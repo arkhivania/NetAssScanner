@@ -2,6 +2,7 @@
 using Ninject;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,8 +23,24 @@ namespace Nailhang.Tool
                 foreach (var module in storage.GetModules())
                     PrintModule(module);
 
-                foreach(var module in processor.ExtractModules(@"E:\Development\dev3\MultiVox\References\Release\Alda.MultiVox.Mode3D.Extensions.dll"))
-                    storage.StoreModule(module);
+                foreach (var envParam in Environment.GetCommandLineArgs())
+                {
+                    if(envParam.ToLower().StartsWith("-folder:"))
+                        foreach (var fp in Directory.GetFiles(envParam.Substring("-folder:".Length), "*.dll", SearchOption.AllDirectories))
+                        {
+                            Console.WriteLine("Extracting:" + fp);
+
+                            try
+                            {
+                                foreach (var module in processor.ExtractModules(fp))
+                                    storage.StoreModule(module);
+                            }
+                            catch 
+                            {
+                                Console.WriteLine("Fail to extract from: " + fp);
+                            }
+                        }
+                }
             }
         }
 

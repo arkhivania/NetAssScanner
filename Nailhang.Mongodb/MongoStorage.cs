@@ -3,6 +3,7 @@ using MongoDB.Driver.Builders;
 using Nailhang.IndexBase.Storage;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,13 +14,24 @@ namespace Nailhang.Mongodb
     {
         readonly MongoCollection<ModuleEntity> modules;
 
+        string dbName = "nailhang";
+
         public MongoStorage()
         {
             var connectionString = "mongodb://localhost";
             var client = new MongoClient(connectionString);
             var server = client.GetServer();
-            var database = server.GetDatabase("nailhang_dev");
+
+            InitDebug();
+
+            var database = server.GetDatabase(dbName);
             this.modules = database.GetCollection<ModuleEntity>("modules");
+        }
+
+        [Conditional("DEBUG")]
+        void InitDebug()
+        {
+            this.dbName = "nailhang_dev";
         }
 
         public void StoreModule(IndexBase.Module module)

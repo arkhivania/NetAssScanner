@@ -22,3 +22,17 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.little-text {
+    font-size: 80%;
+    font-style: italic;
+    color: darkgrey;
+}
+
+.module-description {    
+    
+}
+
+.interface-description {
+    font-size: small;
+}

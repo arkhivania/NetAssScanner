@@ -10,18 +10,51 @@
 </div>
 
 <div class="row">
-    <div class="col-md-4">
+    <div>
         <h2>Модули</h2>
-        <p>
-            Ниже представлены отсканированные модули
-        </p>
-        @foreach(var m in Model)
-        {
-            <h4>@Nailhang.Web.Utils.StringUtils.GetNamespace(m.FullName)</h4>
-            <p>
-                @m.Description
-            </p>
-        }
+        
+        <ul>
+            @foreach (var m in Model)
+            {
+                <li>
+                    @{string nameSpace = @Nailhang.Web.Utils.StringUtils.GetNamespace(m.FullName);}
+                    <h4>@nameSpace</h4>
+                    <p class="module-description">
+                        @m.Description
+                    </p>
+
+                    <br/>
+
+                    @if(m.Interfaces != null) {
+                        <p><i>Интерфейсы:</i></p>
+                        <ul>
+                            @foreach (var i in m.Interfaces)
+                            { 
+                                <li>
+                                    <b>
+                                        @i.Name.Substring(nameSpace.Length + 1)
+                                    </b>
+                                    @if (!string.IsNullOrEmpty(i.Description))
+                                    {
+                                        <p class="interface-description">
+                                            @i.Description
+                                        </p>
+                                    }                                    
+                                </li>
+                            }
+                        </ul>
+                    }
+                    
+                    <br />
+                    
+                    <p class="little-text">
+                        Класс модуля: 
+                        <br />
+                        @m.FullName
+                    </p>
+                </li>
+            }
+        </ul>
 </div>
     
 </div>

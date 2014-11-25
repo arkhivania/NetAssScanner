@@ -23,15 +23,7 @@ namespace Nailhang.Web.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
+            ViewBag.Message = "Программа просмотра списка модулей";
             return View();
         }
     }
