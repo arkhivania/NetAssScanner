@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Nailhang.IndexBase.Module>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Nailhang</h1>
+    <p class="lead">Утилита для просмотра списка модулей</p>
+    @*<p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>*@
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Модули</h2>
+        <p>
+            Ниже представлены отсканированные модули
+        </p>
+        @foreach(var m in Model)
+        {
+            <h4>@Nailhang.Web.Utils.StringUtils.GetNamespace(m.FullName)</h4>
+            <p>
+                @m.Description
+            </p>
+        }
+</div>
+    
+</div>

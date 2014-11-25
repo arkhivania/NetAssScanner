@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nailhang.Mongodb", "Nailhan
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nailhang.Processing", "Nailhang.Processing\Nailhang.Processing.csproj", "{BDF81E71-1AD2-49C4-BE8C-FB1B11FCE3D7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nailhang.Web", "Nailhang.Web\Nailhang.Web.csproj", "{042C0642-57FC-4444-9D3C-BFE1B433D0F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{BDF81E71-1AD2-49C4-BE8C-FB1B11FCE3D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDF81E71-1AD2-49C4-BE8C-FB1B11FCE3D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDF81E71-1AD2-49C4-BE8C-FB1B11FCE3D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{042C0642-57FC-4444-9D3C-BFE1B433D0F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{042C0642-57FC-4444-9D3C-BFE1B433D0F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{042C0642-57FC-4444-9D3C-BFE1B433D0F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{042C0642-57FC-4444-9D3C-BFE1B433D0F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
