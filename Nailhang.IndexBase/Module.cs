@@ -15,5 +15,7 @@ namespace Nailhang.IndexBase
 
         public ModuleInterface[] Interfaces { get; set; }
         public ModuleObject[] Objects { get; set; }
+
+        public string[] NamespaceDependencies { get; set; }
     }
 }

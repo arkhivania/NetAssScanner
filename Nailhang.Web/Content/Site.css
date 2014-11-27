@@ -29,10 +29,23 @@ textarea {
     color: darkgrey;
 }
 
-.module-description {    
-    
+.module-description {
+
+}
+
+.interface-name {
+    font-weight: bold;
+}
+
+.method-name {
+    font-style: italic;
 }
 
 .interface-description {
-    font-size: small;
+    
+}
+
+.method-restriction {
+    font-size: x-small;
+    color: darkred
 }

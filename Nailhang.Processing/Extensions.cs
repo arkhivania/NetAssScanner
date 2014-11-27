@@ -20,11 +20,37 @@ namespace Nailhang.Processing
                 .OfType<string>().FirstOrDefault();
         }
 
+        public static string PrintShortType(this TypeReference type)
+        {
+            var ginst = type as GenericInstanceType;
+            if (ginst != null)
+            {
+                return string.Format("{0}<{1}>", type.Name,
+                    ginst.GenericArguments.Select(w => w.Name).Aggregate((a, b) => a + ", " + b));
+            }
+            return type.Name;
+        }
+
+        public static string PrintParameters(this IEnumerable<ParameterDefinition> parameters)
+        {
+            if (parameters.Any())
+            {
+                var smallPrint = new Func<ParameterDefinition, string>(p => 
+                {
+                    var pt = p.ParameterType.PrintShortType();
+                    return string.Format("{0} {1}", pt, p.Name);
+                });
+                return parameters
+                    .Select(w => smallPrint(w)).Aggregate((a, b) => a + ", " + b);
+            }
+            return "";
+        }
+
         public static string PrintShortMethod(this MethodDefinition method)
         {
             var mname = method.Name;
             var extra = "";
-            var returnType = method.ReturnType.Name;
+            
 
             if (mname.StartsWith("get_"))
             {
@@ -32,14 +58,9 @@ namespace Nailhang.Processing
                 extra = "{ get; }";
             }
 
-            var ginst = method.ReturnType as GenericInstanceType;
-            if(ginst != null)
-            {
-                returnType = string.Format("{0}<{1}>", method.ReturnType.Name,
-                    ginst.GenericArguments.Select(w => w.Name).Aggregate((a, b) => a + ", " + b));
-            }
-
-            return string.Format("{0} {1}({2}) {3}", returnType, mname, "", extra);
+            return string.Format("{0} {1}({2}) {3}", method.ReturnType.PrintShortType(), 
+                mname, 
+                method.Parameters.PrintParameters(), extra);
         }
     }
 }

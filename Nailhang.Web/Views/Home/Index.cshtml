@@ -11,14 +11,12 @@
 
 <div class="row">
     <div>
-        <h2>Модули</h2>
-        
         <ul>
             @foreach (var m in Model)
             {                
                 <li>
                     @{string nameSpace = @Nailhang.Web.Utils.StringUtils.GetNamespace(m.FullName);}
-                    <h4>@nameSpace</h4>
+                    <h2>@nameSpace</h2>
                     <p class="module-description">
                         @m.Description
                     </p>
@@ -26,12 +24,12 @@
                     <br/>
 
                     @if(m.Interfaces != null && m.Interfaces.Length > 0) {
-                        <p><i>Интерфейсы:</i></p>
+                        <p>Интерфейсы:</p>
                         <ul>
                             @foreach (var i in m.Interfaces)
                             { 
                                 <li>
-                                    <p>
+                                    <p class="interface-name">
                                         @i.Name.Substring(nameSpace.Length + 1)
                                     </p>
                                     @if (!string.IsNullOrEmpty(i.Description))
@@ -48,7 +46,11 @@
                                             @foreach (var meth in i.Methods)
                                             {
                                                 <li>
-                                                    <p>@meth.MethodString</p>
+                                                    <p class="method-name">@meth.MethodString</p>
+                                                    @if (meth.InvocationRestriction != null)
+                                                    {
+                                                        <p class="method-restriction">@meth.InvocationRestriction.Value</p>
+                                                    }
                                                 </li>
                                             }
                                         </ul>
@@ -82,7 +84,20 @@
                     }
                     
                     <br/>
-                    
+
+                    @if (m.NamespaceDependencies != null && m.NamespaceDependencies.Length > 0)
+                    {
+                        <p><i>Зависимости:</i></p>
+                        <ul>
+                                @foreach (var nd in m.NamespaceDependencies)
+                                {
+                                    <li>
+                                        <p>@nd</p>
+                                    </li>
+                                }
+                        </ul>
+                    }
+
                     <p class="little-text">
                         Класс модуля: @m.FullName
                         <br/>

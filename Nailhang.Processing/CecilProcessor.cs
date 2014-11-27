@@ -61,7 +61,32 @@ namespace Nailhang.Processing
                 })
                 .Select(w => CreateModuleObject(w)).ToArray();
 
+            res.NamespaceDependencies = GetNamespaceTypes(assDef, moduleType)
+                .SelectMany(w => GetConstructorTypes(w))
+                .Concat(GetNamespaceTypes(assDef, moduleType).SelectMany(w => GetMethodTypes(w)))
+                .Select(w => w.Namespace)
+                .Distinct()
+                .OrderBy(w => w)
+                .ToArray();
+
             return res;
+        }
+
+        private IEnumerable<TypeReference> GetMethodTypes(TypeDefinition w)
+        {
+            return Enumerable.Empty<TypeReference>();
+        }
+
+        private IEnumerable<TypeReference> GetConstructorTypes(TypeDefinition type)
+        {
+            if ((type.Attributes & TypeAttributes.Abstract) == TypeAttributes.Abstract)
+                yield break;
+
+            foreach(var c in type.Methods.Where(w => w.IsConstructor))
+            {
+                foreach (var p in c.Parameters)
+                    yield return p.ParameterType;
+            }
         }
 
         private ModuleObject CreateModuleObject(TypeDefinition objectType)
@@ -84,7 +109,16 @@ namespace Nailhang.Processing
 
         private Nailhang.IndexBase.InterfaceMethod CreateMethod(MethodDefinition meth)
         {
-            return new InterfaceMethod() { MethodString = meth.PrintShortMethod() };
+            return new InterfaceMethod() { MethodString = meth.PrintShortMethod(), InvocationRestriction = GetRestriction(meth) };
+        }
+
+        private InvocationRestriction? GetRestriction(MethodDefinition meth)
+        {
+            var meaname = typeof(Nailhang.MethodEnvironmentAttribute).FullName;
+            var mea = meth.CustomAttributes.Where(w => w.AttributeType.FullName == meaname).FirstOrDefault();
+            if(mea != null)
+                return (Nailhang.InvocationRestriction)(int)mea.Properties.First(w => w.Name == "InvocationRestriction").Argument.Value;
+            return null;
         }
     }
 }
