@@ -65,6 +65,7 @@ namespace Nailhang.Processing
                 .SelectMany(w => GetConstructorTypes(w))
                 .Concat(GetNamespaceTypes(assDef, moduleType).SelectMany(w => GetMethodTypes(w)))
                 .Select(w => w.Namespace)
+                .Where(w => !w.StartsWith(moduleType.Namespace))
                 .Distinct()
                 .OrderBy(w => w)
                 .ToArray();
