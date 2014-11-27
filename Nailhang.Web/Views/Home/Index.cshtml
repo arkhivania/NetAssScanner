@@ -15,7 +15,7 @@
         
         <ul>
             @foreach (var m in Model)
-            {
+            {                
                 <li>
                     @{string nameSpace = @Nailhang.Web.Utils.StringUtils.GetNamespace(m.FullName);}
                     <h4>@nameSpace</h4>
@@ -25,33 +25,71 @@
 
                     <br/>
 
-                    @if(m.Interfaces != null) {
+                    @if(m.Interfaces != null && m.Interfaces.Length > 0) {
                         <p><i>Интерфейсы:</i></p>
                         <ul>
                             @foreach (var i in m.Interfaces)
                             { 
                                 <li>
-                                    <b>
+                                    <p>
                                         @i.Name.Substring(nameSpace.Length + 1)
-                                    </b>
+                                    </p>
                                     @if (!string.IsNullOrEmpty(i.Description))
                                     {
                                         <p class="interface-description">
                                             @i.Description
                                         </p>
-                                    }                                    
+                                    }
+                                    
+                                    @if (i.Methods != null && i.Methods.Length > 0)
+                                    {
+                                        <p>Методы:</p>
+                                        <ul>
+                                            @foreach (var meth in i.Methods)
+                                            {
+                                                <li>
+                                                    <p>@meth.MethodString</p>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }                                        
                                 </li>
                             }
                         </ul>
                     }
                     
                     <br />
+
+                    @if (m.Objects != null && m.Objects.Length > 0)
+                    {
+                        <p><i>Объекты:</i></p>
+                        <ul>
+                            @foreach (var i in m.Objects)
+                            {
+                                <li>
+                                    <p>
+                                        @i.Name.Substring(nameSpace.Length + 1)
+                                    </p>
+                                    @if (!string.IsNullOrEmpty(i.Description))
+                                    {
+                                        <p class="interface-description">
+                                            @i.Description
+                                        </p>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+                    
+                    <br/>
                     
                     <p class="little-text">
-                        Класс модуля: 
-                        <br />
-                        @m.FullName
+                        Класс модуля: @m.FullName
+                        <br/>
+                        Сборка: @m.Assembly
                     </p>
+
+                    <hr />
                 </li>
             }
         </ul>

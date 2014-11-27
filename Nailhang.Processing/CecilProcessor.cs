@@ -16,6 +16,12 @@ namespace Nailhang.Processing
             return assemblyDefinition.MainModule.GetTypes();
         }
 
+        IEnumerable<TypeDefinition> GetNamespaceTypes(AssemblyDefinition assemblyDefinition, TypeDefinition moduleType)
+        {
+            return GetTypes(assemblyDefinition)
+                .Where(w => w.Namespace.StartsWith(moduleType.Namespace));
+        }
+
         public IEnumerable<IndexBase.Module> ExtractModules(string filePath)
         {
             var moduleType = typeof(Nailhang.ModuleAttribute).FullName;
@@ -38,21 +44,47 @@ namespace Nailhang.Processing
             res.Description = moduleType.GetDescription();
             res.FullName = moduleType.FullName;
             res.Significance = (Nailhang.Significance)(int)modAttr.Properties.FirstOrDefault(w => w.Name == "Significance").Argument.Value;
-            res.Interfaces = GetTypes(assDef)
-                .Where(w => w.Namespace.StartsWith(moduleType.Namespace))
+            res.Interfaces = GetNamespaceTypes(assDef, moduleType)
                 .Where(w => 
                 {
                     return (w.Attributes & TypeAttributes.Abstract) == TypeAttributes.Abstract &&
                         (w.Attributes & TypeAttributes.Public) == TypeAttributes.Public;
                 })
-                .Select(w => CreateInterface(w, assDef)).ToArray();
+                .Select(w => CreateInterface(w)).ToArray();
+
+            res.Objects = GetNamespaceTypes(assDef, moduleType)
+                .Where(w =>
+                {
+                    return (w.Attributes & TypeAttributes.Abstract) != TypeAttributes.Abstract &&
+                        w.BaseType.FullName != typeof(System.Enum).FullName &&
+                        (w.Attributes & TypeAttributes.Public) == TypeAttributes.Public;
+                })
+                .Select(w => CreateModuleObject(w)).ToArray();
+
             return res;
         }
 
-        private ModuleInterface CreateInterface(TypeDefinition interfaceType, AssemblyDefinition assDef)
+        private ModuleObject CreateModuleObject(TypeDefinition objectType)
         {
-            var res = new ModuleInterface() { Name = interfaceType.FullName, Description = interfaceType.GetDescription() };
+            var res = new ModuleObject();
+            res.Name = objectType.FullName;
+            res.Description = objectType.GetDescription();
             return res;
+        }
+
+        private ModuleInterface CreateInterface(TypeDefinition interfaceType)
+        {
+            
+            var res = new ModuleInterface() { Name = interfaceType.FullName, Description = interfaceType.GetDescription() };
+            res.Methods = interfaceType.Methods
+                .Select(meth => CreateMethod(meth)).ToArray();
+
+            return res;
+        }
+
+        private Nailhang.IndexBase.InterfaceMethod CreateMethod(MethodDefinition meth)
+        {
+            return new InterfaceMethod() { MethodString = meth.PrintShortMethod() };
         }
     }
 }

@@ -9,6 +9,7 @@ namespace Nailhang.IndexBase
     public class InterfaceMethod
     {
         public string Description { get; set; }
+        public string MethodString { get; set; }
         public Nailhang.InvocationRestriction? InvocationRestriction { get; set; }
     }
 }
