@@ -20,6 +20,10 @@ namespace Nailhang.Web.Controllers
             if (formUpdate)
                 Session["DisplaySettings"] = model.DisplaySettings;
 
+            model.DisplaySettings = (Models.DisplaySettings)Session["DisplaySettings"];
+            if (model.DisplaySettings == null)
+                model.DisplaySettings = new Models.DisplaySettings() { ShowDependencies = true, ShowInterfaces = true, ShowObjects = true };
+
             var rootDeep = Properties.Settings.Default.RootDeep;
 
             var allModules = modulesStorage.GetModules()
@@ -41,9 +45,7 @@ namespace Nailhang.Web.Controllers
             if (!string.IsNullOrEmpty(model.SelectedRoot))
                 model.Modules = allModules.Where(w => w.Module.FullName.StartsWith(model.SelectedRoot));
 
-            model.DisplaySettings = (Models.DisplaySettings)Session["DisplaySettings"];
-            if (model.DisplaySettings == null)
-                model.DisplaySettings = new Models.DisplaySettings() { ShowDependencies = true, ShowInterfaces = true, ShowObjects = true };
+            
             
             return View(model);
         }
