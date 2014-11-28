@@ -1,9 +1,7 @@
 ﻿@model Nailhang.Web.Models.ModuleModel
 
 @{string nameSpace = Model.Namespace;}
-<h2>
-    @Html.ActionLink(@nameSpace, "Index", "Module", new { module = @Model.Module.FullName }, null)
-</h2>
+
 <p class="module-description">
     @Model.Module.Description
 </p>
