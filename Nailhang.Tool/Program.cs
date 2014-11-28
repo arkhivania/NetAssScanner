@@ -20,9 +20,6 @@ namespace Nailhang.Tool
                 var storage = kernel.Get<IModulesStorage>();
                 var processor = kernel.Get<IndexBase.Index.IIndexProcessor>();
 
-                foreach (var module in storage.GetModules())
-                    PrintModule(module);
-
                 foreach (var envParam in Environment.GetCommandLineArgs())
                 {
                     if(envParam.ToLower().StartsWith("-folder:"))
@@ -35,9 +32,9 @@ namespace Nailhang.Tool
                                 foreach (var module in processor.ExtractModules(fp))
                                     storage.StoreModule(module);
                             }
-                            catch 
+                            catch(Exception e) 
                             {
-                                Console.WriteLine("Fail to extract from: " + fp);
+                                Console.WriteLine("Fail to extract from: " + fp + Environment.NewLine + e.ToString());
                             }
                         }
                 }

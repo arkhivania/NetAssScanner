@@ -26,7 +26,16 @@ namespace Nailhang.Processing
         {
             var moduleType = typeof(Nailhang.ModuleAttribute).FullName;
 
-            var assDef = Mono.Cecil.AssemblyDefinition.ReadAssembly(filePath);
+            var readerParameters = new ReaderParameters();
+            var resolver = new DefaultAssemblyResolver();
+            resolver.AddSearchDirectory(System.IO.Path.GetDirectoryName(typeof(CecilProcessor).Assembly.Location));
+
+            foreach (var resolvePath in Environment.GetCommandLineArgs().Where(w => w.ToLower().StartsWith("-cecilrefpath:")))
+                resolver.AddSearchDirectory(resolvePath.Substring("-cecilRefPath:".Length));
+
+            readerParameters.AssemblyResolver = resolver;
+
+            var assDef = Mono.Cecil.AssemblyDefinition.ReadAssembly(filePath, readerParameters);
             foreach(var type in GetTypes(assDef))
             {
                 var modAttr = type.CustomAttributes.FirstOrDefault(w => w.AttributeType.FullName == moduleType);
