@@ -15,18 +15,25 @@ namespace Nailhang.Web.Controllers
             this.modulesStorage = modulesStorage;
         }
 
-        public ActionResult Index(Models.ModuleModel model, string module)
+        public ActionResult Index(Models.ModuleModel model, string module, bool formUpdate = false)
         {
+            if (formUpdate)
+                Session["DisplaySettings"] = model.DisplaySettings;
+
             var allModules = modulesStorage.GetModules()
                 .Select(w => new Models.ModuleModel { Module = w, DisplaySettings = model.DisplaySettings })
                 .ToArray();
+            
+            model.DisplaySettings = (Models.DisplaySettings)Session["DisplaySettings"];
+            if (model.DisplaySettings == null)
+                model.DisplaySettings = new Models.DisplaySettings() { ShowDependencies = true, ShowInterfaces = true, ShowObjects = true  };
 
             HomeController.CreateDependencies(allModules);
 
             var targetModel = allModules.First(w => w.Module.FullName == module);
             model.Module = targetModel.Module;
             model.DependencyItems = targetModel.DependencyItems;
-            return View(model);
+            return View("Index", model);
         }
     }
 }

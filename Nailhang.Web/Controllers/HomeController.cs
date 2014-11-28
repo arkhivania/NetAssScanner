@@ -15,8 +15,11 @@ namespace Nailhang.Web.Controllers
             this.modulesStorage = modulesStorage;
         }
 
-        public ActionResult Index(Models.IndexModel model)
+        public ActionResult Index(Models.IndexModel model, bool formUpdate = false)
         {
+            if (formUpdate)
+                Session["DisplaySettings"] = model.DisplaySettings;
+
             var rootDeep = Properties.Settings.Default.RootDeep;
 
             var allModules = modulesStorage.GetModules()
@@ -28,15 +31,19 @@ namespace Nailhang.Web.Controllers
             model.Modules = allModules;
             model.AllModules = allModules;
 
-            model.DisplaySettings.RootNamespaces = allModules
+            model.RootNamespaces = allModules
                     .SelectMany(w => GetNamespaces(w.Module.FullName)).Distinct()
                     .Where(w => w.Split('.').Length <= rootDeep)
                     .OrderBy(w => w)
                     .Select(w => new SelectListItem() { Value = w, Text = w })
                     .ToArray();
 
-            if (!string.IsNullOrEmpty(model.DisplaySettings.SelectedRoot))
-                model.Modules = allModules.Where(w => w.Module.FullName.StartsWith(model.DisplaySettings.SelectedRoot));
+            if (!string.IsNullOrEmpty(model.SelectedRoot))
+                model.Modules = allModules.Where(w => w.Module.FullName.StartsWith(model.SelectedRoot));
+
+            model.DisplaySettings = (Models.DisplaySettings)Session["DisplaySettings"];
+            if (model.DisplaySettings == null)
+                model.DisplaySettings = new Models.DisplaySettings() { ShowDependencies = true, ShowInterfaces = true, ShowObjects = true };
             
             return View(model);
         }

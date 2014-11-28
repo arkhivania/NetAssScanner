@@ -13,6 +13,9 @@ namespace Nailhang.Web.Models
         public IEnumerable<ModuleModel> Modules { get; set; }
         public IEnumerable<ModuleModel> AllModules { get; set; }
 
+        public IEnumerable<SelectListItem> RootNamespaces { get; set; }
+        public string SelectedRoot { get; set; }
+
 
         public DisplaySettings DisplaySettings { get; set; }        
 

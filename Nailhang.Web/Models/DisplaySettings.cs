@@ -12,9 +12,6 @@ namespace Nailhang.Web.Models
         public bool ShowObjects { get; set; }
         public bool ShowInterfaces { get; set; }
 
-        public IEnumerable<SelectListItem> RootNamespaces { get; set; }
-        public string SelectedRoot { get; set; }
-
         public DisplaySettings()
         {
             this.ShowInterfaces = true;

@@ -12,12 +12,13 @@
 
 @using (Html.BeginForm())
 {
+    @Html.Hidden("formUpdate", true)
     @Html.EditorFor(w => w.DisplaySettings, "DisplaySettings")
 
     <br />
     <div>
         Пространство имен
-        @Html.DropDownListFor(w => w.DisplaySettings.SelectedRoot, Model.DisplaySettings.RootNamespaces)
+        @Html.DropDownListFor(w => w.SelectedRoot, Model.RootNamespaces)
     </div>
 
     <input type="submit" value="Обновить" />
