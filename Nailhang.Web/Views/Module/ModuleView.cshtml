@@ -1,0 +1,96 @@
+﻿@model Nailhang.Web.Models.ModuleModel
+
+@{string nameSpace = Model.Namespace;}
+<h2>@nameSpace</h2>
+<p class="module-description">
+    @Model.Module.Description
+</p>
+
+<br />
+
+@if (Model.DisplaySettings.ShowInterfaces && Model.Module.Interfaces != null && Model.Module.Interfaces.Length > 0)
+{
+    <p>Интерфейсы:</p>
+    <ul>
+        @foreach (var i in Model.Module.Interfaces)
+        {
+            <li>
+                <p class="interface-name">
+                    @i.Name.Substring(nameSpace.Length + 1)
+                </p>
+                @if (!string.IsNullOrEmpty(i.Description))
+                {
+                    <p class="interface-description">
+                        @i.Description
+                    </p>
+                }
+
+                @if (i.Methods != null && i.Methods.Length > 0)
+                {
+                    <ul>
+                        @foreach (var meth in i.Methods)
+                        {
+                            <li>
+                                <p class="method-name">@meth.MethodString</p>
+                                @if (meth.InvocationRestriction != null)
+                                {
+                                    <p class="method-restriction">@meth.InvocationRestriction.Value</p>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    </ul>
+
+    <br />
+}
+
+
+
+@if (Model.DisplaySettings.ShowObjects && Model.Module.Objects != null && Model.Module.Objects.Length > 0)
+{
+    <p><i>Объекты:</i></p>
+    <ul>
+        @foreach (var i in Model.Module.Objects.OrderBy(w => w.Name))
+        {
+            <li>
+                <p>
+                    @i.Name.Substring(nameSpace.Length + 1)
+                </p>
+                @if (!string.IsNullOrEmpty(i.Description))
+                {
+                    <p class="interface-description">
+                        @i.Description
+                    </p>
+                }
+            </li>
+        }
+    </ul>
+
+    <br />
+}
+
+
+
+@if (Model.DisplaySettings.ShowDependencies && Model.Module.NamespaceDependencies != null && Model.Module.NamespaceDependencies.Length > 0)
+{
+    <p><i>Зависимости:</i></p>
+    <ul>
+        @foreach (var nd in Model.Module.NamespaceDependencies.OrderBy(w => w))
+        {
+            <li>
+                <p>@nd</p>
+            </li>
+        }
+    </ul>
+}
+
+<p class="little-text">
+    Класс модуля: @Model.Module.FullName
+    <br />
+    Сборка: @Model.Module.Assembly
+</p>
+
+<hr />
