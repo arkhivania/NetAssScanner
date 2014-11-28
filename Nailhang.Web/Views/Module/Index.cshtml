@@ -1,7 +1,20 @@
-﻿
+﻿@model Nailhang.Web.Models.ModuleModel
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>@Model.Namespace</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.EditorFor(w => w.DisplaySettings, "DisplaySettings")
+    <input type="submit" value="Обновить" />
+}
+
+<div class="row">
+    <div>
+        @Html.Partial("~/Views/Module/ModuleView.cshtml", Model)
+    </div>
+
+</div>
 

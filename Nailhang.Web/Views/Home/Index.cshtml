@@ -13,6 +13,13 @@
 @using (Html.BeginForm())
 {
     @Html.EditorFor(w => w.DisplaySettings, "DisplaySettings")
+
+    <br />
+    <div>
+        Пространство имен
+        @Html.DropDownListFor(w => w.DisplaySettings.SelectedRoot, Model.DisplaySettings.RootNamespaces)
+    </div>
+
     <input type="submit" value="Обновить" />
 }
 
@@ -26,6 +33,6 @@
                 </li>
             }
         </ul>
-</div>
+    </div>
     
 </div>

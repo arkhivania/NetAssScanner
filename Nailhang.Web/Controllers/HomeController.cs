@@ -22,6 +22,9 @@ namespace Nailhang.Web.Controllers
             var allModules = modulesStorage.GetModules()
                 .Select(w => new Models.ModuleModel { Module = w, DisplaySettings = model.DisplaySettings })
                 .ToArray();
+
+            CreateDependencies(allModules);
+
             model.Modules = allModules;
             model.AllModules = allModules;
 
@@ -36,6 +39,21 @@ namespace Nailhang.Web.Controllers
                 model.Modules = allModules.Where(w => w.Module.FullName.StartsWith(model.DisplaySettings.SelectedRoot));
             
             return View(model);
+        }
+
+        internal static void CreateDependencies(Models.ModuleModel[] modules)
+        {
+            foreach(var m in modules)
+            {
+                m.DependencyItems = m.Module.NamespaceDependencies.Select(w => new Models.DependencyItem { Name = w }).ToArray();
+
+                foreach(var depItem in m.DependencyItems)
+                {
+                    var moduleReference = modules.FirstOrDefault(w => depItem.Name.StartsWith(w.Namespace));
+                    if (moduleReference != null)
+                        depItem.Module = moduleReference.Module.FullName;
+                }
+            }
         }
 
         private IEnumerable<string> GetNamespaces(string @namespace)

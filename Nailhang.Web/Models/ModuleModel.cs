@@ -17,5 +17,12 @@ namespace Nailhang.Web.Models
                 return Utils.StringUtils.GetNamespace(Module.FullName);
             }
         }
+
+        public ModuleModel()
+        {
+            DisplaySettings = new DisplaySettings() { ShowDependencies = true, ShowInterfaces = true, ShowObjects = true };
+        }
+
+        public DependencyItem[] DependencyItems { get; set; }
     }
 }

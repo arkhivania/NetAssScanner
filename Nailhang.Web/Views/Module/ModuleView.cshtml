@@ -1,7 +1,9 @@
 ﻿@model Nailhang.Web.Models.ModuleModel
 
 @{string nameSpace = Model.Namespace;}
-<h2>@nameSpace</h2>
+<h2>
+    @Html.ActionLink(@nameSpace, "Index", "Module", new { module = @Model.Module.FullName }, null)
+</h2>
 <p class="module-description">
     @Model.Module.Description
 </p>
@@ -74,14 +76,22 @@
 
 
 
-@if (Model.DisplaySettings.ShowDependencies && Model.Module.NamespaceDependencies != null && Model.Module.NamespaceDependencies.Length > 0)
+@if (Model.DisplaySettings.ShowDependencies && Model.DependencyItems != null && Model.DependencyItems.Length > 0)
 {
     <p><i>Зависимости:</i></p>
     <ul>
-        @foreach (var nd in Model.Module.NamespaceDependencies.OrderBy(w => w))
+        @foreach (var nd in Model.DependencyItems.OrderBy(w => w.Name))
         {
             <li>
-                <p>@nd</p>
+                @if (string.IsNullOrEmpty(nd.Module))
+                {
+                    <p>@nd.Name/</p>
+                }else
+                {
+                    <p>
+                        @Html.ActionLink(nd.Name, "Index", "Module", new { module = nd.Module }, null)
+                    </p>
+                }
             </li>
         }
     </ul>

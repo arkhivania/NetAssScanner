@@ -8,10 +8,25 @@ namespace Nailhang.Web.Controllers
 {
     public class ModuleController : Controller
     {
-        // GET: Module
-        public ActionResult Index(string module)
+        private readonly Nailhang.IndexBase.Storage.IModulesStorage modulesStorage;
+
+        public ModuleController(Nailhang.IndexBase.Storage.IModulesStorage modulesStorage)
         {
-            return View();
+            this.modulesStorage = modulesStorage;
+        }
+
+        public ActionResult Index(Models.ModuleModel model, string module)
+        {
+            var allModules = modulesStorage.GetModules()
+                .Select(w => new Models.ModuleModel { Module = w, DisplaySettings = model.DisplaySettings })
+                .ToArray();
+
+            HomeController.CreateDependencies(allModules);
+
+            var targetModel = allModules.First(w => w.Module.FullName == module);
+            model.Module = targetModel.Module;
+            model.DependencyItems = targetModel.DependencyItems;
+            return View(model);
         }
     }
 }
