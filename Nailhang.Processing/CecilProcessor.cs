@@ -52,7 +52,8 @@ namespace Nailhang.Processing
             res.Assembly = assDef.Name.Name;
             res.Description = moduleType.GetDescription();
             res.FullName = moduleType.FullName;
-            res.Significance = (Nailhang.Significance)(int)modAttr.Properties.FirstOrDefault(w => w.Name == "Significance").Argument.Value;
+            
+            res.Significance = (Nailhang.Significance)modAttr.Properties.Where(w => w.Name == "Significance").Select(w => (int)w.Argument.Value).FirstOrDefault();
             res.Interfaces = GetNamespaceTypes(assDef, moduleType)
                 .Where(w => 
                 {
