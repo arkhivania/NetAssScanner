@@ -19,6 +19,11 @@ namespace Nailhang.Mongodb
         public MongoStorage()
         {
             var connectionString = "mongodb://localhost";
+
+            var mongoParam = Environment.GetCommandLineArgs().FirstOrDefault(w => w.ToLower().StartsWith("-mongo:"));
+            if(mongoParam != null)
+                connectionString = mongoParam.Substring("-mongo:".Length);
+
             var client = new MongoClient(connectionString);
             var server = client.GetServer();
 
@@ -28,7 +33,7 @@ namespace Nailhang.Mongodb
             this.modules = database.GetCollection<ModuleEntity>("modules");
         }
 
-        [Conditional("DEBUG")]
+        [Conditional("DB_DEBUG")]
         void InitDebug()
         {
             this.dbName = "nailhang_dev";
