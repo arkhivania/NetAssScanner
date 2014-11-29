@@ -187,6 +187,7 @@
     <Content Include="Views\Module\Index.cshtml" />
     <Content Include="Views\Module\ModuleView.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\DisplaySettings.cshtml" />
+    <Content Include="Views\Home\DisplaySettings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

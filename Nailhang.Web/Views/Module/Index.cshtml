@@ -8,7 +8,7 @@
 {
     @Html.HiddenFor(w => w.Module.FullName)
     @Html.Hidden("formUpdate", true)
-    @Html.EditorFor(w => w.DisplaySettings, "DisplaySettings")
+    { Html.RenderAction("RenderParameters", "Home"); }
     <input type="submit" value="Обновить" />
 }
 

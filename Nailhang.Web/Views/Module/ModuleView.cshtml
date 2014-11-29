@@ -8,7 +8,9 @@
 
 <br />
 
-@if (Model.DisplaySettings.ShowInterfaces && Model.Module.Interfaces != null && Model.Module.Interfaces.Length > 0)
+@{var displaySettings = (Nailhang.Web.Models.DisplaySettings)Session["DisplaySettings"];}
+
+@if (displaySettings.ShowInterfaces && Model.Module.Interfaces != null && Model.Module.Interfaces.Length > 0)
 {
     <p>Интерфейсы:</p>
     <ul>
@@ -49,7 +51,7 @@
 
 
 
-@if (Model.DisplaySettings.ShowObjects && Model.Module.Objects != null && Model.Module.Objects.Length > 0)
+@if (displaySettings.ShowObjects && Model.Module.Objects != null && Model.Module.Objects.Length > 0)
 {
     <p><i>Объекты:</i></p>
     <ul>
@@ -74,7 +76,7 @@
 
 
 
-@if (Model.DisplaySettings.ShowDependencies && Model.DependencyItems != null && Model.DependencyItems.Length > 0)
+@if (displaySettings.ShowDependencies && Model.DependencyItems != null && Model.DependencyItems.Length > 0)
 {
     <p><i>Зависимости:</i></p>
     <ul>

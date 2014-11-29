@@ -13,8 +13,8 @@
 @using (Html.BeginForm())
 {
     @Html.Hidden("formUpdate", true)
-    @Html.EditorFor(w => w.DisplaySettings, "DisplaySettings")
-
+    { Html.RenderAction("RenderParameters"); }
+    
     <br />
     <div>
         Пространство имен

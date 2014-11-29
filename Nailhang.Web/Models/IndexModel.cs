@@ -15,13 +15,5 @@ namespace Nailhang.Web.Models
 
         public IEnumerable<SelectListItem> RootNamespaces { get; set; }
         public string SelectedRoot { get; set; }
-
-
-        public DisplaySettings DisplaySettings { get; set; }        
-
-        public IndexModel()
-        {
-            this.DisplaySettings = new DisplaySettings();
-        }
     }
 }

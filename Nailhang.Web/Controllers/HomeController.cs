@@ -15,19 +15,28 @@ namespace Nailhang.Web.Controllers
             this.modulesStorage = modulesStorage;
         }
 
-        public ActionResult Index(Models.IndexModel model, bool formUpdate = false)
+        public PartialViewResult RenderParameters()
         {
-            if (formUpdate)
-                Session["DisplaySettings"] = model.DisplaySettings;
+            return PartialView("DisplaySettings", Session["DisplaySettings"]);
+        }
 
-            model.DisplaySettings = (Models.DisplaySettings)Session["DisplaySettings"];
-            if (model.DisplaySettings == null)
-                model.DisplaySettings = new Models.DisplaySettings() { ShowDependencies = true, ShowInterfaces = true, ShowObjects = true };
+        protected override void Initialize(System.Web.Routing.RequestContext requestContext)
+        {
+            base.Initialize(requestContext);
+
+            if (Session["DisplaySettings"] == null)
+                Session["DisplaySettings"] = new Models.DisplaySettings();
+        }
+
+        public ActionResult Index(Models.IndexModel model, Models.DisplaySettings displaySettings, bool formUpdate = false)
+        {
+            if(formUpdate)
+                Session["DisplaySettings"] = displaySettings;
 
             var rootDeep = Properties.Settings.Default.RootDeep;
 
             var allModules = modulesStorage.GetModules()
-                .Select(w => new Models.ModuleModel { Module = w, DisplaySettings = model.DisplaySettings })
+                .Select(w => new Models.ModuleModel { Module = w })
                 .ToArray();
 
             CreateDependencies(allModules);
