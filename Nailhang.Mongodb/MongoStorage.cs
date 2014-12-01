@@ -1,5 +1,6 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using MongoDB.Driver.Linq;
 using Nailhang.IndexBase.Storage;
 using System;
 using System.Collections.Generic;
@@ -53,6 +54,15 @@ namespace Nailhang.Mongodb
         {
             foreach (var moduleEntity in modules.FindAll())
                 yield return moduleEntity.Module;
+        }
+
+
+        public void DropModules(string namespaceStartsWith)
+        {
+            if (string.IsNullOrEmpty(namespaceStartsWith))
+                modules.RemoveAll();
+            else
+                modules.Remove(Query<ModuleEntity>.Where(w => w.Module.FullName.StartsWith(namespaceStartsWith)));            
         }
     }
 }

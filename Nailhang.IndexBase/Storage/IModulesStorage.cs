@@ -10,5 +10,11 @@ namespace Nailhang.IndexBase.Storage
     {
         void StoreModule(Module module);
         IEnumerable<Module> GetModules();
+
+        /// <summary>
+        /// Очищает модули, namespace которых начинается с параметра namespaceStartsWith
+        /// </summary>
+        /// <param name="namespaceStartsWith">С чего начинается namespace для удаления. Если пустой, удаляются все модули в базе</param>
+        void DropModules(string namespaceStartsWith);
     }
 }

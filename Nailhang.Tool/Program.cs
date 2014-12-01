@@ -20,8 +20,16 @@ namespace Nailhang.Tool
                 var storage = kernel.Get<IModulesStorage>();
                 var processor = kernel.Get<IndexBase.Index.IIndexProcessor>();
 
+                if(Environment.GetCommandLineArgs().Any(w => w.ToLower() == "-drop"))
+                    storage.DropModules("");
+
+                foreach(var drop in Environment.GetCommandLineArgs().Where(w => w.ToLower().StartsWith("-drop:")))
+                    storage.DropModules(drop.Substring("-drop:".Length));
+
                 foreach (var envParam in Environment.GetCommandLineArgs())
                 {
+                    
+
                     if(envParam.ToLower().StartsWith("-folder:"))
                         foreach (var fp in Directory.GetFiles(envParam.Substring("-folder:".Length), "*.dll", SearchOption.AllDirectories))
                         {
