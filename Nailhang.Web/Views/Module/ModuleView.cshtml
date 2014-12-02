@@ -2,7 +2,7 @@
 
 @{string nameSpace = Model.Namespace;}
 
-<p class="module-description">
+<p class="module-description" style="white-space: pre-line">
     @Model.Module.Description
 </p>
 
@@ -97,10 +97,19 @@
     </ul>
 }
 
-<p class="little-text">
-    Класс модуля: @Model.Module.FullName
-    <br />
-    Сборка: @Model.Module.Assembly
-</p>
+@if (Model.Module.FullName != Model.Namespace)
+{
+    <p class="little-text">
+        Класс модуля: @Model.Module.FullName
+        <br/>
+        Сборка: @Model.Module.Assembly
+    </p>
+}
+else
+{
+    <p class="little-text">
+        Сборка: @Model.Module.Assembly
+    </p>
+}
 
 <hr />

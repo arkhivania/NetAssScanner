@@ -9,6 +9,7 @@ namespace Nailhang.IndexBase
     public class Module
     {
         public string FullName { get; set; }
+        public string Namespace { get; set; }
         public string Description { get; set; }
         public Nailhang.Significance Significance { get; set; }
         public string Assembly { get; set; }

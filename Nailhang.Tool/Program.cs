@@ -26,13 +26,18 @@ namespace Nailhang.Tool
                 foreach(var drop in Environment.GetCommandLineArgs().Where(w => w.ToLower().StartsWith("-drop:")))
                     storage.DropModules(drop.Substring("-drop:".Length));
 
+                var targetFiles = new List<string>();
+
                 foreach (var envParam in Environment.GetCommandLineArgs())
                 {
-                    
+                    if (envParam.ToLower().StartsWith("-folder:"))
+                        targetFiles.AddRange(Directory.GetFiles(envParam.Substring("-folder:".Length), "*.dll", SearchOption.AllDirectories));
+                    if (envParam.ToLower().StartsWith("-file:"))
+                        targetFiles.Add(envParam.Substring("-file:".Length));
+                }
 
-                    if(envParam.ToLower().StartsWith("-folder:"))
-                        foreach (var fp in Directory.GetFiles(envParam.Substring("-folder:".Length), "*.dll", SearchOption.AllDirectories))
-                        {
+                foreach(var fp in targetFiles)
+                    {
                             Console.WriteLine("Extracting:" + fp);
 
                             try
@@ -40,18 +45,14 @@ namespace Nailhang.Tool
                                 foreach (var module in processor.ExtractModules(fp))
                                     storage.StoreModule(module);
                             }
-                            catch(Exception e) 
+                            catch (Exception e)
                             {
                                 Console.WriteLine("Fail to extract from: " + fp + Environment.NewLine + e.ToString());
                             }
                         }
-                }
-            }
-        }
 
-        private static void PrintModule(IndexBase.Module module)
-        {
-            Console.WriteLine(new {module.Assembly, module.FullName, module.Description});
+                
+            }
         }
     }
 }

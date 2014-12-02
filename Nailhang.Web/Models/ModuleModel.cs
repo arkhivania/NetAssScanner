@@ -13,7 +13,7 @@ namespace Nailhang.Web.Models
         {
             get 
             {
-                return Utils.StringUtils.GetNamespace(Module.FullName);
+                return Module.Namespace;
             }
         }
 

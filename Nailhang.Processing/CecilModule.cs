@@ -12,6 +12,9 @@ namespace Nailhang.Processing
         public override void Load()
         {
             Kernel.Bind<IndexBase.Index.IIndexProcessor>().To<CecilProcessor>();
+
+            Kernel.Bind<ModuleBuilder.Base.IModuleBuilder>().To<ModuleBuilder.NailhangModuleBuilder>();
+            Kernel.Bind<ModuleBuilder.Base.IModuleBuilder>().To<ModuleBuilder.NamespaceGroupedBuilder>();
         }
     }
 }
