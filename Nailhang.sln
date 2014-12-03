@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3B89FB
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nailhang.Portable", "Nailhang\Nailhang.Portable.csproj", "{5508D95F-FC40-4372-A596-824A2DAAC0F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{042C0642-57FC-4444-9D3C-BFE1B433D0F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{042C0642-57FC-4444-9D3C-BFE1B433D0F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{042C0642-57FC-4444-9D3C-BFE1B433D0F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5508D95F-FC40-4372-A596-824A2DAAC0F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5508D95F-FC40-4372-A596-824A2DAAC0F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5508D95F-FC40-4372-A596-824A2DAAC0F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5508D95F-FC40-4372-A596-824A2DAAC0F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

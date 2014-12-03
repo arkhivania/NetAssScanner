@@ -15,7 +15,7 @@ namespace Nailhang.Processing
         {
             return typeDefinition
                 .CustomAttributes
-                .Where(w => w.AttributeType.FullName == typeof(DescriptionAttribute).FullName)
+                .Where(w => w.AttributeType.FullName == typeof(DescriptionAttribute).FullName || w.AttributeType.FullName == typeof(Nailhang.ModuleDescription).FullName)
                 .Where(w => w.ConstructorArguments.Count > 0)
                 .Select(w => w.ConstructorArguments[0].Value)
                 .OfType<string>().FirstOrDefault();
