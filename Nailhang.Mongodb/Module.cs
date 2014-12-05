@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Nailhang.Mongodb
 {
+    [Nailhang.Module]
+    [Nailhang.ModuleDescription("Модуль хранения данных Nailhang в БД Mongo")]
     public class Module : NinjectModule
     {
         public override void Load()

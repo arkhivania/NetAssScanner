@@ -28,6 +28,20 @@ namespace Nailhang.Tool
 
                 var targetFiles = new List<string>();
 
+                if (Environment.GetCommandLineArgs().Any(w => w.ToLower() == "-list"))
+                {
+                    Console.WriteLine("Stored modules:");
+                    Console.WriteLine(Environment.NewLine);
+                    foreach (var m in storage.GetModules())
+                    {
+
+                        Console.WriteLine(string.Format("Assembly: {0}", m.Assembly));
+                        Console.WriteLine(string.Format("ModuleName: {0}", m.FullName));
+                        Console.WriteLine(string.Format("Description: {0}", m.Description));
+                        Console.WriteLine(Environment.NewLine);
+                    }
+                }
+
                 foreach (var envParam in Environment.GetCommandLineArgs())
                 {
                     if (envParam.ToLower().StartsWith("-folder:"))

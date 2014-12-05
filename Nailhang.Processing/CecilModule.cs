@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Nailhang.Processing
 {
+    [Nailhang.Module]
+    [Nailhang.ModuleDescription("Модуль сканирования сборок с помощью библиотеки Mono Cecil")]
     public class CecilModule : NinjectModule
     {
         public override void Load()
