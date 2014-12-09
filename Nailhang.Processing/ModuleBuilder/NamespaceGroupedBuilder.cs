@@ -61,7 +61,7 @@ namespace Nailhang.Processing.ModuleBuilder
 
         private bool ModuleContains(IndexBase.Module module, Mono.Cecil.TypeDefinition type)
         {
-            if (module.Namespace == type.Namespace)
+            if (type.Namespace.StartsWith(module.Namespace))
                 return true;
             return module.Objects.Any(w => w.Name == type.FullName);
         }

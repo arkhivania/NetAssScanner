@@ -40,11 +40,5 @@ namespace Nailhang.Processing.ModuleBuilder
 
             return res;
         }
-
-        
-
-        
-
-        
     }
 }
