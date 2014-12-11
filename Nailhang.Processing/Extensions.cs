@@ -72,7 +72,8 @@ namespace Nailhang.Processing
         internal static IEnumerable<TypeDefinition> GetNamespaceTypes(this AssemblyDefinition assemblyDefinition, TypeDefinition moduleType)
         {
             return GetTypes(assemblyDefinition)
-                .Where(w => w.Namespace.StartsWith(moduleType.Namespace));
+                .Where(w => w.Namespace.StartsWith(moduleType.Namespace))
+                .Where(w => w.FullName.Substring(moduleType.Namespace.Length).StartsWith("."));
         }
 
         internal static IEnumerable<TypeReference> GetConstructorTypes(this TypeDefinition type)
