@@ -2,10 +2,12 @@
 using Ninject;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace Nailhang.Tool
 {
@@ -50,22 +52,56 @@ namespace Nailhang.Tool
                         targetFiles.Add(envParam.Substring("-file:".Length));
                 }
 
-                foreach(var fp in targetFiles)
-                    {
-                            Console.WriteLine("Extracting:" + fp);
-
-                            try
-                            {
-                                foreach (var module in processor.ExtractModules(fp))
-                                    storage.StoreModule(module);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine("Fail to extract from: " + fp + Environment.NewLine + e.ToString());
-                            }
+                var filesBlock = new BufferBlock<string>();
+                var getModulesBlock = new TransformManyBlock<string, IndexBase.Module>(w =>
+                    {                        
+                        try
+                        {
+                            return processor.ExtractModules(w).ToArray();
                         }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Fail to extract from: " + w + Environment.NewLine + e.ToString());
+                            return Enumerable.Empty<IndexBase.Module>();
+                        }
+                    }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 16 });
 
-                
+                var broadcastBlock = new BroadcastBlock<IndexBase.Module>(w => w);
+                var printModuleBlock = new ActionBlock<IndexBase.Module>(m => Console.WriteLine(string.Format("Store module: {0}", m.FullName)));
+
+                int stored = 0;
+                var storeBlock = new ActionBlock<IndexBase.Module>(m =>
+                {   
+                    storage.StoreModule(m);
+                    System.Threading.Interlocked.Increment(ref stored);
+                }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 4, BoundedCapacity = 2000 });
+
+                filesBlock.LinkTo(getModulesBlock, new DataflowLinkOptions { PropagateCompletion = true });
+                getModulesBlock.LinkTo(broadcastBlock, new DataflowLinkOptions { PropagateCompletion = true });
+                broadcastBlock.LinkTo(printModuleBlock, new DataflowLinkOptions { PropagateCompletion = true });
+                broadcastBlock.LinkTo(storeBlock, new DataflowLinkOptions { PropagateCompletion = true });
+
+                var esw = new Stopwatch();
+                var sw = new Stopwatch();
+                sw.Start();
+                esw.Start();
+
+                foreach (var fp in targetFiles)
+                    filesBlock.Post(fp);
+
+                getModulesBlock.Completion.ContinueWith(w =>
+                    {
+                        esw.Stop();
+                        Console.WriteLine(string.Format("Modules extracting complete: {0} ms", esw.ElapsedMilliseconds));
+                    });
+
+                filesBlock.Complete();
+                storeBlock.Completion.Wait();
+
+                sw.Stop();
+
+                Console.WriteLine(string.Format("Complete: {0} ms", sw.ElapsedMilliseconds));
+                Console.WriteLine("Modules stored:" + stored);
             }
         }
     }

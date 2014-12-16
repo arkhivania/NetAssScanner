@@ -11,11 +11,11 @@ namespace Nailhang.Processing
 {
     class CecilProcessor : IndexBase.Index.IIndexProcessor
     {
-        private readonly IEnumerable<ModuleBuilder.Base.IModuleBuilder> moduleBuilders;
+        private readonly ModuleBuilder.Base.IModuleBuilder[] moduleBuilders;
 
         public CecilProcessor(IEnumerable<ModuleBuilder.Base.IModuleBuilder> moduleBuilders)
         {
-            this.moduleBuilders = moduleBuilders;
+            this.moduleBuilders = moduleBuilders.ToArray();
         }
 
         public IEnumerable<IndexBase.Module> ExtractModules(string filePath)
