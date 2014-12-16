@@ -37,6 +37,13 @@ textarea {
     font-weight: bold;
 }
 
+.module-columns {
+    -webkit-columns: 200px 2; /* Chrome, Safari, Opera */
+    -moz-columns: 200px 2; /* Firefox */
+    columns: 200px 2;
+    margin: 10px
+}
+
 .method-name {
     font-style: italic;
 }

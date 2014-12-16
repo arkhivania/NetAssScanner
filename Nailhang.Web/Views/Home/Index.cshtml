@@ -24,11 +24,22 @@
     <input type="submit" value="Обновить" />
 }
 
+<div class="module-columns">
+    <ul>
+        @foreach (var m in Model.Modules.OrderBy(w => w.Module.FullName))
+        {
+            <li title="@m.Module.Description">
+                @Html.ActionLink(m.Namespace, "Index", "Module", new { module = @m.Module.FullName }, null)
+            </li>
+        }
+    </ul>
+</div>
+
 <div class="row">
     <div>
         <ul>
             @foreach (var m in Model.Modules.OrderBy(w => w.Module.FullName))
-            {                
+            {
                 <li>
                     @{string nameSpace = m.Namespace;}
                     <h2>
@@ -40,5 +51,5 @@
             }
         </ul>
     </div>
-    
+
 </div>
