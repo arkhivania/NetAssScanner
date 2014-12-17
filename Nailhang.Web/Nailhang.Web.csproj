@@ -156,6 +156,10 @@
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Curry-1.0.1.js" />
+    <Content Include="Scripts\dracula_algorithms.js" />
+    <Content Include="Scripts\dracula_graffle.js" />
+    <Content Include="Scripts\dracula_graph.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-2.1.1.min.map" />
@@ -166,6 +170,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\npm.js" />
+    <Content Include="Scripts\raphael-min.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
@@ -188,6 +193,7 @@
     <Content Include="Views\Module\ModuleView.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\DisplaySettings.cshtml" />
     <Content Include="Views\Home\DisplaySettings.cshtml" />
+    <Content Include="Views\Home\Map.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

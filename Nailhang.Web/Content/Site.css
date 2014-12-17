@@ -44,6 +44,10 @@ textarea {
     margin: 10px
 }
 
+.draw-div {
+    margin: 10px;
+}
+
 .method-name {
     font-style: italic;
 }

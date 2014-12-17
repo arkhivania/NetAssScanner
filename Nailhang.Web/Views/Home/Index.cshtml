@@ -1,14 +1,8 @@
 ﻿@model Nailhang.Web.Models.IndexModel
 
-<script src="@Url.Content("~/Scripts/raphael-min.js")"></script>
-<script src="@Url.Content("~/Scripts/dracula_graffle.js")"></script>
-<script src="@Url.Content("~/Scripts/dracula_graph.js")"></script>
-<script src="@Url.Content("~/Scripts/dracula_algorithms.js")"></script>
-
 @{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Домашняя страница";
 }
-
 
 <div class="jumbotron">
     <h1>Nailhang</h1>
@@ -29,11 +23,6 @@
 
     <input type="submit" value="Обновить" />
 }
-
-<div id="canvas"></div>
-@*<button id="redraw" onclick="redraw();">redraw</button>
-    <button id="hide_penguin" onclick="hide('penguin');">hide penguin (beta)</button>
-    <button id="hide_penguin" onclick="show('penguin');">show penguin (beta)</button>*@
 
 <div class="module-columns">
     <ul>
@@ -66,31 +55,7 @@
 </div>
 
 
-@*<script type="text/javascript">
-    
-    window.onload = function () {
 
-        var width = $(document).width() - 100;
-        var height = 800;
-
-        var g = new Graph();
-
-        @foreach (var m in Model.Modules)
-        {
-            foreach (var di in m.DependencyItems.Where(d => d.Module != null))
-            {
-                <text>
-                g.addEdge("@m.Module.FullName", "@di.Module");
-                </text>
-            }                
-                
-        }
-
-        var layouter = new Graph.Layout.Ordered(g, topological_sort(g));
-        var renderer = new Graph.Renderer.Raphael('canvas', g, width, height);
-    };
-
-</script>*@
 
 
 

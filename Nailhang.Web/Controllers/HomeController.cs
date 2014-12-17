@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Nailhang.Web.Models;
 
 namespace Nailhang.Web.Controllers
 {
@@ -28,16 +29,33 @@ namespace Nailhang.Web.Controllers
                 Session["DisplaySettings"] = new Models.DisplaySettings();
         }
 
+        public ActionResult Map(Models.IndexModel model, Models.DisplaySettings displaySettings, bool formUpdate = false)
+        {
+            if (formUpdate)
+                Session["DisplaySettings"] = displaySettings;
+
+            UpdateIndexModel(model);
+
+            return View(model);
+        }
+
         public ActionResult Index(Models.IndexModel model, Models.DisplaySettings displaySettings, bool formUpdate = false)
         {
             if(formUpdate)
                 Session["DisplaySettings"] = displaySettings;
 
+            UpdateIndexModel(model);
+            
+            return View(model);
+        }
+ 
+        private void UpdateIndexModel(IndexModel model)
+        {
             var rootDeep = Properties.Settings.Default.RootDeep;
 
             var allModules = modulesStorage.GetModules()
-                .Select(w => new Models.ModuleModel { Module = w })
-                .ToArray();
+                                           .Select(w => new Models.ModuleModel { Module = w })
+                                           .ToArray();
 
             CreateDependencies(allModules);
 
@@ -45,18 +63,19 @@ namespace Nailhang.Web.Controllers
             model.AllModules = allModules;
 
             model.RootNamespaces = allModules
-                    .SelectMany(w => GetNamespaces(w.Module.FullName)).Distinct()
-                    .Where(w => w.Split('.').Length <= rootDeep)
-                    .OrderBy(w => w)
-                    .Select(w => new SelectListItem() { Value = w, Text = w })
-                    .ToArray();
+                                             .SelectMany(w => GetNamespaces(w.Module.FullName))
+                                             .Distinct()
+                                             .Where(w => w.Split('.').Length <= rootDeep)
+                                             .OrderBy(w => w)
+                                             .Select(w => new SelectListItem()
+                                                    {
+                                                        Value = w,
+                                                        Text = w
+                                                    })
+                                             .ToArray();
 
             if (!string.IsNullOrEmpty(model.SelectedRoot))
                 model.Modules = allModules.Where(w => w.Module.FullName.StartsWith(model.SelectedRoot));
-
-            
-            
-            return View(model);
         }
 
         internal static void CreateDependencies(Models.ModuleModel[] modules)
