@@ -22,7 +22,7 @@ namespace Nailhang.Web.Controllers
                 Session["DisplaySettings"] = new Models.DisplaySettings();
         }
 
-        public ActionResult Index(Models.ModuleModel model, string module, Models.DisplaySettings displaySettings, bool formUpdate = false)
+        public ActionResult Index(string module, Models.DisplaySettings displaySettings, bool formUpdate = false)
         {
             if (formUpdate)
                 Session["DisplaySettings"] = displaySettings;
@@ -31,11 +31,8 @@ namespace Nailhang.Web.Controllers
                 .Select(w => new Models.ModuleModel { Module = w })
                 .ToArray();
 
-            HomeController.CreateDependencies(allModules);
-
-            var targetModel = allModules.First(w => w.Module.FullName == module);
-            model.Module = targetModel.Module;
-            model.DependencyItems = targetModel.DependencyItems;
+            HomeController.CreateDependencies(allModules, displaySettings.CalcDependenciesWithChildNodes);
+            var model = allModules.First(w => w.Module.FullName == module);
             return View("Index", model);
         }
     }

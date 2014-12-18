@@ -34,7 +34,7 @@ namespace Nailhang.Web.Controllers
             if (formUpdate)
                 Session["DisplaySettings"] = displaySettings;
 
-            UpdateIndexModel(model);
+            UpdateIndexModel(model, displaySettings);
 
             return View(model);
         }
@@ -44,12 +44,12 @@ namespace Nailhang.Web.Controllers
             if(formUpdate)
                 Session["DisplaySettings"] = displaySettings;
 
-            UpdateIndexModel(model);
+            UpdateIndexModel(model, displaySettings);
             
             return View(model);
         }
- 
-        private void UpdateIndexModel(IndexModel model)
+
+        private void UpdateIndexModel(IndexModel model, Models.DisplaySettings displaySettings)
         {
             var rootDeep = Properties.Settings.Default.RootDeep;
 
@@ -57,7 +57,7 @@ namespace Nailhang.Web.Controllers
                                            .Select(w => new Models.ModuleModel { Module = w })
                                            .ToArray();
 
-            CreateDependencies(allModules);
+            CreateDependencies(allModules, displaySettings.CalcDependenciesWithChildNodes);
 
             model.Modules = allModules;
             model.AllModules = allModules;
@@ -78,11 +78,13 @@ namespace Nailhang.Web.Controllers
                 model.Modules = allModules.Where(w => w.Module.FullName.StartsWith(model.SelectedRoot));
         }
 
-        internal static void CreateDependencies(Models.ModuleModel[] modules)
+        internal static void CreateDependencies(Models.ModuleModel[] modules, bool dependenciesWithChild)
         {
             foreach(var m in modules)
             {
-                m.DependencyItems = m.Module.NamespaceDependencies.Select(w => new Models.DependencyItem { Name = w }).ToArray();
+                m.DependencyItems = m.Module
+                    .NamespaceDependencies
+                    .Select(w => new Models.DependencyItem { Name = w }).ToArray();
 
                 foreach(var depItem in m.DependencyItems)
                 {
@@ -91,7 +93,32 @@ namespace Nailhang.Web.Controllers
                         depItem.Module = moduleReference.Module.FullName;
                 }
             }
+
+            if (dependenciesWithChild)
+            {
+                var depDict = modules.ToDictionary(w => w.Module.FullName, w => w.DependencyItems.Where(w2 => w2.Module != null).ToArray());
+                foreach (var m in modules)
+                    m.DependencyItems = m.DependencyItems.Concat(GetChildDependencies(m.DependencyItems.Where(w2 => w2.Module != null), depDict)).Distinct().ToArray();
+            }
+
+            foreach (var m in modules)
+                m.ItemsWithThisDependency = modules
+                    .Where(w => w.DependencyItems.Select(w2 => w2.Module).Contains(m.Module.FullName))
+                    .Select(w => new DependencyItem { Module = w.Module.FullName, Name = w.Module.Namespace })
+                    .ToArray();
         }
+
+        private static IEnumerable<DependencyItem> GetChildDependencies(IEnumerable<DependencyItem> items, Dictionary<string, DependencyItem[]> depDict)
+        {
+            foreach (var item in items)
+            {
+                yield return item;
+                foreach (var depItem in GetChildDependencies(depDict[item.Module], depDict))
+                    yield return depItem;
+            }
+        }
+
+        
 
         private IEnumerable<string> GetNamespaces(string @namespace)
         {

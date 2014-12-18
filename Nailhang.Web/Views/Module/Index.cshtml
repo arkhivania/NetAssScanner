@@ -9,6 +9,7 @@
     @Html.HiddenFor(w => w.Module.FullName)
     @Html.Hidden("formUpdate", true)
     { Html.RenderAction("RenderParameters", "Home"); }
+    Html.RenderPartial("~/Views/Home/DependenciesSettings.cshtml", (Nailhang.Web.Models.DisplaySettings)Session["DisplaySettings"]);
     <input type="submit" value="Обновить" />
 }
 

@@ -94,8 +94,32 @@
                 }
             </li>
         }
-    </ul>
+    </ul>    
 }
+
+@if (displaySettings.ShowDependencies && Model.DependencyItems != null && Model.ItemsWithThisDependency.Length > 0)
+{
+<br />
+<p><i>Модули, которые зависят от: @Model.Namespace</i></p>
+<ul>
+    @foreach (var nd in Model.ItemsWithThisDependency.OrderBy(w => w.Name))
+    {
+        <li>
+            @if (string.IsNullOrEmpty(nd.Module))
+            {
+                <p>@nd.Name</p>
+            }
+            else
+            {
+                <p>
+                    @Html.ActionLink(nd.Name, "Index", "Module", new { module = nd.Module }, null)
+                </p>
+            }
+        </li>
+    }
+</ul>
+}
+
 
 @if (Model.Module.FullName != Model.Namespace)
 {

@@ -9,6 +9,9 @@
 @using (Html.BeginForm("Map", "Home", FormMethod.Get))
 {
     @Html.Hidden("formUpdate", true)
+    
+    Html.RenderPartial("DependenciesSettings", (Nailhang.Web.Models.DisplaySettings)Session["DisplaySettings"]);
+    
     <br />
     <div>
         Пространство имен

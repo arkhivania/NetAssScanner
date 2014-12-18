@@ -18,5 +18,6 @@ namespace Nailhang.Web.Models
         }
 
         public DependencyItem[] DependencyItems { get; set; }
+        public DependencyItem[] ItemsWithThisDependency { get; set; }
     }
 }

@@ -190,6 +190,7 @@
     <Content Include="Views\Shared\EditorTemplates\DisplaySettings.cshtml" />
     <Content Include="Views\Home\DisplaySettings.cshtml" />
     <Content Include="Views\Home\Map.cshtml" />
+    <Content Include="Views\Home\DependenciesSettings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
