@@ -15,5 +15,19 @@ namespace Nailhang.Web.Models
 
         public IEnumerable<SelectListItem> RootNamespaces { get; set; }
         public string SelectedRoot { get; set; }
+
+        public IEnumerable<ModuleModel> ModulesWithDependencies 
+        {
+            get 
+            {
+                var allModules = AllModules.ToDictionary(w => w.Module.FullName);
+                
+                var dependencies = Modules.SelectMany(w => w.DependencyItems)
+                    .Where(w => w.Module != null)
+                    .Select(w => allModules[w.Module]);
+
+                return Modules.Concat(dependencies).Distinct();
+            }
+        }
     }
 }
