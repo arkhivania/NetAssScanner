@@ -22,8 +22,8 @@ namespace Nailhang.Tool
                 var storage = kernel.Get<IModulesStorage>();
                 var processor = kernel.Get<IndexBase.Index.IIndexProcessor>();
 
-                if(Environment.GetCommandLineArgs().Any(w => w.ToLower() == "-drop"))
-                    storage.DropModules("");
+                if (Environment.GetCommandLineArgs().Any(w => w.ToLower() == "-drop"))
+                    storage.DropModules(namespaceStartsWith: "");
 
                 foreach(var drop in Environment.GetCommandLineArgs().Where(w => w.ToLower().StartsWith("-drop:")))
                     storage.DropModules(drop.Substring("-drop:".Length));

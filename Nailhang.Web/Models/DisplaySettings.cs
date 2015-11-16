@@ -9,14 +9,15 @@ namespace Nailhang.Web.Models
     public class DisplaySettings
     {
         public bool ShowDependencies { get; set; }
+        public bool ShowBinds { get; set; }
         public bool ShowObjects { get; set; }
         public bool ShowInterfaces { get; set; }
-        public bool CalcDependenciesWithChildNodes { get; set; }
 
         public DisplaySettings()
         {
             this.ShowInterfaces = true;
             this.ShowDependencies = true;
+            this.ShowBinds = true;
         }
     }
 }

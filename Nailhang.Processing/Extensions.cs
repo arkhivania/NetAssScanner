@@ -21,7 +21,7 @@ namespace Nailhang.Processing
                 .OfType<string>().FirstOrDefault();
         }
 
-        public static string PrintShortType(this TypeReference type)
+        public static string PrintShortType(this Mono.Cecil.TypeReference type)
         {
             var ginst = type as GenericInstanceType;
             if (ginst != null)
@@ -30,6 +30,15 @@ namespace Nailhang.Processing
                     ginst.GenericArguments.Select(w => w.Name).Aggregate((a, b) => a + ", " + b));
             }
             return type.Name;
+        }
+
+        public static IndexBase.TypeReference ToIndexBaseTypeReference(this Mono.Cecil.TypeReference typeReference)
+        {
+            return new IndexBase.TypeReference
+            {
+                AssemblyName = typeReference.Module.Assembly.Name.Name,
+                FullName = typeReference.FullName
+            };
         }
 
         public static string PrintParameters(this IEnumerable<ParameterDefinition> parameters)
@@ -76,7 +85,7 @@ namespace Nailhang.Processing
                 .Where(w => w.FullName.Substring(moduleType.Namespace.Length).StartsWith("."));
         }
 
-        internal static IEnumerable<TypeReference> GetConstructorTypes(this TypeDefinition type)
+        internal static IEnumerable<Mono.Cecil.TypeReference> GetConstructorTypes(this TypeDefinition type)
         {
             if ((type.Attributes & TypeAttributes.Abstract) == TypeAttributes.Abstract)
                 yield break;
@@ -124,15 +133,18 @@ namespace Nailhang.Processing
         private static ModuleObject CreateModuleObject(TypeDefinition objectType)
         {
             var res = new ModuleObject();
-            res.Name = objectType.FullName;
+            res.TypeReference = objectType.ToIndexBaseTypeReference();
             res.Description = objectType.GetDescription();
             return res;
         }
 
         private static ModuleInterface CreateInterface(TypeDefinition interfaceType)
         {
-
-            var res = new ModuleInterface() { Name = interfaceType.FullName, Description = interfaceType.GetDescription() };
+            var res = new ModuleInterface()
+            {
+                TypeReference = interfaceType.ToIndexBaseTypeReference(),
+                Description = interfaceType.GetDescription()
+            };
             res.Methods = interfaceType.Methods
                 .Select(meth => CreateMethod(meth)).ToArray();
 

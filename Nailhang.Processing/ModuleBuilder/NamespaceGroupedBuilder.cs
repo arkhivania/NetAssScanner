@@ -40,7 +40,11 @@ namespace Nailhang.Processing.ModuleBuilder
                 return null;
 
             res.Objects = moduleTypes
-                .Select(w => new IndexBase.ModuleObject { Name = w.FullName, Description = w.GetDescription() })
+                .Select(w => new IndexBase.ModuleObject
+                {
+                    TypeReference = w.ToIndexBaseTypeReference(),
+                    Description = w.GetDescription()
+                })
                 .ToArray();
 
             res.NamespaceDependencies = moduleTypes.GetDependencies(typeDefinition.First().Namespace);
@@ -63,7 +67,9 @@ namespace Nailhang.Processing.ModuleBuilder
         {
             if (type.Namespace.StartsWith(module.Namespace))
                 return true;
-            return module.Objects.Any(w => w.Name == type.FullName);
+
+            var indexTR = type.ToIndexBaseTypeReference();
+            return module.Objects.Any(w => w.TypeReference.Equals(indexTR));
         }
     }
 }

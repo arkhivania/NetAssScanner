@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Nailhang.IndexBase
 {
-    public class ModuleInterface
+    public struct ModuleInterface
     {
-        public string Name { get; set; }
+        public TypeReference TypeReference { get; set; }
+        
+
         public string Description { get; set; }
         public InterfaceMethod[] Methods { get; set; }
     }

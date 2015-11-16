@@ -57,7 +57,7 @@ namespace Nailhang.Web.Controllers
                                            .Select(w => new Models.ModuleModel { Module = w })
                                            .ToArray();
 
-            CreateDependencies(allModules, displaySettings.CalcDependenciesWithChildNodes);
+            CreateDependencies(allModules);
 
             model.Modules = allModules;
             model.AllModules = allModules;
@@ -78,7 +78,7 @@ namespace Nailhang.Web.Controllers
                 model.Modules = allModules.Where(w => w.Module.FullName.StartsWith(model.SelectedRoot));
         }
 
-        internal static void CreateDependencies(Models.ModuleModel[] modules, bool dependenciesWithChild)
+        internal static void CreateDependencies(Models.ModuleModel[] modules)
         {
             foreach(var m in modules)
             {
@@ -94,13 +94,6 @@ namespace Nailhang.Web.Controllers
                 }
             }
 
-            if (dependenciesWithChild)
-            {
-                var depDict = modules.ToDictionary(w => w.Module.FullName, w => w.DependencyItems.Where(w2 => w2.Module != null).ToArray());
-                foreach (var m in modules)
-                    m.DependencyItems = m.DependencyItems.Concat(GetChildDependencies(m.DependencyItems.Where(w2 => w2.Module != null), depDict)).Distinct().ToArray();
-            }
-
             foreach (var m in modules)
                 m.ItemsWithThisDependency = modules
                     .Where(w => w.DependencyItems.Select(w2 => w2.Module).Contains(m.Module.FullName))
@@ -108,15 +101,7 @@ namespace Nailhang.Web.Controllers
                     .ToArray();
         }
 
-        private static IEnumerable<DependencyItem> GetChildDependencies(IEnumerable<DependencyItem> items, Dictionary<string, DependencyItem[]> depDict)
-        {
-            foreach (var item in items)
-            {
-                yield return item;
-                foreach (var depItem in GetChildDependencies(depDict[item.Module], depDict))
-                    yield return depItem;
-            }
-        }
+        
 
         
 

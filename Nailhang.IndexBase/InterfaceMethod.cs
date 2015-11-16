@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Nailhang.IndexBase
 {
-    public class InterfaceMethod
+    public struct InterfaceMethod
     {
         public string Description { get; set; }
         public string MethodString { get; set; }

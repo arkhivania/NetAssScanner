@@ -1,0 +1,38 @@
+﻿@model Nailhang.Web.Models.InterfaceModel
+
+@{
+    ViewBag.Title = "Interface:" + @Model.Name;
+}
+
+<h2>@Model.Name</h2>
+<br />
+
+<h3>Привязывают модули:</h3>
+
+<ul>
+    @foreach (var s in Model.InterfaceModules.OrderBy(w => w.Module.FullName))
+    {
+        <li>
+            @s.Module.FullName 
+            <p class="little-text">
+                Сборка: @s.Module.Assembly
+            </p>
+        </li>
+    }
+</ul>
+
+<h3>Модули:</h3>
+
+<ul>
+    @foreach (var m in Model.InterfaceModules.OrderBy(w => w.Module.FullName))
+            {
+        <li>
+            @{string nameSpace = m.Namespace;}
+            <h2>
+                @Html.ActionLink(@nameSpace, "Index", "Module", new { module = @m.Module.FullName }, null)
+            </h2>
+
+            @Html.Partial("~/Views/Module/ModuleView.cshtml", m)
+        </li>
+                }
+</ul>

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Nailhang.IndexBase
 {
-    public class ModuleObject
+    public struct ModuleObject
     {
-        public string Name { get; set; }
+        public TypeReference TypeReference { get; set; }
         public string Description { get; set; }
     }
 }

@@ -12,6 +12,8 @@ namespace Nailhang.Mongodb
     {
         [BsonId]
         public Guid Id { get; set; }
-        public IndexBase.Module Module { get; set; }
+        public string ModuleHeader { get; set; }
+        public string Namespace { get; set; }
+        public string Name { get; set; }
     }
 }

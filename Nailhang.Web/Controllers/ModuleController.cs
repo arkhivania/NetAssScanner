@@ -31,7 +31,7 @@ namespace Nailhang.Web.Controllers
                 .Select(w => new Models.ModuleModel { Module = w })
                 .ToArray();
 
-            HomeController.CreateDependencies(allModules, displaySettings.CalcDependenciesWithChildNodes);
+            HomeController.CreateDependencies(allModules);
             var model = allModules.First(w => w.Module.FullName == module);
             return View("Index", model);
         }
