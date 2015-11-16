@@ -16,7 +16,6 @@ namespace Nailhang.Processing
             Kernel.Bind<IndexBase.Index.IIndexProcessor>().To<CecilProcessor>();
 
             Kernel.Bind<ModuleBuilder.Base.IModuleBuilder>().To<ModuleBuilder.NailhangModuleBuilder>();
-            Kernel.Bind<ModuleBuilder.Base.IModuleBuilder>().To<ModuleBuilder.NamespaceGroupedBuilder>();
         }
     }
 }
