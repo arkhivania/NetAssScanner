@@ -45,7 +45,7 @@ namespace Nailhang.Processing.ModuleBuilder
             }
         }
 
-        IEnumerable<Mono.Cecil.TypeReference> GetBases(Mono.Cecil.TypeDefinition t)
+        static IEnumerable<Mono.Cecil.TypeReference> GetBases(Mono.Cecil.TypeDefinition t)
         {
             if (t.BaseType == null)
                 yield break;
@@ -82,13 +82,15 @@ namespace Nailhang.Processing.ModuleBuilder
                         if (genInstance.ElementMethod.Name == "To")
                         {
                             foreach (var bt in genInstance.GenericArguments)
-                                yield return bt;
+                                if(!bt.IsGenericParameter)
+                                    yield return bt;
                         }
 
                         if(genInstance.ElementMethod.Name == "Get")
                         {
                             foreach (var bt in genInstance.GenericArguments)
-                                yield return bt;
+                                if (!bt.IsGenericParameter)
+                                    yield return bt;
                         }
                     }
                 }
@@ -98,21 +100,26 @@ namespace Nailhang.Processing.ModuleBuilder
 
         static IEnumerable<Mono.Cecil.TypeReference> ModuleBinds(Mono.Cecil.TypeDefinition module)
         {
-            foreach (var meth in module.Methods
+            var methods = GetBases(module)
+                        .ToDefs()
+                        .Where(w => w != null)
+                        .SelectMany(w => w.Methods);
+
+            foreach (var meth in methods
                 .Where(w => w.HasBody))
-            {
-                if (meth.Name == "Load")
+            {   
+                var methBody = meth.Body;
+                foreach (var i in methBody.Instructions)
                 {
-                    var methBody = meth.Body;
-                    foreach (var i in methBody.Instructions)
+                    var genInstance = i.Operand as GenericInstanceMethod;
+                    if (genInstance != null)
                     {
-                        var genInstance = i.Operand as GenericInstanceMethod;
-                        if (genInstance != null)
-                            if (genInstance.ElementMethod.Name == "Bind")
-                            {
-                                foreach (var bt in genInstance.GenericArguments)
+                        if (genInstance.ElementMethod.Name == "Bind" || genInstance.ElementMethod.Name == "Rebind")
+                        {
+                            foreach (var bt in genInstance.GenericArguments)
+                                if (!bt.IsGenericParameter)
                                     yield return bt;
-                            }
+                        }
                     }
                 }
             }

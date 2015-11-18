@@ -13,7 +13,7 @@
     @foreach (var s in Model.InterfaceModules.OrderBy(w => w.Module.FullName))
     {
         <li>
-            @s.Module.FullName 
+            @Html.ActionLink(s.Module.FullName, "Index", "Module", new { module = s.Module.FullName }, null)
             <p class="little-text">
                 Сборка: @s.Module.Assembly
             </p>

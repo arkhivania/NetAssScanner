@@ -117,7 +117,7 @@ namespace Nailhang.Processing
 
         public static TypeDefinition ToDef(this Mono.Cecil.TypeReference tr)
         {
-            var res = tr.Module.MetadataResolver.Resolve(tr);
+            var res = tr.Resolve();
             if (res == null)
                 throw new InvalidOperationException();
             return res;
