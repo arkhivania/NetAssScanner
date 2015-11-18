@@ -27,9 +27,8 @@
     @foreach (var m in Model.InterfaceModules.OrderBy(w => w.Module.FullName))
             {
         <li>
-            @{string nameSpace = m.Namespace;}
             <h2>
-                @Html.ActionLink(@nameSpace, "Index", "Module", new { module = @m.Module.FullName }, null)
+                @Html.ActionLink(m.Module.FullName, "Index", "Module", new { module = @m.Module.FullName }, null)
             </h2>
 
             @Html.Partial("~/Views/Module/ModuleView.cshtml", m)

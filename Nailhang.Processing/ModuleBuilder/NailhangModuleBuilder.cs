@@ -137,7 +137,9 @@ namespace Nailhang.Processing.ModuleBuilder
                 .ToArray();
 
             activatesTypes = activatesTypes
+                .Concat(moduleTypeRefs.ToDefs())
                 .Concat(activatesTypes.SelectMany(w => w.GetConstructorTypes()).ToDefs())
+                .Distinct()
                 .ToArray();
 
             var moduleTypes = activatesTypes;
@@ -146,15 +148,17 @@ namespace Nailhang.Processing.ModuleBuilder
                 .Select(w => w.ToIndexBaseTypeReference())
                 .ToArray();
 
-            res.Interfaces = moduleTypes.CreateInterfaces();
-            res.Objects = moduleTypes.CreateObjects(true);
+            res.Interfaces = moduleTypes
+                .Where(w => w.Namespace.StartsWith(moduleType.Namespace))
+                .CreateInterfaces();
+            res.Objects = moduleTypes
+                .Where(w => w.Namespace.StartsWith(moduleType.Namespace))
+                .CreateObjects(true);
 
             var moduleReferences = moduleTypes
                 .FilterObjects(false)
                 .GetDependencies()
                 .ToDefs();
-
-
 
             res.InterfaceDependencies = moduleReferences
                 .FilterInterfaces()
