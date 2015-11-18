@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nailhang.IndexBase;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,11 +14,11 @@ namespace Nailhang.Web.Models
         {
             get 
             {
-                return Module.Namespace;
+                return Module.FullName.ToNamespace();
             }
         }
 
-        public DependencyItem[] DependencyItems { get; set; }
-        public DependencyItem[] ItemsWithThisDependency { get; set; }
+        public DependencyItem[] DependencyItems { get; set; } = new DependencyItem[] { };
+        public DependencyItem[] ItemsWithThisDependency { get; set; } = new DependencyItem[] { };
     }
 }

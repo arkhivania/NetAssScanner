@@ -59,12 +59,17 @@ namespace Nailhang.Tool
                         {
                             return processor.ExtractModules(w).ToArray();
                         }
+                        catch(BadImageFormatException)
+                        {
+                            Console.WriteLine("Skip bad image: " + w + Environment.NewLine);
+                            return Enumerable.Empty<IndexBase.Module>();
+                        }
                         catch (Exception e)
                         {
                             Console.WriteLine("Fail to extract from: " + w + Environment.NewLine + e.ToString());
                             return Enumerable.Empty<IndexBase.Module>();
                         }
-                    }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 16 });
+                    }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 1 });
 
                 var broadcastBlock = new BroadcastBlock<IndexBase.Module>(w => w);
                 var printModuleBlock = new ActionBlock<IndexBase.Module>(m => Console.WriteLine(string.Format("Store module: {0}", m.FullName)));

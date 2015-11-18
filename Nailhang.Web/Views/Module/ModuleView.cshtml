@@ -1,7 +1,5 @@
 ﻿@model Nailhang.Web.Models.ModuleModel
 
-@{string nameSpace = Model.Namespace;}
-
 <p class="module-description" style="white-space: pre-line">
     @Model.Module.Description
 </p>
@@ -18,7 +16,7 @@
         {
             <li>
                 <p class="interface-name">
-                    @i.TypeReference.FullName.Substring(nameSpace.Length + 1)
+                    @i.TypeReference.FullName.GetClassName()
                 </p>
                 @if (!string.IsNullOrEmpty(i.Description))
                 {
@@ -59,7 +57,7 @@
         {
             <li>
                 <p>
-                    @i.TypeReference.FullName.Substring(nameSpace.Length + 1)
+                    @i.TypeReference.FullName.GetClassName()
                 </p>
                 @if (!string.IsNullOrEmpty(i.Description))
                 {

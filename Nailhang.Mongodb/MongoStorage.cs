@@ -44,8 +44,7 @@ namespace Nailhang.Mongodb
             {
                 ModuleHeader = JsonConvert.SerializeObject(module),
                 Id = module.FullName.GenerateGuid(),
-                Namespace = module.Namespace,
-                Name = module.FullName
+                FullName = module.FullName
             };
             
             modules.Update(
@@ -73,7 +72,7 @@ namespace Nailhang.Mongodb
             else
                 modules.Remove(Query<ModuleEntity>
                     .Where(w => w
-                        .Name
+                        .FullName
                         .StartsWith(namespaceStartsWith)));
         }
     }

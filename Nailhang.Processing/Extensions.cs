@@ -78,12 +78,12 @@ namespace Nailhang.Processing
             return assemblyDefinition.MainModule.GetTypes();
         }
 
-        internal static IEnumerable<TypeDefinition> GetNamespaceTypes(this AssemblyDefinition assemblyDefinition, TypeDefinition moduleType)
-        {
-            return GetTypes(assemblyDefinition)
-                .Where(w => w.Namespace.StartsWith(moduleType.Namespace))
-                .Where(w => w.FullName.Substring(moduleType.Namespace.Length).StartsWith("."));
-        }
+        //internal static IEnumerable<TypeDefinition> GetNamespaceTypes(this AssemblyDefinition assemblyDefinition, string nameSpace)
+        //{
+        //    return GetTypes(assemblyDefinition)
+        //        .Where(w => w.Namespace.StartsWith(nameSpace))
+        //        .Where(w => w.FullName.Substring(nameSpace.Length).StartsWith(".") || w.Namespace.Equals(nameSpace));
+        //}
 
         internal static IEnumerable<Mono.Cecil.TypeReference> GetConstructorTypes(this TypeDefinition type)
         {
@@ -93,41 +93,84 @@ namespace Nailhang.Processing
             foreach (var c in type.Methods.Where(w => w.IsConstructor))
             {
                 foreach (var p in c.Parameters)
-                    yield return p.ParameterType;
+                    if(p.ParameterType != null)
+                        yield return p.ParameterType;
             }
+        }
+
+        public static IEnumerable<TypeDefinition> FilterInterfaces(this IEnumerable<TypeDefinition> types)
+        {
+            return types
+                    .Where(w =>
+                    {
+                        return (w.Attributes & TypeAttributes.Abstract) == TypeAttributes.Abstract &&
+                            (w.Attributes & TypeAttributes.Public) == TypeAttributes.Public;
+                    });
         }
 
         internal static IndexBase.ModuleInterface[] CreateInterfaces(this IEnumerable<TypeDefinition> types)
         {
             return types
-                    .Where(w =>
-                        {
-                            return (w.Attributes & TypeAttributes.Abstract) == TypeAttributes.Abstract &&
-                                (w.Attributes & TypeAttributes.Public) == TypeAttributes.Public;
-                        })
-                        .Select(w => CreateInterface(w)).ToArray();
+                    .FilterInterfaces()
+                    .Select(w => CreateInterface(w)).ToArray();
         }
 
-        internal static IndexBase.ModuleObject[] CreateObjects(this IEnumerable<TypeDefinition> types)
+        public static TypeDefinition ToDef(this Mono.Cecil.TypeReference tr)
         {
-            return types.Where(w =>
+            var res = tr.Module.MetadataResolver.Resolve(tr);
+            if (res == null)
+                throw new InvalidOperationException();
+            return res;
+        }
+
+        public static IEnumerable<TypeDefinition> ToDefs(this IEnumerable<Mono.Cecil.TypeReference> refs)
+        {
+            return refs
+                .ToDefsRaw()
+                .Distinct();
+        }
+
+        static IEnumerable<TypeDefinition> ToDefsRaw(this IEnumerable<Mono.Cecil.TypeReference> refs)
+        {
+            foreach (var r in refs)
+                yield return r.ToDef();
+        }
+
+        public static IEnumerable<TypeDefinition> FilterObjects(this IEnumerable<TypeDefinition> types, bool onlyPublic)
+        {
+            return types
+                .Where(w =>
                 {
-                    return (w.Attributes & TypeAttributes.Abstract) != TypeAttributes.Abstract &&
-                        w.BaseType.FullName != typeof(System.Enum).FullName &&
-                        (w.Attributes & TypeAttributes.Public) == TypeAttributes.Public;
-                })
+                    return (w.Attributes & TypeAttributes.Abstract) != TypeAttributes.Abstract 
+                    && w.BaseType != null
+                    && w.BaseType.FullName != typeof(System.Enum).FullName;
+                }).Where(w => onlyPublic ? (w.Attributes & TypeAttributes.Public) == TypeAttributes.Public : true);
+        }
+
+        internal static IndexBase.ModuleObject[] CreateObjects(this IEnumerable<TypeDefinition> types, bool onlyPublic)
+        {
+            return types
+                .FilterObjects(onlyPublic)
                 .Select(w => CreateModuleObject(w)).ToArray();
         }
 
-        internal static string[] GetDependencies(this IEnumerable<TypeDefinition> types, string homeNamespace)
+        public static IDictionary<Mono.Cecil.TypeReference, Mono.Cecil.TypeDefinition> LoadDefinitions(this IEnumerable<Mono.Cecil.TypeReference> types, AssemblyDefinition assDef)
+        {
+            var dict = new Dictionary<Mono.Cecil.TypeReference, Mono.Cecil.TypeDefinition>();
+            var modTypes = assDef.Modules.SelectMany(w => w.Types).ToDictionary(w => w.FullName, w => w);
+
+            foreach (var m in types)
+                if (modTypes.ContainsKey(m.FullName))
+                    dict[m] = modTypes[m.FullName];
+
+            return dict;
+        }
+
+        internal static IEnumerable<Mono.Cecil.TypeReference> GetDependencies(this IEnumerable<TypeDefinition> types)
         {
             return types.SelectMany(w => w.GetConstructorTypes())
-                .Select(w => w.Namespace)
-                .Where(w => !w.StartsWith(homeNamespace))
-                .Where(w => !string.IsNullOrEmpty(w))
-                .Distinct()
-                .OrderBy(w => w)
-                .ToArray();
+                .Select(w => w)
+                .Distinct();
         }
 
         private static ModuleObject CreateModuleObject(TypeDefinition objectType)

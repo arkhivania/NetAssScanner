@@ -16,6 +16,14 @@ namespace Nailhang.Web.Controllers
             this.modulesStorage = modulesStorage;
         }
 
+        protected override void Initialize(System.Web.Routing.RequestContext requestContext)
+        {
+            base.Initialize(requestContext);
+
+            if (Session["DisplaySettings"] == null)
+                Session["DisplaySettings"] = new Models.DisplaySettings();
+        }
+
         // GET: Interface
         public ActionResult Index(Guid interfaceHash)
         {
@@ -29,8 +37,6 @@ namespace Nailhang.Web.Controllers
                 .Select(w => w.FullName)
                 .Distinct()
                 .ToDictionary(w => w.ToMD5(), w => w);
-
-            HomeController.CreateDependencies(allModules);
 
             var model = new Models.InterfaceModel
             {

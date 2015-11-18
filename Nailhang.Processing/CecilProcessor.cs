@@ -28,6 +28,7 @@ namespace Nailhang.Processing
                 resolver.AddSearchDirectory(resolvePath.Substring("-cecilRefPath:".Length));
 
             readerParameters.AssemblyResolver = resolver;
+            
 
             var assDef = Mono.Cecil.AssemblyDefinition.ReadAssembly(filePath, readerParameters);
 

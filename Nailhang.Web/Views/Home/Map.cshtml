@@ -25,7 +25,7 @@
 <br/>
 
 @{
-    var depModules = Model.ModulesWithDependencies.OrderBy(w => w.Module.Namespace).ToArray();
+    var depModules = Model.ModulesWithDependencies.OrderBy(w => w.Module.FullName).ToArray();
 }
 
 <table class="table-bordered">

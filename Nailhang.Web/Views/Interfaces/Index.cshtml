@@ -6,6 +6,18 @@
 
 <h2>Элементы привязок</h2>
 
+@using (Html.BeginForm("Index", "Interfaces", FormMethod.Get))
+{
+    <br />
+    <div>
+        Содержит:
+        @Html.EditorFor(w => w.Contains)
+        
+        <input type="submit" value="Обновить" />
+    </div>
+}
+
+<br />
 
 @foreach (var s in Model.Interfaces)
 {

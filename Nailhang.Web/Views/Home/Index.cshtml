@@ -12,8 +12,8 @@
 
 @using (Html.BeginForm("Index", "Home", FormMethod.Get))
 {
-    @Html.Hidden("formUpdate", true)
-    { Html.RenderAction("RenderParameters"); }
+    @*@Html.Hidden("formUpdate", true)
+    { Html.RenderAction("RenderParameters"); }*@
     
     <br />
     <div>
@@ -29,7 +29,7 @@
         @foreach (var m in Model.Modules.OrderBy(w => w.Module.FullName))
         {
             <li title="@m.Module.Description">
-                @Html.ActionLink(m.Namespace, "Index", "Module", new { module = @m.Module.FullName }, null)
+                @Html.ActionLink(m.Module.FullName, "Index", "Module", new { module = @m.Module.FullName }, null)
             </li>
         }
     </ul>

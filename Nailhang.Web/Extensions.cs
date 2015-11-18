@@ -14,5 +14,10 @@ namespace Nailhang.Web
             using (var md5 = MD5.Create())
                 return new Guid(md5.ComputeHash(Encoding.UTF8.GetBytes(content)));
         }
+
+        public static string GetClassName(this string fullName)
+        {
+            return fullName.Split('.').Last();
+        }
     }
 }

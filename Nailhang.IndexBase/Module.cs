@@ -9,7 +9,7 @@ namespace Nailhang.IndexBase
     public class Module
     {
         public string FullName { get; set; }
-        public string Namespace { get; set; }
+        
         public string Description { get; set; }
         public Nailhang.Significance Significance { get; set; }
         public string Assembly { get; set; }
@@ -18,6 +18,7 @@ namespace Nailhang.IndexBase
         public ModuleObject[] Objects { get; set; }
         public TypeReference[] ModuleBinds { get; set; }
 
-        public string[] NamespaceDependencies { get; set; }
+        public TypeReference[] InterfaceDependencies { get; set; }
+        public TypeReference[] ObjectDependencies { get; set; }
     }
 }
