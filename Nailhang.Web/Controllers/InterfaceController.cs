@@ -38,15 +38,23 @@ namespace Nailhang.Web.Controllers
                 .Distinct()
                 .ToDictionary(w => w.ToMD5(), w => w);
 
+            var interfaceFullName = types[interfaceHash];
+
+            var dependentModules = allModules
+                .Where(w =>
+                w.Module.InterfaceDependencies.Any(q => q.FullName == interfaceFullName)
+                || w.Module.ObjectDependencies.Any(q => q.FullName == interfaceFullName));
+
             var model = new Models.InterfaceModel
             {
-                Name = types[interfaceHash],
+                Name = interfaceFullName,
                 InterfaceModules = allModules
                     .Where(w => w.Module
                                 .ModuleBinds != null)
                     .Where(w => w.Module.ModuleBinds
                     .Any(q => q.FullName.ToMD5().Equals(interfaceHash)))
-                    .ToArray()
+                    .ToArray(),
+                ModulesWithInterfaceDependencies = dependentModules
             };
             return View("Index", model);
         }

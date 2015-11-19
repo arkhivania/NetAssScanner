@@ -21,17 +21,17 @@
     }
 </ul>
 
-<h3>Модули:</h3>
+<h3>Зависят модули:</h3>
 
 <ul>
-    @foreach (var m in Model.InterfaceModules.OrderBy(w => w.Module.FullName))
-            {
+    @foreach (var s in Model.ModulesWithInterfaceDependencies.OrderBy(w => w.Module.FullName))
+    {
         <li>
-            <h2>
-                @Html.ActionLink(m.Module.FullName, "Index", "Module", new { module = @m.Module.FullName }, null)
-            </h2>
-
-            @Html.Partial("~/Views/Module/ModuleView.cshtml", m)
+            @Html.ActionLink(s.Module.FullName, "Index", "Module", new { module = s.Module.FullName }, null)
+            <p class="little-text">
+                Сборка: @s.Module.Assembly
+            </p>
         </li>
-                }
+    }
 </ul>
+

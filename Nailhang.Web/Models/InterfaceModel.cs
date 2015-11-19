@@ -11,5 +11,6 @@ namespace Nailhang.Web.Models
         public string Name { get; set; }
 
         public IEnumerable<ModuleModel> InterfaceModules { get; set; }
+        public IEnumerable<ModuleModel> ModulesWithInterfaceDependencies { get; set; }
     }
 }
