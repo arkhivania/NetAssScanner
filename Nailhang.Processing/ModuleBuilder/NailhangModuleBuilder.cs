@@ -36,6 +36,7 @@ namespace Nailhang.Processing.ModuleBuilder
                 var interfaces = GetBases(type)
                     .ToDefs()
                     .SelectMany(w => w.Interfaces)
+                    .Select(q => q.InterfaceType)
                     .ToDefs();
                 return interfaces.Any(w => w.FullName == typeof(Ninject.Modules.INinjectModule).FullName);
             }
