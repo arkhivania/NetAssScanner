@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 using Nailhang.Web.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Nailhang.Web.Controllers
 {
@@ -18,21 +20,18 @@ namespace Nailhang.Web.Controllers
 
         public PartialViewResult RenderParameters()
         {
-            return PartialView("DisplaySettings", Session["DisplaySettings"]);
-        }
+            var dsString = HttpContext.Session.GetString("DisplaySettings");
+            if(string.IsNullOrEmpty(dsString))
+                return PartialView("DisplaySettings", new DisplaySettings());
 
-        protected override void Initialize(System.Web.Routing.RequestContext requestContext)
-        {
-            base.Initialize(requestContext);
-
-            if (Session["DisplaySettings"] == null)
-                Session["DisplaySettings"] = new Models.DisplaySettings();
+            var ds = JsonConvert.DeserializeObject<DisplaySettings>(dsString);
+            return PartialView("DisplaySettings", ds);
         }
 
         public ActionResult Map(Models.IndexModel model, Models.DisplaySettings displaySettings, bool formUpdate = false)
         {
             if (formUpdate)
-                Session["DisplaySettings"] = displaySettings;
+                HttpContext.Session.SetString("DisplaySettings", JsonConvert.SerializeObject(displaySettings));
 
             UpdateIndexModel(model, displaySettings);
 
@@ -41,17 +40,24 @@ namespace Nailhang.Web.Controllers
 
         public ActionResult Index(Models.IndexModel model, Models.DisplaySettings displaySettings, bool formUpdate = false)
         {
+            ValidateSession();
             if(formUpdate)
-                Session["DisplaySettings"] = displaySettings;
+                HttpContext.Session.SetString("DisplaySettings", JsonConvert.SerializeObject(displaySettings));
 
             UpdateIndexModel(model, displaySettings);
             
             return View(model);
         }
 
+        private void ValidateSession()
+        {
+            if(HttpContext.Session.GetString("DisplaySettings") == null)
+                HttpContext.Session.SetString("DisplaySettings", JsonConvert.SerializeObject(new DisplaySettings()));
+        }
+
         private void UpdateIndexModel(IndexModel model, Models.DisplaySettings displaySettings)
         {
-            var rootDeep = Properties.Settings.Default.RootDeep;
+            var rootDeep = 3;
 
             var allModules = modulesStorage.GetModules()
                                            .Select(w => new Models.ModuleModel { Module = w })

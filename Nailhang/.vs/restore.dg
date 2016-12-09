@@ -1,9 +1,7 @@
-#:C:\Development\github\NetAssScanner\Nailhang.Tool\Nailhang.Tool.xproj
-C:\Development\github\NetAssScanner\Nailhang.Tool\Nailhang.Tool.xproj|C:\Development\github\NetAssScanner\Nailhang.IndexBase\Nailhang.IndexBase.xproj
-C:\Development\github\NetAssScanner\Nailhang.Tool\Nailhang.Tool.xproj|C:\Development\github\NetAssScanner\Nailhang.Mongodb\Nailhang.Mongodb.xproj
-C:\Development\github\NetAssScanner\Nailhang.Tool\Nailhang.Tool.xproj|C:\Development\github\NetAssScanner\Nailhang.Processing\Nailhang.Processing.xproj
-C:\Development\github\NetAssScanner\Nailhang.IndexBase\Nailhang.IndexBase.xproj|C:\Development\github\NetAssScanner\Nailhang\Nailhang.xproj
-C:\Development\github\NetAssScanner\Nailhang.Mongodb\Nailhang.Mongodb.xproj|C:\Development\github\NetAssScanner\Nailhang\Nailhang.xproj
-C:\Development\github\NetAssScanner\Nailhang.Mongodb\Nailhang.Mongodb.xproj|C:\Development\github\NetAssScanner\Nailhang.IndexBase\Nailhang.IndexBase.xproj
-C:\Development\github\NetAssScanner\Nailhang.Processing\Nailhang.Processing.xproj|C:\Development\github\NetAssScanner\Nailhang\Nailhang.xproj
-C:\Development\github\NetAssScanner\Nailhang.Processing\Nailhang.Processing.xproj|C:\Development\github\NetAssScanner\Nailhang.IndexBase\Nailhang.IndexBase.xproj
+#:C:\Development\dev_git\NetAssScanner\Nailhang.Web\Nailhang.Web.xproj
+C:\Development\dev_git\NetAssScanner\Nailhang.Web\Nailhang.Web.xproj|C:\Development\dev_git\NetAssScanner\Nailhang.IndexBase\Nailhang.IndexBase.xproj
+C:\Development\dev_git\NetAssScanner\Nailhang.Web\Nailhang.Web.xproj|C:\Development\dev_git\NetAssScanner\Nailhang.Mongodb\Nailhang.Mongodb.xproj
+C:\Development\dev_git\NetAssScanner\Nailhang.Web\Nailhang.Web.xproj|C:\Development\dev_git\NetAssScanner\Nailhang\Nailhang.xproj
+C:\Development\dev_git\NetAssScanner\Nailhang.IndexBase\Nailhang.IndexBase.xproj|C:\Development\dev_git\NetAssScanner\Nailhang\Nailhang.xproj
+C:\Development\dev_git\NetAssScanner\Nailhang.Mongodb\Nailhang.Mongodb.xproj|C:\Development\dev_git\NetAssScanner\Nailhang\Nailhang.xproj
+C:\Development\dev_git\NetAssScanner\Nailhang.Mongodb\Nailhang.Mongodb.xproj|C:\Development\dev_git\NetAssScanner\Nailhang.IndexBase\Nailhang.IndexBase.xproj

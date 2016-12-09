@@ -1,9 +1,9 @@
-﻿using Nailhang.IndexBase.Storage;
+﻿using Microsoft.AspNetCore.Mvc;
+using Nailhang.IndexBase.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+
 
 namespace Nailhang.Web.Controllers
 {
@@ -14,15 +14,7 @@ namespace Nailhang.Web.Controllers
         public InterfaceController(IModulesStorage modulesStorage)
         {
             this.modulesStorage = modulesStorage;
-        }
-
-        protected override void Initialize(System.Web.Routing.RequestContext requestContext)
-        {
-            base.Initialize(requestContext);
-
-            if (Session["DisplaySettings"] == null)
-                Session["DisplaySettings"] = new Models.DisplaySettings();
-        }
+        }        
 
         // GET: Interface
         public ActionResult Index(Guid interfaceHash)
