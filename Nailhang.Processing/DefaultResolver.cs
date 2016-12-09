@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -45,7 +46,16 @@ namespace Nailhang.Processing
         {
             var filePath = SearchFile(name.Name + ".dll");
             if (filePath == null)
+            {
+                try
+                {
+                    var hass = Assembly.Load(new AssemblyName(name.Name) { Version = name.Version });
+                    return AssemblyDefinition.ReadAssembly(hass.Location, parameters);
+                }
+                catch { }
+
                 throw new InvalidOperationException($"Can't find: {name.FullName} assembly");
+            }
             return AssemblyDefinition.ReadAssembly(filePath, parameters);
         }
 

@@ -18,7 +18,11 @@ namespace Nailhang.Mongodb.Tests
             var kc = new Ninject.KernelConfiguration();
             kc.Load<Nailhang.Mongodb.Module>();
             kc.Rebind<Nailhang.Mongodb.MongoConnection>()
-                .ToConstant(new MongoConnection { ConnectionString = "mongodb://192.168.0.32", DbName = "nail_tests" });
+                .ToConstant(new MongoConnection
+                {
+                    ConnectionString = "mongodb://192.168.0.32",
+                    DbName = "nail_tests"
+                });
 
             using (var kernel = kc.BuildReadonlyKernel())
             {

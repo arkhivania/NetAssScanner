@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Nailhang.Mongodb.Tests.CecilProcessing
@@ -13,10 +14,9 @@ namespace Nailhang.Mongodb.Tests.CecilProcessing
     {
         [Test]
         [TestCase(@".\Nailhang.Processing.dll")]
+        [TestCase(@".\Nailhang.Mongodb.dll")]
         public void Parse(string path)
         {
-            var curD = System.IO.Directory.GetCurrentDirectory();
-
             var kc = new KernelConfiguration();
             kc.Load<Nailhang.Processing.CecilModule>();
             using (var kernel = kc.BuildReadonlyKernel())
