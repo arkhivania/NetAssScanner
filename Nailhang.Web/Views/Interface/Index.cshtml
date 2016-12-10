@@ -4,34 +4,41 @@
     ViewBag.Title = "Interface:" + @Model.Name;
 }
 
-<h2>@Model.Name</h2>
-<br />
+<div class="jumbotron">
+    <div class="container">
+        <h2>@Model.Name</h2>
+        <br />
+        </div>
+</div>
 
-<h3>Привязывают модули:</h3>
+        <h3>Привязывают модули:</h3>
 
-<ul>
-    @foreach (var s in Model.InterfaceModules.OrderBy(w => w.Module.FullName))
-    {
-        <li>
-            @Html.ActionLink(s.Module.FullName, "Index", "Module", new { module = s.Module.FullName }, null)
-            <p class="little-text">
-                Сборка: @s.Module.Assembly
-            </p>
-        </li>
-    }
-</ul>
+<div class="container">
+    <ul>
+        @foreach (var s in Model.InterfaceModules.OrderBy(w => w.Module.FullName))
+            {
+            <li>
+                @Html.ActionLink(s.Module.FullName, "Index", "Module", new { module = s.Module.FullName }, null)
+                <span class="label label-info">
+                    Сборка: @s.Module.Assembly
+                </span>
+            </li>
+        }
+    </ul>
+</div>
 
-<h3>Зависят модули:</h3>
 
-<ul>
-    @foreach (var s in Model.ModulesWithInterfaceDependencies.OrderBy(w => w.Module.FullName))
-    {
-        <li>
-            @Html.ActionLink(s.Module.FullName, "Index", "Module", new { module = s.Module.FullName }, null)
-            <p class="little-text">
-                Сборка: @s.Module.Assembly
-            </p>
-        </li>
-    }
-</ul>
+    <h3>Зависят модули:</h3>
+
+    <ul>
+        @foreach (var s in Model.ModulesWithInterfaceDependencies.OrderBy(w => w.Module.FullName))
+            {
+            <li>
+                @Html.ActionLink(s.Module.FullName, "Index", "Module", new { module = s.Module.FullName }, null)
+                <span class="label label-info">
+                    (@s.Module.Assembly)
+                </span>
+</li>
+        }
+    </ul>
 

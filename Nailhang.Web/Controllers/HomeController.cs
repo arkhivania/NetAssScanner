@@ -18,41 +18,10 @@ namespace Nailhang.Web.Controllers
             this.modulesStorage = modulesStorage;
         }
 
-        public PartialViewResult RenderParameters()
-        {
-            var dsString = HttpContext.Session.GetString("DisplaySettings");
-            if(string.IsNullOrEmpty(dsString))
-                return PartialView("DisplaySettings", new DisplaySettings());
-
-            var ds = JsonConvert.DeserializeObject<DisplaySettings>(dsString);
-            return PartialView("DisplaySettings", ds);
-        }
-
-        public ActionResult Map(Models.IndexModel model, Models.DisplaySettings displaySettings, bool formUpdate = false)
-        {
-            if (formUpdate)
-                HttpContext.Session.SetString("DisplaySettings", JsonConvert.SerializeObject(displaySettings));
-
-            UpdateIndexModel(model, displaySettings);
-
-            return View(model);
-        }
-
         public ActionResult Index(Models.IndexModel model, Models.DisplaySettings displaySettings, bool formUpdate = false)
         {
-            ValidateSession();
-            if(formUpdate)
-                HttpContext.Session.SetString("DisplaySettings", JsonConvert.SerializeObject(displaySettings));
-
-            UpdateIndexModel(model, displaySettings);
-            
+            UpdateIndexModel(model, displaySettings);            
             return View(model);
-        }
-
-        private void ValidateSession()
-        {
-            if(HttpContext.Session.GetString("DisplaySettings") == null)
-                HttpContext.Session.SetString("DisplaySettings", JsonConvert.SerializeObject(new DisplaySettings()));
         }
 
         private void UpdateIndexModel(IndexModel model, Models.DisplaySettings displaySettings)

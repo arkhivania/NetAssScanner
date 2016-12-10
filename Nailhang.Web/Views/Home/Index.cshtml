@@ -5,23 +5,22 @@
 }
 
 <div class="jumbotron">
-    <h1>Nailhang</h1>
-    <p class="lead">Утилита для просмотра списка модулей</p>
-    @*<p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>*@
+    <div class="container">
+        <h2>Nailhang</h2>
+        <h5>Утилита для просмотра списка модулей</h5>
+        @*<p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>*@
+    </div>
 </div>
 
 @using (Html.BeginForm("Index", "Home", FormMethod.Get))
-{
-    @*@Html.Hidden("formUpdate", true)
-    { Html.RenderAction("RenderParameters"); }*@
-    
-    <br />
-    <div>
-        Пространство имен
-        @Html.DropDownListFor(w => w.SelectedRoot, Model.RootNamespaces)
+{   
+    <div class="panel panel-default">
+        <div class="panel-heading">Пространство имен</div>
+        <div class="panel-body">
+            @Html.DropDownListFor(w => w.SelectedRoot, Model.RootNamespaces)
+            <input class="btn btn-primary" type="submit" value="Обновить" />
+        </div>
     </div>
-
-    <input type="submit" value="Обновить" />
 }
 
 <div class="module-columns">
@@ -35,7 +34,7 @@
     </ul>
 </div>
 
-<div class="row">
+<div class="container">
     <div>
         <ul>
             @foreach (var m in Model.Modules.OrderBy(w => w.Module.FullName))
@@ -48,7 +47,7 @@
 
                     @Html.Partial("~/Views/Module/ModuleView.cshtml", m)
                 </li>
-            }
+                        }
         </ul>
     </div>
 

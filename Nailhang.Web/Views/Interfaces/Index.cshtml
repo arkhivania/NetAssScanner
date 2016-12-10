@@ -13,15 +13,14 @@
         Содержит:
         @Html.EditorFor(w => w.Contains)
         
-        <input type="submit" value="Обновить" />
+        <input class="btn btn-primary" type="submit" value="Обновить" />
     </div>
 }
 
 <br />
-
-@foreach (var s in Model.Interfaces)
-{
-    <p>
+    @foreach (var s in Model.Interfaces)
+    {   
         @Html.ActionLink(s, "Index", "Interface", new { interfaceHash = s.ToMD5() }, null)
-    </p>
-}
+        <br/>
+    }
+

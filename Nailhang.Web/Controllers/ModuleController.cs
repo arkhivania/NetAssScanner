@@ -19,9 +19,6 @@ namespace Nailhang.Web.Controllers
 
         public ActionResult Index(string module, Models.DisplaySettings displaySettings, bool formUpdate = false)
         {
-            if (formUpdate)
-                HttpContext.Session.SetString("DisplaySettings", JsonConvert.SerializeObject(displaySettings));
-
             var allModules = modulesStorage.GetModules()
                 .Select(w => new Models.ModuleModel { Module = w })
                 .ToArray();

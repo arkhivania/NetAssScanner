@@ -2,26 +2,21 @@
 @{
     ViewBag.Title = "Index";
 }
-<br/>
+<br />
 
-@*@using (Html.BeginForm())
-{
-    @Html.HiddenFor(w => w.Module.FullName)
-    @Html.Hidden("formUpdate", true)
-    //{ Html.RenderAction("RenderParameters", "Home"); }
-    //Html.RenderPartial("~/Views/Home/DependenciesSettings.cshtml", (Nailhang.Web.Models.DisplaySettings)Session["DisplaySettings"]);
-    <input type="submit" value="Обновить" />
-}*@
-
-<h2>
-    @{string nameSpace = Model.Module.FullName;}
-    @nameSpace
-</h2>
-
-<div class="row">
-    <div>
-        @Html.Partial("~/Views/Module/ModuleView.cshtml", Model)
+<div class="jumbotron">
+    <div class="container">
+        <h2>
+            @{string nameSpace = Model.Module.FullName;}
+            @nameSpace
+        </h2>
+        </div>
     </div>
 
-</div>
+        <div class="row">
+            <div>
+                @Html.Partial("~/Views/Module/ModuleView.cshtml", Model)
+            </div>
+
+        </div>
 
