@@ -14,6 +14,7 @@ namespace Nailhang.Web
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseUrls("http://0.0.0.0:5001")
                 .UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();

@@ -19,6 +19,12 @@ namespace Nailhang.Tool
                 new Nailhang.Mongodb.Module(),
                 new Nailhang.Processing.CecilModule()))
             {
+                var builder = new ConfigurationBuilder()
+                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                        .AddEnvironmentVariables();
+                var config = builder.Build();
+                kernel.Bind<IConfiguration>().ToConstant(config);
+
                 var storage = kernel.Get<IModulesStorage>();
                 var processor = kernel.Get<IndexBase.Index.IIndexProcessor>();
 
