@@ -18,6 +18,8 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+*.lock.json
+
 # Roslyn cache directories
 *.ide/
 
@@ -229,3 +231,4 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.dg
+Nailhang.Processing/project.lock.json

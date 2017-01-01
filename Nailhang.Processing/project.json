@@ -1,15 +1,15 @@
 {
   "version": "1.0.0-*",
   "dependencies": {
-    "NETStandard.Library": "1.6.0",
     "Ninject": "4.0.0-beta-0134",
     "Nailhang": "1.0.0-*",
     "Nailhang.IndexBase": "1.0.0-*",
     "Newtonsoft.Json": "9.0.1",
-    "Microsoft.Extensions.Configuration": "1.0.0",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "Mono.Cecil": "0.10.0-beta1-v2",
-    "System.ComponentModel.Primitives": "4.1.0"
+    "Microsoft.Extensions.Configuration": "1.1.0",
+    "Microsoft.Extensions.Configuration.Json": "1.1.0",
+    "NETStandard.Library": "1.6.1",
+    "System.ComponentModel.Primitives": "4.3.0"
   },
 
   "frameworks": {

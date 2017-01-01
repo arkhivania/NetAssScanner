@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0-*",
 
   "dependencies": {
@@ -7,7 +7,8 @@
     "dotnet-test-nunit": "3.4.0-beta-3",
     "Nailhang.IndexBase": "1.0.0-*",
     "Nailhang.Mongodb": "1.0.0-*",
-    "Nailhang.Processing": "1.0.0-*"
+    "Nailhang.Processing": "1.0.0-*",
+    "Microsoft.NETCore.App": "1.1.0"
   },
 
   "testRunner": "nunit",
@@ -16,10 +17,6 @@
     "netcoreapp1.0": {
       "imports": "portable-net45+win8",
       "dependencies": {
-        "Microsoft.NETCore.App": {
-          "version": "1.0.0-*",
-          "type": "platform"
-        }
       }
     }
   }
