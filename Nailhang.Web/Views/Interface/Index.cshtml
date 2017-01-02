@@ -19,7 +19,8 @@
             {
             <li>
                 @Html.ActionLink(s.Module.FullName, "Index", "Module", new { module = s.Module.FullName }, null)
-                <span class="label label-info">
+                <br/>
+                <span class="little-text">
                     Сборка: @s.Module.Assembly
                 </span>
             </li>
