@@ -16,16 +16,17 @@ namespace Nailhang.Tool
     {
         static void Main(string[] args)
         {
-            using(var kernel = new StandardKernel(
-                new Nailhang.Mongodb.Module(),
-                new Nailhang.Processing.CecilModule()))
-            {
-                var builder = new ConfigurationBuilder()
+            var kc = new KernelConfiguration(new Nailhang.Mongodb.Module(),
+                new Nailhang.Processing.CecilModule());
+
+            var builder = new ConfigurationBuilder()
                         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                         .AddEnvironmentVariables();
-                var config = builder.Build();
-                kernel.Bind<IConfiguration>().ToConstant(config);
+            var config = builder.Build();
+            kc.Bind<IConfiguration>().ToConstant(config);
 
+            using (var kernel = kc.BuildReadonlyKernel())
+            {
                 var storage = kernel.Get<IModulesStorage>();
                 var processor = kernel.Get<IndexBase.Index.IIndexProcessor>();
 
