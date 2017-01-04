@@ -11,7 +11,30 @@
         </div>
 </div>
 
-        <h3>Привязывают модули:</h3>
+@{var moduleInterfaceN = @Model.Interface;}
+@if (moduleInterfaceN.HasValue)
+{
+    var moduleInterface = moduleInterfaceN.Value;
+
+    <h3>Сигнатура</h3>
+    @if (moduleInterface.Methods != null && moduleInterface.Methods.Length > 0)
+                {
+        <ul>
+            @foreach (var meth in moduleInterface.Methods)
+            {
+                <li>
+                    <p class="method-name">@meth.MethodString</p>
+                    @if (meth.InvocationRestriction != null)
+                    {
+                        <p class="method-restriction">@meth.InvocationRestriction.Value</p>
+                    }
+                </li>
+            }
+        </ul>
+    }
+        }
+
+<h3>Привязывают модули:</h3>
 
 <div class="container">
     <ul>
