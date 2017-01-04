@@ -2,10 +2,12 @@
 using Ninject.Modules;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using Ninject;
 
 namespace Nailhang.Mongodb
 {
@@ -15,25 +17,38 @@ namespace Nailhang.Mongodb
     {
         public override void Load()
         {
-            Kernel
+            KernelConfiguration
                 .Bind<MongoConnection>()
                 .ToMethod(w =>
                 {
-                    var configSection = ConfigurationManager.GetSection("mongoConnection");
-                    if (configSection != null)
-                        return (MongoConnection)configSection;
+                    //var builder = new ConfigurationBuilder()
+                    //            .SetBasePath(Directory.GetCurrentDirectory())
+                    //            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-                    return new MongoConnection();
+                    //var config = builder.Build();
+
+                    var config = w.Kernel.Get<IConfiguration>();
+                    var section = config.GetSection("Mongo");
+                    var res = new MongoConnection
+                    {
+                        ConnectionString = section["ConnectionString"],
+                        DbName = section["DbName"]
+                    };
+
+                    if (res.ConnectionString == null)
+                        res.ConnectionString = "mongodb://localhost";
+
+                    if (res.DbName == null)
+                        res.DbName = "nailhang";
+
+                    return res;
                 });
 
-            Kernel.Bind<Nailhang.IndexBase.Storage.IModulesStorage>().To<MongoStorage>();
+            KernelConfiguration
+                .Bind<Nailhang.IndexBase.Storage.IModulesStorage>()
+                .To<MongoStorage>();
 
             BsonSerializer.UseZeroIdChecker = true;
-
-            //BsonClassMap.RegisterClassMap<IndexBase.TypeReference>(cm => {
-            //    cm.MapProperty(c => c.AssemblyName);
-            //    cm.MapProperty(c => c.FullName);
-            //});
         }
     }
 }

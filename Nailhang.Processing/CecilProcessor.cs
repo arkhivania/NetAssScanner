@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Nailhang.IndexBase;
 using Mono.Cecil;
 using System.ComponentModel;
+using System.Reflection;
+using System.IO;
 
 namespace Nailhang.Processing
 {
@@ -22,13 +24,22 @@ namespace Nailhang.Processing
         {
             var readerParameters = new ReaderParameters();
             var resolver = new DefaultAssemblyResolver();
-            resolver.AddSearchDirectory(System.IO.Path.GetDirectoryName(typeof(CecilProcessor).Assembly.Location));
+
+            var assLocation = typeof(CecilProcessor).GetTypeInfo().Assembly.Location;
+            var assDir = System.IO.Path.GetDirectoryName(assLocation);
+
+            resolver.AddSearchDirectory(assDir);
 
             foreach (var resolvePath in Environment.GetCommandLineArgs().Where(w => w.ToLower().StartsWith("-cecilrefpath:")))
                 resolver.AddSearchDirectory(resolvePath.Substring("-cecilRefPath:".Length));
 
             readerParameters.AssemblyResolver = resolver;
-            
+
+            if(new FileInfo(filePath).Exists == false)
+            {
+                if (new FileInfo(Path.Combine(assDir, filePath)).Exists)
+                    filePath = Path.Combine(assDir, filePath);
+            }
 
             var assDef = Mono.Cecil.AssemblyDefinition.ReadAssembly(filePath, readerParameters);
 

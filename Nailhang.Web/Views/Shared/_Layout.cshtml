@@ -2,42 +2,35 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Nailhang</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] - Nailhang</title>
+
+    <link rel="stylesheet" href="~/lib/tether/dist/css/tether.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Nailhang", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    @*<li>@Html.ActionLink("Домой", "Index", "Home")</li>*@
-                    @*<li>@Html.ActionLink("Карта модулей", "Map", "Home")</li>*@
-                    <li>@Html.ActionLink("Элементы привязки", "Index", "Interfaces")</li>
-                    <li>@Html.ActionLink("О программе", "About", "Home")</li>
-                </ul>
-            </div>
+<body> 
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="btn-group" role="group" aria-label="...">
+            @Html.ActionLink("Nailhang", "Index", "Home", null, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Элементы привязок", "Index", "Interfaces", null, new { @class = "btn btn-primary" })
+            @Html.ActionLink("О программе", "About", "Home", null, new { @class = "btn btn-primary" })
         </div>
-    </div>
+    </nav>
+       
     <div class="container body-content">
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - Nailhang</p>
+            <p>&copy; @System.DateTime.Now.Year - Nailhang</p>
         </footer>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/tether/dist/js/tether.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    @*<script src="~/js/site.js" asp-append-version="true"></script>*@
+
     @RenderSection("scripts", required: false)
 </body>
 </html>

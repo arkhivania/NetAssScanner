@@ -1,9 +1,9 @@
-﻿using Nailhang.IndexBase.Storage;
+﻿using Microsoft.AspNetCore.Mvc;
+using Nailhang.IndexBase.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+
 
 namespace Nailhang.Web.Controllers
 {
@@ -14,15 +14,7 @@ namespace Nailhang.Web.Controllers
         public InterfaceController(IModulesStorage modulesStorage)
         {
             this.modulesStorage = modulesStorage;
-        }
-
-        protected override void Initialize(System.Web.Routing.RequestContext requestContext)
-        {
-            base.Initialize(requestContext);
-
-            if (Session["DisplaySettings"] == null)
-                Session["DisplaySettings"] = new Models.DisplaySettings();
-        }
+        }        
 
         // GET: Interface
         public ActionResult Index(Guid interfaceHash)
@@ -38,23 +30,32 @@ namespace Nailhang.Web.Controllers
                 .Distinct()
                 .ToDictionary(w => w.ToMD5(), w => w);
 
-            var interfaceFullName = types[interfaceHash];
+            var interfaceFullName = types[interfaceHash];            
 
             var dependentModules = allModules
                 .Where(w =>
                 w.Module.InterfaceDependencies.Any(q => q.FullName == interfaceFullName)
                 || w.Module.ObjectDependencies.Any(q => q.FullName == interfaceFullName));
 
-            var model = new Models.InterfaceModel
-            {
-                Name = interfaceFullName,
-                InterfaceModules = allModules
+            var interfaceModules = allModules
                     .Where(w => w.Module
                                 .ModuleBinds != null)
                     .Where(w => w.Module.ModuleBinds
                     .Any(q => q.FullName.ToMD5().Equals(interfaceHash)))
-                    .ToArray(),
-                ModulesWithInterfaceDependencies = dependentModules
+                    .ToArray();
+
+            var interfaceItem = interfaceModules
+                .SelectMany(q => q.Module.Interfaces)
+                .Select(q => (Nailhang.IndexBase.ModuleInterface?)q)
+                .Where(q => q.Value.TypeReference.FullName == interfaceFullName)
+                .FirstOrDefault();
+
+            var model = new Models.InterfaceModel
+            {
+                Name = interfaceFullName,
+                InterfaceModules = interfaceModules,
+                ModulesWithInterfaceDependencies = dependentModules,
+                Interface = interfaceItem
             };
             return View("Index", model);
         }

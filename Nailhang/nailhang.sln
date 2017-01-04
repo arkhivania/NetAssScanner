@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nailhang", "Nailhang.xproj", "{81FAA3BC-9FC3-4BDE-84E4-B6DD2FABE422}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nailhang.IndexBase", "..\Nailhang.IndexBase\Nailhang.IndexBase.xproj", "{AB927550-81C3-4A22-83A3-196558081293}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nailhang.Mongodb", "..\Nailhang.Mongodb\Nailhang.Mongodb.xproj", "{81AC4107-7031-44C5-80CF-ED30733033E9}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nailhang.Mongodb.Tests", "..\Nailhang.Mongodb.Tests\Nailhang.Mongodb.Tests.xproj", "{4DFFC395-05B3-4505-91FE-83EDB4CC1ECC}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nailhang.Processing", "..\Nailhang.Processing\Nailhang.Processing.xproj", "{CF6C9E7E-B441-491F-9527-50DE8CF6C8EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3EC4BA9E-BD6B-47CA-9AFF-C1F625094922}"
+	ProjectSection(SolutionItems) = preProject
+		nailhang.testsettings = nailhang.testsettings
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nailhang.Tool", "..\Nailhang.Tool\Nailhang.Tool.xproj", "{B5D5C15E-33A2-4190-9C7F-8A793F8F0AA5}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nailhang.Web", "..\Nailhang.Web\Nailhang.Web.xproj", "{3764606A-5C45-40B8-A05F-88D7674CB565}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81FAA3BC-9FC3-4BDE-84E4-B6DD2FABE422}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81FAA3BC-9FC3-4BDE-84E4-B6DD2FABE422}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81FAA3BC-9FC3-4BDE-84E4-B6DD2FABE422}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81FAA3BC-9FC3-4BDE-84E4-B6DD2FABE422}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB927550-81C3-4A22-83A3-196558081293}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB927550-81C3-4A22-83A3-196558081293}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB927550-81C3-4A22-83A3-196558081293}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB927550-81C3-4A22-83A3-196558081293}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81AC4107-7031-44C5-80CF-ED30733033E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81AC4107-7031-44C5-80CF-ED30733033E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81AC4107-7031-44C5-80CF-ED30733033E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81AC4107-7031-44C5-80CF-ED30733033E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DFFC395-05B3-4505-91FE-83EDB4CC1ECC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DFFC395-05B3-4505-91FE-83EDB4CC1ECC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DFFC395-05B3-4505-91FE-83EDB4CC1ECC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DFFC395-05B3-4505-91FE-83EDB4CC1ECC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF6C9E7E-B441-491F-9527-50DE8CF6C8EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF6C9E7E-B441-491F-9527-50DE8CF6C8EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF6C9E7E-B441-491F-9527-50DE8CF6C8EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF6C9E7E-B441-491F-9527-50DE8CF6C8EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5D5C15E-33A2-4190-9C7F-8A793F8F0AA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5D5C15E-33A2-4190-9C7F-8A793F8F0AA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5D5C15E-33A2-4190-9C7F-8A793F8F0AA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5D5C15E-33A2-4190-9C7F-8A793F8F0AA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3764606A-5C45-40B8-A05F-88D7674CB565}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3764606A-5C45-40B8-A05F-88D7674CB565}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3764606A-5C45-40B8-A05F-88D7674CB565}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3764606A-5C45-40B8-A05F-88D7674CB565}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

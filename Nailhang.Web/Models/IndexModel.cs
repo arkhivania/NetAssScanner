@@ -1,15 +1,22 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Nailhang.Web.Models
 {
     public class IndexModel
     {
+        public IndexModel()
+        {
+            AllModules = new ModuleModel[] { };
+            Modules = new ModuleModel[] { };
+            RootNamespaces = new SelectListItem[] { };
+        }
+        
+
         public IEnumerable<ModuleModel> Modules { get; set; }
         public IEnumerable<ModuleModel> AllModules { get; set; }
 

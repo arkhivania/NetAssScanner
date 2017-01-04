@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Microsoft.Extensions.Configuration;
 
 namespace Nailhang.Tool
 {
@@ -15,9 +16,16 @@ namespace Nailhang.Tool
     {
         static void Main(string[] args)
         {
-            using(var kernel = new StandardKernel(
-                new Nailhang.Mongodb.Module(),
-                new Nailhang.Processing.CecilModule()))
+            var kc = new KernelConfiguration(new Nailhang.Mongodb.Module(),
+                new Nailhang.Processing.CecilModule());
+
+            var builder = new ConfigurationBuilder()
+                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                        .AddEnvironmentVariables();
+            var config = builder.Build();
+            kc.Bind<IConfiguration>().ToConstant(config);
+
+            using (var kernel = kc.BuildReadonlyKernel())
             {
                 var storage = kernel.Get<IModulesStorage>();
                 var processor = kernel.Get<IndexBase.Index.IIndexProcessor>();

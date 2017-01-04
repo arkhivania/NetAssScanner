@@ -1,12 +1,14 @@
 ﻿@model Nailhang.Web.Models.ModuleModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using Nailhang.Web
 
-<p class="module-description" style="white-space: pre-line">
-    @Model.Module.Description
-</p>
+
+<h6>@Model.Module.Description</h6>
 
 <br />
 
-@{var displaySettings = (Nailhang.Web.Models.DisplaySettings)Session["DisplaySettings"];}
+@{var displaySettings = new Nailhang.Web.Models.DisplaySettings();}
 
 @if (displaySettings.ShowInterfaces && Model.Module.Interfaces != null && Model.Module.Interfaces.Length > 0)
 {

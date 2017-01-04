@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 using Nailhang.Web.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Nailhang.Web.Controllers
 {
@@ -16,42 +18,15 @@ namespace Nailhang.Web.Controllers
             this.modulesStorage = modulesStorage;
         }
 
-        public PartialViewResult RenderParameters()
-        {
-            return PartialView("DisplaySettings", Session["DisplaySettings"]);
-        }
-
-        protected override void Initialize(System.Web.Routing.RequestContext requestContext)
-        {
-            base.Initialize(requestContext);
-
-            if (Session["DisplaySettings"] == null)
-                Session["DisplaySettings"] = new Models.DisplaySettings();
-        }
-
-        public ActionResult Map(Models.IndexModel model, Models.DisplaySettings displaySettings, bool formUpdate = false)
-        {
-            if (formUpdate)
-                Session["DisplaySettings"] = displaySettings;
-
-            UpdateIndexModel(model, displaySettings);
-
-            return View(model);
-        }
-
         public ActionResult Index(Models.IndexModel model, Models.DisplaySettings displaySettings, bool formUpdate = false)
         {
-            if(formUpdate)
-                Session["DisplaySettings"] = displaySettings;
-
-            UpdateIndexModel(model, displaySettings);
-            
+            UpdateIndexModel(model, displaySettings);            
             return View(model);
         }
 
         private void UpdateIndexModel(IndexModel model, Models.DisplaySettings displaySettings)
         {
-            var rootDeep = Properties.Settings.Default.RootDeep;
+            var rootDeep = 3;
 
             var allModules = modulesStorage.GetModules()
                                            .Select(w => new Models.ModuleModel { Module = w })
