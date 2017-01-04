@@ -1,0 +1,1 @@
+start powershell -executionpolicy unrestricted -file warm.ps1
