@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Nailhang.Tool": {
+      "commandName": "Project",
+      "commandLineArgs": "-folder:\"C:\\Development\\Dev3\\MultiVox\\Bin_Testing_Net40\" -mongo:\"mongodb://192.168.0.32\" -cecilRefPath:\".\\Bin_Testing_Net40\" -drop:Alda.MultiVox"
+    }
+  }
+}

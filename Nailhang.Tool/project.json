@@ -21,9 +21,10 @@
       },
       "imports": "dnxcore50"
     },
-    "net452": {
+    "net461": {
       "dependencies": {
         "Microsoft.Tpl.Dataflow": "4.5.24"
+
       }
     }
   },

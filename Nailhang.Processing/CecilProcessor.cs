@@ -28,7 +28,10 @@ namespace Nailhang.Processing
             var assLocation = typeof(CecilProcessor).GetTypeInfo().Assembly.Location;
             var assDir = System.IO.Path.GetDirectoryName(assLocation);
 
+            var targetDirFolder = Path.GetDirectoryName(filePath);
+            resolver.AddSearchDirectory(targetDirFolder);
             resolver.AddSearchDirectory(assDir);
+            
 
             foreach (var resolvePath in Environment.GetCommandLineArgs().Where(w => w.ToLower().StartsWith("-cecilrefpath:")))
                 resolver.AddSearchDirectory(resolvePath.Substring("-cecilRefPath:".Length));
