@@ -68,7 +68,7 @@ namespace Nailhang.Web
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "nailhang/{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
