@@ -20,7 +20,7 @@
 <br />
     @foreach (var s in Model.Interfaces)
     {   
-        @Html.ActionLink(s, "Index", "Interface", new { interfaceHash = s.ToMD5() }, null)
+        @Html.ActionLink(s.Name, "Index", "Interface", new { interfaceHash = s.MD5 }, null)
         <br/>
     }
 

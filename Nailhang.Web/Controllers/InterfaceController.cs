@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Nailhang.IndexBase.Storage;
+using Nailhang.Web.MD5Cache;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,11 @@ namespace Nailhang.Web.Controllers
     public class InterfaceController : Controller
     {
         readonly IModulesStorage modulesStorage;
+        readonly IMD5Cache md5Cache;
 
-        public InterfaceController(IModulesStorage modulesStorage)
+        public InterfaceController(IMD5Cache md5Cache, IModulesStorage modulesStorage)
         {
+            this.md5Cache = md5Cache;
             this.modulesStorage = modulesStorage;
         }        
 
@@ -28,7 +31,7 @@ namespace Nailhang.Web.Controllers
                 .SelectMany(w => w.Module.ModuleBinds)
                 .Select(w => w.FullName)
                 .Distinct()
-                .ToDictionary(w => w.ToMD5(), w => w);
+                .ToDictionary(w => md5Cache.ToMD5(w), w => w);
 
             var interfaceFullName = types[interfaceHash];            
 
@@ -41,7 +44,7 @@ namespace Nailhang.Web.Controllers
                     .Where(w => w.Module
                                 .ModuleBinds != null)
                     .Where(w => w.Module.ModuleBinds
-                    .Any(q => q.FullName.ToMD5().Equals(interfaceHash)))
+                    .Any(q => q.FullName == interfaceFullName))
                     .ToArray();
 
             var interfaceItem = interfaceModules

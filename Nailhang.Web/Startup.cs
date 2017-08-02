@@ -39,9 +39,11 @@ namespace Nailhang.Web
             kernelC.Load<Nailhang.Mongodb.Module>();
             kernelC.Bind<IConfiguration>()
                 .ToMethod(q => Configuration).InSingletonScope();
+            kernelC.Bind<MD5Cache.IMD5Cache>().To<MD5Cache.MD5NonBlockingCache>().InSingletonScope();
 
             var rok = kernelC.BuildReadonlyKernel();
             services.AddTransient<IModulesStorage>(sp => rok.Get<IModulesStorage>());
+            services.AddTransient<MD5Cache.IMD5Cache>(sp => rok.Get<MD5Cache.IMD5Cache>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
