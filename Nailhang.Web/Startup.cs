@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Nailhang.IndexBase.Storage;
 using Ninject;
 using System.IO;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Http;
 
 namespace Nailhang.Web
 {
@@ -62,9 +64,17 @@ namespace Nailhang.Web
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseStaticFiles();
-
             app.UseSession();
+
+            var root = Configuration.GetSection("general")["wwwRoot"];
+
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot")),
+                RequestPath = new PathString(root)
+            });
+
+            app.UsePathBase(new PathString(root));
 
             app.UseMvc(routes =>
             {

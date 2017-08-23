@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish" Condition=" '$(IsCrossTargetingBuild)' != 'true' ">
-    <Exec Command="bower install" />
+    <!--<Exec Command="bower install" />-->
     <Exec Command="dotnet bundle" />
   </Target>
 

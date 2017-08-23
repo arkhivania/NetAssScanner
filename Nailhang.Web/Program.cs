@@ -19,20 +19,8 @@ namespace Nailhang.Web
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://0.0.0.0:5001/nailhang")
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseUrls("http://0.0.0.0:5001")
                 .Build();
-
-        //public static void Main(string[] args)
-        //{
-        //    var host = new WebHostBuilder()
-        //        .UseKestrel()
-        //        .UseContentRoot(Directory.GetCurrentDirectory())
-        //        .UseUrls("http://0.0.0.0:5001/nailhang")
-        //        .UseIISIntegration()
-        //        .UseStartup<Startup>()
-        //        .Build();
-
-        //    host.Run();
-        //}
     }
 }
