@@ -1,0 +1,15 @@
+[Unit]
+Description=Nailhang warm 
+After=syslog.target 
+[Service] 
+ExecStart=/home/arkhivania/warm/warm
+# KillMode=control-group, process, mixed, none mixed: SIGTERM to parent 
+# process and SIGKILL to child processes after TimeoutStopSec
+KillMode= mixed TimeoutStopSec=5
+
+# restart on-failure, always, ...
+Restart=on-failure 
+RestartSec=5 
+
+[Install]
+WantedBy=multi-user.target
