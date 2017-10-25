@@ -15,17 +15,17 @@ namespace Nailhang.Mongodb.Tests
         [Test]
         public void DoIt()
         {
-            var kc = new Ninject.KernelConfiguration();
-            kc.Load<Nailhang.Mongodb.Module>();
-            kc.Rebind<Nailhang.Mongodb.MongoConnection>()
+            using (var kernel = new Ninject.StandardKernel())
+            {
+                kernel.Load<Nailhang.Mongodb.Module>();
+                kernel.Rebind<Nailhang.Mongodb.MongoConnection>()
                 .ToConstant(new MongoConnection
                 {
                     ConnectionString = "mongodb://192.168.0.32",
                     DbName = "nail_tests"
                 });
 
-            using (var kernel = kc.BuildReadonlyKernel())
-            {
+            
                 var ms = kernel.Get<IModulesStorage>();
                 ms.StoreModule(new IndexBase.Module
                 {

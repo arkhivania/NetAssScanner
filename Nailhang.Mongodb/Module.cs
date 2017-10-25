@@ -17,7 +17,7 @@ namespace Nailhang.Mongodb
     {
         public override void Load()
         {
-            KernelConfiguration
+            Kernel
                 .Bind<MongoConnection>()
                 .ToMethod(w =>
                 {
@@ -44,7 +44,7 @@ namespace Nailhang.Mongodb
                     return res;
                 });
 
-            KernelConfiguration
+            Kernel
                 .Bind<Nailhang.IndexBase.Storage.IModulesStorage>()
                 .To<MongoStorage>();
 

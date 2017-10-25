@@ -17,15 +17,16 @@ namespace Nailhang.Mongodb.Tests.CecilProcessing
         [TestCase(@".\Nailhang.Mongodb.dll")]
         public void Parse(string path)
         {
-            var kc = new KernelConfiguration();
-            kc.Load<Nailhang.Processing.CecilModule>();
-            using (var kernel = kc.BuildReadonlyKernel())
-            {
+            using (var kernel = new StandardKernel())
+            { 
+                kernel.Load<Nailhang.Processing.CecilModule>();
+
                 var modules = kernel.Get<IIndexProcessor>()
                     .ExtractModules(path)
                     .ToArray();
                 Assert.IsNotEmpty(modules);
             }
+
         }
     }
 }

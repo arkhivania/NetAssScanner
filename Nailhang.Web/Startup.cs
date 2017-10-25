@@ -37,13 +37,13 @@ namespace Nailhang.Web
             services.AddDistributedMemoryCache(); // Adds a default in-memory implementation of IDistributedCache
             services.AddSession();
 
-            var kernelC = new KernelConfiguration();
-            kernelC.Load<Nailhang.Mongodb.Module>();
-            kernelC.Bind<IConfiguration>()
+            var rok = new StandardKernel();
+            rok.Load<Nailhang.Mongodb.Module>();
+            rok.Bind<IConfiguration>()
                 .ToMethod(q => Configuration).InSingletonScope();
-            kernelC.Bind<MD5Cache.IMD5Cache>().To<MD5Cache.MD5NonBlockingCache>().InSingletonScope();
+            rok.Bind<MD5Cache.IMD5Cache>().To<MD5Cache.MD5NonBlockingCache>().InSingletonScope();
 
-            var rok = kernelC.BuildReadonlyKernel();
+            
             services.AddTransient<IModulesStorage>(sp => rok.Get<IModulesStorage>());
             services.AddTransient<MD5Cache.IMD5Cache>(sp => rok.Get<MD5Cache.IMD5Cache>());
         }

@@ -16,24 +16,24 @@ namespace Nailhang.Tool
     {
         static void Main(string[] args)
         {
-            var kc = new KernelConfiguration(new Nailhang.Mongodb.Module(),
-                new Nailhang.Processing.CecilModule());
-
-            var builder = new ConfigurationBuilder()
-                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                        .AddEnvironmentVariables();
-            var config = builder.Build();
-            kc.Bind<IConfiguration>().ToConstant(config);
-
-            using (var kernel = kc.BuildReadonlyKernel())
+            using (var kernel = new StandardKernel(new Nailhang.Mongodb.Module(),
+                new Nailhang.Processing.CecilModule()))
             {
+
+                var builder = new ConfigurationBuilder()
+                            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                            .AddEnvironmentVariables();
+                var config = builder.Build();
+                kernel.Bind<IConfiguration>().ToConstant(config);
+
+
                 var storage = kernel.Get<IModulesStorage>();
                 var processor = kernel.Get<IndexBase.Index.IIndexProcessor>();
 
                 if (Environment.GetCommandLineArgs().Any(w => w.ToLower() == "-drop"))
                     storage.DropModules(namespaceStartsWith: "");
 
-                foreach(var drop in Environment.GetCommandLineArgs().Where(w => w.ToLower().StartsWith("-drop:")))
+                foreach (var drop in Environment.GetCommandLineArgs().Where(w => w.ToLower().StartsWith("-drop:")))
                     storage.DropModules(drop.Substring("-drop:".Length));
 
                 var targetFiles = new List<string>();
@@ -62,12 +62,12 @@ namespace Nailhang.Tool
 
                 var filesBlock = new BufferBlock<string>();
                 var getModulesBlock = new TransformManyBlock<string, IndexBase.Module>(w =>
-                    {                        
+                    {
                         try
                         {
                             return processor.ExtractModules(w).ToArray();
                         }
-                        catch(BadImageFormatException)
+                        catch (BadImageFormatException)
                         {
                             Console.WriteLine("Skip bad image: " + w + Environment.NewLine);
                             return Enumerable.Empty<IndexBase.Module>();
@@ -84,7 +84,7 @@ namespace Nailhang.Tool
 
                 int stored = 0;
                 var storeBlock = new ActionBlock<IndexBase.Module>(m =>
-                {   
+                {
                     storage.StoreModule(m);
                     System.Threading.Interlocked.Increment(ref stored);
                 }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 4, BoundedCapacity = 2000 });
