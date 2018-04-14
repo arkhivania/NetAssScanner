@@ -32,6 +32,34 @@ namespace Nailhang.Processing
             return type.Name;
         }
 
+        internal static IEnumerable<Mono.Cecil.TypeReference> GetBases(this Mono.Cecil.TypeDefinition t)
+        {
+            if (t.BaseType == null)
+                yield break;
+
+            foreach (var b in GetBases(t.BaseType.ToDef()))
+                yield return b;
+
+            yield return t;
+        }
+
+        public static bool IsNinject(this TypeDefinition type)
+        {
+            try
+            {
+                var interfaces = GetBases(type)
+                    .ToDefs()
+                    .SelectMany(w => w.Interfaces)
+                    .Select(q => q.InterfaceType)
+                    .ToDefs();
+                return interfaces.Any(w => w.FullName == typeof(Ninject.Modules.INinjectModule).FullName);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static IndexBase.TypeReference ToIndexBaseTypeReference(this Mono.Cecil.TypeReference typeReference)
         {
             return new IndexBase.TypeReference
@@ -73,7 +101,7 @@ namespace Nailhang.Processing
                 method.Parameters.PrintParameters(), extra);
         }
 
-        internal static IEnumerable<TypeDefinition> GetTypes(this AssemblyDefinition assemblyDefinition)
+        public static IEnumerable<TypeDefinition> GetTypes(this AssemblyDefinition assemblyDefinition)
         {
             return assemblyDefinition.MainModule.GetTypes();
         }
@@ -108,7 +136,7 @@ namespace Nailhang.Processing
                     });
         }
 
-        internal static IndexBase.ModuleInterface[] CreateInterfaces(this IEnumerable<TypeDefinition> types)
+        public static IndexBase.ModuleInterface[] CreateInterfaces(this IEnumerable<TypeDefinition> types)
         {
             return types
                     .FilterInterfaces()

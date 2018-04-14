@@ -12,59 +12,32 @@ namespace Nailhang.Processing.ModuleBuilder
         public IEnumerable<Module> CreateModules(Mono.Cecil.AssemblyDefinition assemblyDefinition)
         {
             var moduleType = typeof(Nailhang.ModuleAttribute).FullName;
-            
+
 
 
             foreach (var type in assemblyDefinition.GetTypes())
             {
                 var modAttr = type.CustomAttributes.FirstOrDefault(w => w.AttributeType.FullName == moduleType);
                 if (modAttr != null)
-                    yield return ExtractModule(type, assemblyDefinition, modAttr);
+                    foreach (var m in ExtractModule(type, assemblyDefinition, modAttr))
+                        yield return m;
                 else
                 {
-                    if(IsNinject(type))
+                    if (type.IsNinject())
                         if (!type.FullName.Contains("/"))
-                            yield return ExtractModule(type, assemblyDefinition, null);
+                            foreach (var m in ExtractModule(type, assemblyDefinition, null))
+                                yield return m;
                 }
             }
         }
 
-        bool IsNinject(TypeDefinition type)
-        {
-            try
-            {
-                var interfaces = GetBases(type)
-                    .ToDefs()
-                    .SelectMany(w => w.Interfaces)
-                    .Select(q => q.InterfaceType)
-                    .ToDefs();
-                return interfaces.Any(w => w.FullName == typeof(Ninject.Modules.INinjectModule).FullName);
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        static IEnumerable<Mono.Cecil.TypeReference> GetBases(Mono.Cecil.TypeDefinition t)
-        {
-            if (t.BaseType == null)
-                yield break;
-
-            foreach (var b in GetBases(t.BaseType.ToDef()))
-                yield return b;
-
-            yield return t;
-        }
 
         private bool IsInstanceOf(TypeDefinition type, string baseFullName)
         {
             if (type.BaseType == null)
                 return false;
-            if (GetBases(type).Any(w => w.FullName == baseFullName))
+            if (type.GetBases().Any(w => w.FullName == baseFullName))
                 return true;
-
-            
 
             return false;
         }
@@ -83,11 +56,11 @@ namespace Nailhang.Processing.ModuleBuilder
                         if (genInstance.ElementMethod.Name == "To")
                         {
                             foreach (var bt in genInstance.GenericArguments)
-                                if(!bt.IsGenericParameter)
+                                if (!bt.IsGenericParameter)
                                     yield return bt;
                         }
 
-                        if(genInstance.ElementMethod.Name == "Get")
+                        if (genInstance.ElementMethod.Name == "Get")
                         {
                             foreach (var bt in genInstance.GenericArguments)
                                 if (!bt.IsGenericParameter)
@@ -97,18 +70,18 @@ namespace Nailhang.Processing.ModuleBuilder
                 }
             }
         }
-        
+
 
         static IEnumerable<Mono.Cecil.TypeReference> ModuleBinds(Mono.Cecil.TypeDefinition module)
         {
-            var methods = GetBases(module)
+            var methods = module.GetBases()
                         .ToDefs()
                         .Where(w => w != null)
                         .SelectMany(w => w.Methods);
 
             foreach (var meth in methods
                 .Where(w => w.HasBody))
-            {   
+            {
                 var methBody = meth.Body;
                 foreach (var i in methBody.Instructions)
                 {
@@ -126,7 +99,7 @@ namespace Nailhang.Processing.ModuleBuilder
             }
         }
 
-        private Module ExtractModule(TypeDefinition moduleType, AssemblyDefinition assDef, CustomAttribute modAttr)
+        private IEnumerable<Module> ExtractModule(TypeDefinition moduleType, AssemblyDefinition assDef, CustomAttribute modAttr)
         {
             var res = new Module();
             res.Assembly = assDef.Name.Name;
@@ -178,7 +151,12 @@ namespace Nailhang.Processing.ModuleBuilder
                 .Select(w => w.ToIndexBaseTypeReference())
                 .ToArray();
 
-            return res;
+            if(res.InterfaceDependencies.Any()
+                || res.Interfaces.Any()
+                || res.ModuleBinds.Any()
+                || res.ObjectDependencies.Any()
+                || res.Objects.Any())
+                yield return res;
         }
     }
 }

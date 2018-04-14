@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <AssemblyName>Nailhang.MVoxLease</AssemblyName>
+    <PackageId>Nailhang.MVoxLease</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nailhang.Processing\Nailhang.Processing.csproj" />
+    <ProjectReference Include="..\Nailhang\Nailhang.csproj" />
+    <ProjectReference Include="..\Nailhang.IndexBase\Nailhang.IndexBase.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mono.Cecil" Version="0.10.0" />
+    <PackageReference Include="Ninject" Version="3.3.4" />
+  </ItemGroup>
+</Project>

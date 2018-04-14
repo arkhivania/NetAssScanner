@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Nailhang.Mongodb\Nailhang.Mongodb.csproj" />
     <ProjectReference Include="..\Nailhang.IndexBase\Nailhang.IndexBase.csproj" />
+    <ProjectReference Include="..\Nailhang.MVoxLease\Nailhang.MVoxLease.csproj" />
     <ProjectReference Include="..\Nailhang.Processing\Nailhang.Processing.csproj" />
   </ItemGroup>
 

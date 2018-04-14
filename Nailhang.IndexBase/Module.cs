@@ -14,11 +14,13 @@ namespace Nailhang.IndexBase
         public Nailhang.Significance Significance { get; set; }
         public string Assembly { get; set; }
 
-        public ModuleInterface[] Interfaces { get; set; }
-        public ModuleObject[] Objects { get; set; }
-        public TypeReference[] ModuleBinds { get; set; }
+        public ModuleInterface[] Interfaces { get; set; } = new ModuleInterface[] { };
+        public ModuleObject[] Objects { get; set; } = new ModuleObject[] { };
+        public TypeReference[] ModuleBinds { get; set; } = new TypeReference[] { };
 
-        public TypeReference[] InterfaceDependencies { get; set; }
-        public TypeReference[] ObjectDependencies { get; set; }
+        public TypeReference[] InterfaceDependencies { get; set; } = new TypeReference[] { };
+        public TypeReference[] ObjectDependencies { get; set; } = new TypeReference[] { };
+
+        public string[] Tags { get; set; } = new string[] { };
     }
 }

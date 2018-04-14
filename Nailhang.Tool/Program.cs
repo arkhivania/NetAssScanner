@@ -16,10 +16,11 @@ namespace Nailhang.Tool
     {
         static void Main(string[] args)
         {
-            using (var kernel = new StandardKernel(new Nailhang.Mongodb.Module(),
-                new Nailhang.Processing.CecilModule()))
+            using (var kernel = new StandardKernel(
+                new Nailhang.Mongodb.Module(),
+                new Nailhang.Processing.CecilModule(),
+                new Nailhang.MVoxLease.AgarLease.Module()))
             {
-
                 var builder = new ConfigurationBuilder()
                             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                             .AddEnvironmentVariables();
