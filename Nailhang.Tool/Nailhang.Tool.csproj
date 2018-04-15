@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;net462</TargetFrameworks>
     <AssemblyName>Nailhang.Tool</AssemblyName>
     <OutputType>Exe</OutputType>
-    <PackageId>Nailhang.Tool</PackageId>    
+    <PackageId>Nailhang.Tool</PackageId>
+    <NoWarn>NU1605</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +17,10 @@
     <ProjectReference Include="..\Nailhang.IndexBase\Nailhang.IndexBase.csproj" />
     <ProjectReference Include="..\Nailhang.MVoxLease\Nailhang.MVoxLease.csproj" />
     <ProjectReference Include="..\Nailhang.Processing\Nailhang.Processing.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.8.0" />
   </ItemGroup>
 
   <ItemGroup>
