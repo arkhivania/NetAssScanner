@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using Ninject;
+using MongoDB.Driver;
 
 namespace Nailhang.Mongodb
 {
@@ -42,6 +43,24 @@ namespace Nailhang.Mongodb
                         res.DbName = "nailhang";
 
                     return res;
+                });
+
+            Kernel.Bind<IMongoDatabase>()
+                .ToMethod(q =>
+                {
+                    var mongoConnection = q.Kernel.Get<MongoConnection>();
+
+                    var connectionString = mongoConnection.ConnectionString;
+                    var dbName = mongoConnection.DbName;
+
+                    var mongoParam = Environment
+                        .GetCommandLineArgs()
+                        .FirstOrDefault(w => w.ToLower().StartsWith("-mongo:"));
+                    if (mongoParam != null)
+                        connectionString = mongoParam.Substring("-mongo:".Length);
+
+                    var client = new MongoClient(connectionString);
+                    return client.GetDatabase(dbName);
                 });
 
             Kernel

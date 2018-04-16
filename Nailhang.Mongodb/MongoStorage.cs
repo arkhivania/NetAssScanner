@@ -15,21 +15,8 @@ namespace Nailhang.Mongodb
     {
         readonly IMongoCollection<ModuleEntity> modules;
 
-        readonly string dbName;
-
-        public MongoStorage(MongoConnection mongoConnection)
-        {
-            var connectionString = mongoConnection.ConnectionString;
-            this.dbName = mongoConnection.DbName;
-
-            var mongoParam = Environment
-                .GetCommandLineArgs()
-                .FirstOrDefault(w => w.ToLower().StartsWith("-mongo:"));
-            if(mongoParam != null)
-                connectionString = mongoParam.Substring("-mongo:".Length);
-
-            var client = new MongoClient(connectionString);
-            var database = client.GetDatabase(dbName);
+        public MongoStorage(IMongoDatabase database)
+        {   
             this.modules = database.GetCollection<ModuleEntity>("modules");
         }
 
@@ -41,7 +28,6 @@ namespace Nailhang.Mongodb
                 Id = module.FullName.GenerateGuid(),
                 FullName = module.FullName
             };
-
 
             var filter = Builders<ModuleEntity>.Filter.Where(w => w.Id == mentity.Id);
             var replaceResult = modules.ReplaceOne(filter, mentity, new UpdateOptions { IsUpsert = true });            
