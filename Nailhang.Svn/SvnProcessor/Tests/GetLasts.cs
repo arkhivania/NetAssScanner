@@ -11,7 +11,7 @@ namespace Nailhang.Svn.SvnProcessor.Tests
     class GetLasts
     {
         [Test]
-        [TestCase("https://svn.multivox.ru:8443/svn/dev3", 50, 1251)]
+        [TestCase("https://192.168.0.4:8443/svn/dev3", 50, 1251)]
         public void GetLastsFromStorage(string url, int count, int codePage)
         {
             using (var kernel = new StandardKernel(new Module()))
