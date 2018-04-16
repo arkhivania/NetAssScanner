@@ -8,5 +8,6 @@ namespace Nailhang.Svn.SvnProcessor.Base
     {
         public string Path { get; set; }
         public ChangeType ChangeType { get; set; }
+        public int Revision { get; set; }
     }
 }

@@ -8,5 +8,6 @@ namespace Nailhang.Svn.SvnProcessor.Base
     {
         IEnumerable<Revision> LastRevisions(int count);
         IEnumerable<Change> GetChanges(int revision);
+        string Content(string path, int revision);
     }
 }

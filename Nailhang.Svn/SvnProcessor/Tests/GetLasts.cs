@@ -29,6 +29,24 @@ namespace Nailhang.Svn.SvnProcessor.Tests
         }
 
         [Test]
+        [TestCase("https://192.168.0.4:8443/svn/dev3", "https://192.168.0.4:8443/svn/dev3/MultiVox/Alda.MultiVox.Base/NinjectExtensions/AccurateKernel.cs", 20300)]
+        public void LoadContent(string server, string path, int revision)
+        {
+            using (var kernel = new StandardKernel(new Module()))
+            {
+                kernel.Rebind<Base.Settings>().ToConstant(new Base.Settings
+                {
+                    CodePage = 1251
+                });
+                using (var connection = kernel.Get<Base.ISvn>().Connect(server))
+                {
+                    var content = connection.Content(path, revision);
+                    Assert.Greater(content.Length, 0);
+                }
+            }
+        }
+
+        [Test]
         [TestCase("https://192.168.0.4:8443/svn/dev3", 20303)]
         public void GetChanges(string url, int revision)
         {
@@ -41,6 +59,7 @@ namespace Nailhang.Svn.SvnProcessor.Tests
                 using (var connection = kernel.Get<Base.ISvn>().Connect(url))
                 {
                     var revs = connection.GetChanges(revision).ToArray();
+                    Assert.Greater(revs.Length, 0);
                 }
             }
         }

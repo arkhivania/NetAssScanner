@@ -24,6 +24,12 @@ namespace Nailhang.Svn.SvnProcessor.Processing
                 encoding = Encoding.GetEncoding(settings.CodePage.Value);
         }
 
+        public string Content(string path, int revision)
+        {
+            string output = RunSvn($"cat -r {revision} {path}");
+            return output;
+        }
+
         public void Dispose()
         {
             
@@ -35,7 +41,7 @@ namespace Nailhang.Svn.SvnProcessor.Processing
             var matches = Regex.Matches(output, @"(?<symbol>D|A|M)\s+(?<url>(http(s)://([\w-]+.)+[\w-]+)(/[\w- ./?%&=])?)");
             for(int i = 0; i < matches.Count; ++i)
             {
-                var res = new Base.Change();
+                var res = new Base.Change() { Revision = revision };
                 var m = matches[i];
                 switch(m.Groups["symbol"].Value)
                 {
