@@ -23,6 +23,24 @@ namespace Nailhang.Svn.SvnProcessor.Tests
                 using (var connection = kernel.Get<Base.ISvn>().Connect(url))
                 {
                     var revs = connection.LastRevisions(count).ToArray();
+                    Assert.Greater(revs.Length, 0);
+                }
+            }
+        }
+
+        [Test]
+        [TestCase("https://192.168.0.4:8443/svn/dev3", 20303)]
+        public void GetChanges(string url, int revision)
+        {
+            using (var kernel = new StandardKernel(new Module()))
+            {
+                kernel.Rebind<Base.Settings>().ToConstant(new Base.Settings
+                {
+                    CodePage = 1251
+                });
+                using (var connection = kernel.Get<Base.ISvn>().Connect(url))
+                {
+                    var revs = connection.GetChanges(revision).ToArray();
                 }
             }
         }
