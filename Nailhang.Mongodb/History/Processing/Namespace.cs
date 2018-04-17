@@ -8,6 +8,6 @@ namespace Nailhang.Mongodb.History.Processing
     public class Namespace
     {
         public string Id { get; set; }
-        public List<Revision> Revisions { get; set; } = new List<Revision>();
+        public Revision[] Revisions { get; set; } = new Revision[] { };
     }
 }

@@ -22,12 +22,6 @@ namespace Nailhang.Mongodb
                 .Bind<MongoConnection>()
                 .ToMethod(w =>
                 {
-                    //var builder = new ConfigurationBuilder()
-                    //            .SetBasePath(Directory.GetCurrentDirectory())
-                    //            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-
-                    //var config = builder.Build();
-
                     var config = w.Kernel.Get<IConfiguration>();
                     var section = config.GetSection("Mongo");
                     var res = new MongoConnection
@@ -62,6 +56,9 @@ namespace Nailhang.Mongodb
                     var client = new MongoClient(connectionString);
                     return client.GetDatabase(dbName);
                 });
+
+            Kernel.Bind<Nailhang.IndexBase.History.Base.IHistoryStorage>()
+                .To<History.Processing.Storage>();
 
             Kernel
                 .Bind<Nailhang.IndexBase.Storage.IModulesStorage>()

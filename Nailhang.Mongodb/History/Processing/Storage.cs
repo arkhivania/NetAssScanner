@@ -38,8 +38,34 @@ namespace Nailhang.Mongodb.History.Processing
         }
 
         public void StoreChangeToNamespace(string @namespace, Revision revision)
-        {           
-            
+        {
+            var cap_n = @namespace;
+
+            while(true)
+            {
+                var obj = namespaces.AsQueryable()
+                    .FirstOrDefault(w => w.Id == cap_n);
+                if (obj == null)
+                    obj = new Namespace { Id = cap_n };
+
+                if (!obj.Revisions.Any(q => q.Id == revision.Id))
+                {
+                    obj.Revisions = obj.Revisions.Concat(new[] { revision }).ToArray();
+
+                    var filter = Builders<Namespace>.Filter.Where(w => w.Id == cap_n);
+                    var replaceResult = namespaces.ReplaceOne(filter, obj, new UpdateOptions { IsUpsert = true });
+                }
+
+                var name_split = cap_n.Split('.');
+                if (name_split.Length == 1)
+                    break;
+                cap_n = string.Join(".", name_split.Take(name_split.Length - 1));
+            }
+        }
+
+        public void DropHistory()
+        {
+            namespaces.DeleteMany(new BsonDocument());
         }
     }
 }

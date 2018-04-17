@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Nailhang.Svn": {
+      "commandName": "Project",
+      "commandLineArgs": "/reindex"
+    }
+  }
+}
