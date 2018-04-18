@@ -23,6 +23,18 @@ namespace Nailhang.Svn
                             .AddEnvironmentVariables();
             var config = builder.Build();
             
+            string arg(string name)
+            {
+                return (from q in args
+                         where q.StartsWith($"/{name}:")
+                         select q.Substring($"/{name}:".Length)).FirstOrDefault();
+            }
+
+            int? numArg(string argName)
+            {
+                var p = arg(argName);
+                return p != null ? int.Parse(p) : (int?)null;
+            }
 
             using (var kernel = new StandardKernel(
                 new Nailhang.Mongodb.Module(),
@@ -41,33 +53,49 @@ namespace Nailhang.Svn
                     {
                         using (var svnConnection = kernel.Get<SvnProcessor.Base.ISvn>().Connect(rep))
                         {
-                            foreach(var v in svnConnection.LastRevisions(int.MaxValue))
+                            void processChanges(int revision)
                             {
+                                var rev = svnConnection.GetRevision(revision);
+                                Console.WriteLine("Processing revision:" + new { rev.Number, rev.User, rev.UtcDateTime });
+                                
                                 var updated = new HashSet<string>();
-                                Console.WriteLine("Processing revision:" + new { v.Number, v.User, v.UtcDateTime });
-                                foreach (var c in svnConnection.GetChanges(v.Number))
-                                {   
+                                foreach (var c in svnConnection.GetChanges(revision))
+                                {
                                     if (c.Path.EndsWith(".cs", StringComparison.InvariantCultureIgnoreCase))
                                     {
                                         if (c.ChangeType == ChangeType.Added ||
                                             c.ChangeType == ChangeType.Modify)
                                         {
-                                            var content = svnConnection.Content(c.Path, c.Revision);
-                                            var namespace_matches = Regex.Matches(content, @"\bnamespace\s+(?<namespace>(\w+\.)+\w+)");
-                                            for(int i = 0; i < namespace_matches.Count; ++i)
+                                            try
                                             {
-                                                var ns = namespace_matches[i].Groups["namespace"].Value;
-                                                if (!updated.Contains(ns))
+                                                var content = svnConnection.Content(c.Path, c.Revision);
+                                                var namespace_matches = Regex.Matches(content, @"\bnamespace\s+(?<namespace>(\w+\.)+\w+)");
+                                                for (int i = 0; i < namespace_matches.Count; ++i)
                                                 {
-                                                    hs.StoreChangeToNamespace(ns, new IndexBase.History.Base.Revision { UtcDateTime = v.UtcDateTime, Id = v.Number, User = v.User });
-                                                    updated.Add(ns);
+                                                    var ns = namespace_matches[i].Groups["namespace"].Value;
+                                                    if (!updated.Contains(ns))
+                                                    {
+                                                        hs.StoreChangeToNamespace(ns, new IndexBase.History.Base.Revision { UtcDateTime = rev.UtcDateTime, Id = rev.Number, User = rev.User });
+                                                        updated.Add(ns);
+                                                    }
                                                 }
+                                            }catch(Exception e)
+                                            {
+                                                Console.WriteLine(e);
                                             }
                                         }
                                     }
                                 }
+                            }                            
 
-                            }
+                            var revisionParameter = numArg("revision");
+                            if(revisionParameter != null)
+                                processChanges(revisionParameter.Value);
+                            else
+                                foreach(var v in svnConnection.LastRevisions(int.MaxValue))
+                                {   
+                                    processChanges(v.Number);
+                                }
                         }
                     }
                 }
