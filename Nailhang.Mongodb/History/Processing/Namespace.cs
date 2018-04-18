@@ -1,13 +1,17 @@
-﻿using Nailhang.IndexBase.History.Base;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
+using Nailhang.IndexBase.History.Base;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Nailhang.Mongodb.History.Processing
 {
-    public class Namespace
+    class Namespace
     {
         public string Id { get; set; }
-        public Revision[] Revisions { get; set; } = new Revision[] { };
+
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
+        public Dictionary<string, ChangeInfo> ChangeInfos { get; set; } = new Dictionary<string, ChangeInfo>();
     }
 }

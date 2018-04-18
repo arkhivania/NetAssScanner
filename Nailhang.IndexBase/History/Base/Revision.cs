@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Nailhang.IndexBase.History.Base
 {
-    public class Revision
+    public struct Revision
     {
         public int Id { get; set; }
         public string User { get; set; }

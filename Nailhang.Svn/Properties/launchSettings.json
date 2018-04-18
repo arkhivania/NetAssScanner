@@ -2,7 +2,7 @@
   "profiles": {
     "Nailhang.Svn": {
       "commandName": "Project",
-      "commandLineArgs": "/reindex /revision:20350"
+      "commandLineArgs": "/reindex /dropHistory /count:10"
     }
   }
 }

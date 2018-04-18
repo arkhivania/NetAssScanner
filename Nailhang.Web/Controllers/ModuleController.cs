@@ -35,7 +35,8 @@ namespace Nailhang.Web.Controllers
             var changes = historyStorage.GetChanges(GetNamespace(module));
 
             var groups = from c in changes
-                         let m = new Models.MonthPeriod { Year = c.UtcDateTime.Year, Month = c.UtcDateTime.Month }
+                         where (c.Modification & Modification.Modification) != 0
+                         let m = new Models.MonthPeriod { Year = c.Revision.UtcDateTime.Year, Month = c.Revision.UtcDateTime.Month }
                          orderby m.Year * 12 + m.Month
                          group c by m;            
 
@@ -51,7 +52,7 @@ namespace Nailhang.Web.Controllers
                           select new Models.ChangesRow
                           {
                               Month = g.Key,
-                              Users = g.Select(q => q.User).Distinct().ToArray(),
+                              Users = g.Select(q => q.Revision.User).Distinct().ToArray(),
                               Count = g.Count()
                           }
             });

@@ -22,14 +22,14 @@ namespace Nailhang.Mongodb.History.Tests
                 var hs = kernel.Get<IHistoryStorage>();
 
                 hs.DropHistory();
-                hs.StoreChangeToNamespace("AA.BB", new Revision { UtcDateTime = DateTime.Now, Id = 0, User = "test_user" });
-                hs.StoreChangeToNamespace("AA.BB", new Revision { UtcDateTime = DateTime.Now, Id = 1, User = "test_user" });
-                hs.StoreChangeToNamespace("QQ.BB", new Revision { UtcDateTime = DateTime.Now, Id = 1, User = "test_user" });
+                hs.StoreChangeToNamespace("AA.BB", new Change { Revision = new Revision { UtcDateTime = DateTime.Now, Id = 0, User = "test_user" } });
+                hs.StoreChangeToNamespace("AA.BB", new Change { Revision = new Revision { UtcDateTime = DateTime.Now, Id = 1, User = "test_user" } });
+                hs.StoreChangeToNamespace("QQ.BB", new Change { Revision = new Revision { UtcDateTime = DateTime.Now, Id = 1, User = "test_user" } });
 
                 {
                     var changes = hs.GetChanges("AA").ToArray();
                     Assert.That(changes.Length == 2);
-                    Assert.That(changes.Select(q => q.Id).Distinct().Count() == 2);
+                    Assert.That(changes.Select(q => q.Revision.Id).Distinct().Count() == 2);
                 }
 
                 {

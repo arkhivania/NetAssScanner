@@ -71,29 +71,14 @@ namespace Nailhang.Svn.SvnProcessor.Processing
 
         public IEnumerable<Revision> LastRevisions(int count)
         {
-            var psStatInfo = new ProcessStartInfo
+            Console.WriteLine("quering log messages");
+            var output = RunSvn($"log {url} -l {count}");
+            var matches = Regex.Matches(output, @"r(?<revision>\d*)\s.\s(?<user>\w*)\s.\s(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})\s(?<hour>\d{2}):(?<minutes>\d{2}):(?<seconds>\d{2})\s\+(?<utc>\d{4})");
+            Console.WriteLine($"quering complete: {matches.Count} revisions");
+            for (int index = 0; index < matches.Count; ++index)
             {
-                FileName = "svn",
-                Arguments = $"log {url} -l {count}",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true,
-                StandardOutputEncoding = encoding
-            };
-
-            var svnLog = Process.Start(psStatInfo);
-
-            var stream = svnLog.StandardOutput;
-
-            while (!stream.EndOfStream)
-            {
-                var line = stream.ReadLine();
-                var matches = Regex.Matches(line, @"r(?<revision>\d*)\s.\s(?<user>\w*)\s.\s(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})\s(?<hour>\d{2}):(?<minutes>\d{2}):(?<seconds>\d{2})\s\+(?<utc>\d{4})");
-                for (int index = 0; index < matches.Count; ++index)
-                {
-                    var m = matches[index];
-                    yield return RevisionMatch(m);
-                }
+                var m = matches[index];
+                yield return RevisionMatch(m);
             }
         }
 
