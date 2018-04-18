@@ -26,7 +26,7 @@ namespace Nailhang.Svn.SvnProcessor.Processing
 
         public string Content(string path, int revision)
         {
-            string output = RunSvn($"cat -r {revision} {path}");
+            string output = RunSvn($"cat -r {revision} {path}@{revision}");
             return output;
         }
 
