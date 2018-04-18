@@ -12,6 +12,7 @@ using Ninject;
 using System.IO;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
+using Nailhang.IndexBase.History.Base;
 
 namespace Nailhang.Web
 {
@@ -45,6 +46,7 @@ namespace Nailhang.Web
 
             
             services.AddTransient<IModulesStorage>(sp => rok.Get<IModulesStorage>());
+            services.AddTransient<IHistoryStorage>(sp => rok.Get<IHistoryStorage>());
             services.AddTransient<MD5Cache.IMD5Cache>(sp => rok.Get<MD5Cache.IMD5Cache>());
         }
 
