@@ -3,7 +3,7 @@
 
     [Service]
     WorkingDirectory=/home/arkhivania/dev/netass/NetAssScanner/Nailhang.Svn/bin/Release/netcoreapp2.0/publish/
-    ExecStart=/usr/bin/dotnet /home/arkhivania/dev/netass/NetAssScanner/Nailhang.Svn/bin/Release/netcoreapp2.0/publish/Nailhang.Svn.dll
+    ExecStart=/usr/bin/dotnet /home/arkhivania/dev/netass/NetAssScanner/Nailhang.Svn/bin/Release/netcoreapp2.0/publish/Nailhang.Svn.dll /reindex /count:20 /service
     Restart=always
     RestartSec=10                                          
     SyslogIdentifier=nailhang_svn_service
