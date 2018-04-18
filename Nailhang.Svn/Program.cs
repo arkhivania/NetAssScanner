@@ -9,12 +9,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Nailhang.Svn
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -51,64 +52,72 @@ namespace Nailhang.Svn
                 if (haveArg("dropHistory"))
                     hs.DropHistory();
 
-                if (args.Contains("/reindex", StringComparer.InvariantCultureIgnoreCase))
+                while (true)
                 {
-                    var sec = config.GetSection("repositories");
-
-                    foreach (var rep in sec.Get<string[]>())
+                    if (args.Contains("/reindex", StringComparer.InvariantCultureIgnoreCase))
                     {
-                        using (var svnConnection = kernel.Get<SvnProcessor.Base.ISvn>().Connect(rep))
+                        var sec = config.GetSection("repositories");
+
+                        foreach (var rep in sec.Get<string[]>())
                         {
-                            void processChanges(int revision)
+                            using (var svnConnection = kernel.Get<SvnProcessor.Base.ISvn>().Connect(rep))
                             {
-                                var rev = svnConnection.GetRevision(revision);
-                                Console.WriteLine("Processing revision:" + new { rev.Number, rev.User, rev.UtcDateTime });
-
-                                foreach (var c in svnConnection.GetChanges(revision))
+                                void processChanges(int revision)
                                 {
-                                    if (c.Path.EndsWith(".cs", StringComparison.InvariantCultureIgnoreCase))
-                                    {
-                                        if (c.ChangeType == ChangeType.Added ||
-                                            c.ChangeType == ChangeType.Modify)
-                                        {
-                                            var modification = c.ChangeType == ChangeType.Modify ? Modification.Modification : Modification.Add;
+                                    var rev = svnConnection.GetRevision(revision);
+                                    Console.WriteLine("Processing revision:" + new { rev.Number, rev.User, rev.UtcDateTime });
 
-                                            try
+                                    foreach (var c in svnConnection.GetChanges(revision))
+                                    {
+                                        if (c.Path.EndsWith(".cs", StringComparison.InvariantCultureIgnoreCase))
+                                        {
+                                            if (c.ChangeType == ChangeType.Added ||
+                                                c.ChangeType == ChangeType.Modify)
                                             {
-                                                var content = svnConnection.Content(c.Path, c.Revision);
-                                                var namespace_matches = Regex.Matches(content, @"\bnamespace\s+(?<namespace>(\w+\.)+\w+)");
-                                                for (int i = 0; i < namespace_matches.Count; ++i)
+                                                var modification = c.ChangeType == ChangeType.Modify ? Modification.Modification : Modification.Add;
+
+                                                try
                                                 {
-                                                    var ns = namespace_matches[i].Groups["namespace"].Value;
-                                                    hs.StoreChangeToNamespace(ns, new IndexBase.History.Base.Change
+                                                    var content = svnConnection.Content(c.Path, c.Revision);
+                                                    var namespace_matches = Regex.Matches(content, @"\bnamespace\s+(?<namespace>(\w+\.)+\w+)");
+                                                    for (int i = 0; i < namespace_matches.Count; ++i)
                                                     {
-                                                        Revision = new IndexBase.History.Base.Revision { UtcDateTime = rev.UtcDateTime, Id = rev.Number, User = rev.User },
-                                                        Modification = modification
-                                                    });
+                                                        var ns = namespace_matches[i].Groups["namespace"].Value;
+                                                        hs.StoreChangeToNamespace(ns, new IndexBase.History.Base.Change
+                                                        {
+                                                            Revision = new IndexBase.History.Base.Revision { UtcDateTime = rev.UtcDateTime, Id = rev.Number, User = rev.User },
+                                                            Modification = modification
+                                                        });
+                                                    }
                                                 }
-                                            }
-                                            catch (Exception e)
-                                            {
-                                                Console.WriteLine(e);
+                                                catch (Exception e)
+                                                {
+                                                    Console.WriteLine(e);
+                                                }
                                             }
                                         }
                                     }
                                 }
+
+                                var count = numArg("count");
+                                var revisionParameter = numArg("revision");
+                                if (revisionParameter != null)
+                                    processChanges(revisionParameter.Value);
+                                else
+                                    foreach (var v in svnConnection.LastRevisions(count ?? int.MaxValue))
+                                    {
+                                        processChanges(v.Number);
+                                    }
                             }
-
-                            var count = numArg("count");
-                            
-
-                            var revisionParameter = numArg("revision");
-                            if (revisionParameter != null)
-                                processChanges(revisionParameter.Value);
-                            else
-                                foreach (var v in svnConnection.LastRevisions(count ?? int.MaxValue))
-                                {
-                                    processChanges(v.Number);
-                                }
                         }
                     }
+
+                    if (!haveArg("service"))
+                        break;
+
+                    var pollPeriodSec = config.GetSection("pollingPeriodSeconds").Get<int>();
+
+                    await Task.Delay(TimeSpan.FromSeconds(pollPeriodSec));
                 }
             }
         }

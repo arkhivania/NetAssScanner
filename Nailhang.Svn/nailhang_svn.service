@@ -1,0 +1,13 @@
+[Unit]
+    Description=Nailhang SVN
+
+    [Service]
+    WorkingDirectory=/home/arkhivania/dev/netass/NetAssScanner/Nailhang.Svn/bin/Release/netcoreapp2.0/publish/
+    ExecStart=/usr/bin/dotnet /home/arkhivania/dev/netass/NetAssScanner/Nailhang.Svn/bin/Release/netcoreapp2.0/publish/Nailhang.Svn.dll
+    Restart=always
+    RestartSec=10                                          
+    SyslogIdentifier=nailhang_svn_service
+    User=arkhivania
+
+    [Install]
+    WantedBy=multi-user.target
