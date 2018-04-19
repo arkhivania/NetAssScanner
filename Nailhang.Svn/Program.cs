@@ -79,9 +79,7 @@ namespace Nailhang.Svn
                     return p != null ? int.Parse(p) : (int?)null;
                 }
 
-                using (var kernel = new StandardKernel(
-                    new Nailhang.Mongodb.Module(),
-                    new SvnProcessor.Module()))
+                using (var kernel = new StandardKernel(new SvnProcessor.Module()))
                 {
                     kernel.Bind<IConfiguration>().ToConstant(config);
 
