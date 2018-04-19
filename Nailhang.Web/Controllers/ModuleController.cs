@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Nailhang.IndexBase.History.Base;
 using Nailhang.IndexBase.Storage;
 using Nailhang.Services.Interfaces;
+using Nailhang.Services.Interfaces.History;
 using Newtonsoft.Json;
 using Orleans;
 using System;

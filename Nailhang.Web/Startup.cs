@@ -12,7 +12,6 @@ using Ninject;
 using System.IO;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
-using Nailhang.IndexBase.History.Base;
 using Orleans;
 using Orleans.Runtime;
 

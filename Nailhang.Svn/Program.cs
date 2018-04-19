@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Binder;
 using Microsoft.Extensions.Logging;
-using Nailhang.IndexBase.History.Base;
-using Nailhang.Services.Interfaces;
+using Nailhang.Services.Interfaces.History;
 using Nailhang.Svn.SvnProcessor.Base;
 using Ninject;
 using Orleans;
@@ -117,9 +116,9 @@ namespace Nailhang.Svn
 
                                                             var nsGrain = client.GetGrain<IModulesHistory>(ns);
 
-                                                            await nsGrain.StoreChangeToNamespace(new IndexBase.History.Base.Change
+                                                            await nsGrain.StoreChangeToNamespace(new Services.Interfaces.History.Change
                                                             {
-                                                                Revision = new IndexBase.History.Base.Revision { UtcDateTime = rev.UtcDateTime, Id = rev.Number, User = rev.User },
+                                                                Revision = new Services.Interfaces.History.Revision { UtcDateTime = rev.UtcDateTime, Id = rev.Number, User = rev.User },
                                                                 Modification = modification
                                                             });
                                                         }

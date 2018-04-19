@@ -8,6 +8,6 @@
     <PackageReference Include="Microsoft.Orleans.OrleansCodeGenerator.Build" Version="2.0.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Nailhang.IndexBase\Nailhang.IndexBase.csproj" />
+    
   </ItemGroup>
 </Project>
