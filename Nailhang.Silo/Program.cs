@@ -6,6 +6,7 @@ using Orleans.Configuration;
 using Orleans.Hosting;
 using Orleans.Runtime;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,8 +29,16 @@ namespace Nailhang.Silo
             {
                 var host = await StartSilo();
 
-                Console.WriteLine("Press Enter to terminate...");
-                Console.ReadLine();
+                if (args.Contains("/service", StringComparer.InvariantCultureIgnoreCase))
+                {
+                    while (true)
+                        await Task.Delay(TimeSpan.FromSeconds(10));
+                }
+                else
+                {
+                    Console.WriteLine("Press Enter to terminate...");
+                    Console.ReadLine();
+                }
 
                 await host.StopAsync();
                 return 0;
