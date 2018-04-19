@@ -13,13 +13,49 @@ using System.IO;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
 using Nailhang.IndexBase.History.Base;
+using Orleans;
+using Orleans.Runtime;
 
 namespace Nailhang.Web
 {
     public class Startup
     {
+        readonly IClusterClient clusterClient;
+
+        private static async Task<IClusterClient> StartClientWithRetries(int initializeAttemptsBeforeFailing = 5)
+        {
+            int attempt = 0;
+            IClusterClient client;
+            while (true)
+            {
+                try
+                {
+                    client = new ClientBuilder()
+                        .UseLocalhostClustering()
+                        .ConfigureLogging(logging => logging.AddConsole())
+                        .Build();
+
+                    await client.Connect();
+                    Console.WriteLine("Client successfully connect to silo host");
+                    break;
+                }
+                catch (SiloUnavailableException)
+                {
+                    attempt++;
+                    Console.WriteLine($"Attempt {attempt} of {initializeAttemptsBeforeFailing} failed to initialize the Orleans client.");
+                    if (attempt > initializeAttemptsBeforeFailing)
+                        throw;
+                    await Task.Delay(TimeSpan.FromSeconds(4));
+                }
+            }
+
+            return client;
+        }        
+
         public Startup(IHostingEnvironment env)
         {
+            clusterClient = StartClientWithRetries().Result;
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -46,7 +82,7 @@ namespace Nailhang.Web
 
             
             services.AddTransient<IModulesStorage>(sp => rok.Get<IModulesStorage>());
-            services.AddTransient<IHistoryStorage>(sp => rok.Get<IHistoryStorage>());
+            services.AddSingleton<IGrainFactory>(clusterClient);
             services.AddTransient<MD5Cache.IMD5Cache>(sp => rok.Get<MD5Cache.IMD5Cache>());
         }
 

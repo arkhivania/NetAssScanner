@@ -1,0 +1,13 @@
+[Unit]
+    Description=Nailhang Silo
+
+    [Service]
+    WorkingDirectory=/home/arkhivania/dev/netass/NetAssScanner/Nailhang.Silo/bin/Release/netcoreapp2.0/publish/
+    ExecStart=/usr/bin/dotnet /home/arkhivania/dev/netass/NetAssScanner/Nailhang.Silo/bin/Release/netcoreapp2.0/publish/Nailhang.Silo.dll
+    Restart=always
+    RestartSec=10                                          
+    SyslogIdentifier=nailhang_silo_service
+    User=arkhivania
+
+    [Install]
+    WantedBy=multi-user.target

@@ -57,9 +57,6 @@ namespace Nailhang.Mongodb
                     return client.GetDatabase(dbName);
                 });
 
-            Kernel.Bind<Nailhang.IndexBase.History.Base.IHistoryStorage>()
-                .To<History.Processing.Storage>();
-
             Kernel
                 .Bind<Nailhang.IndexBase.Storage.IModulesStorage>()
                 .To<MongoStorage>();

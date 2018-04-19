@@ -2,23 +2,26 @@
 using Microsoft.AspNetCore.Mvc;
 using Nailhang.IndexBase.History.Base;
 using Nailhang.IndexBase.Storage;
+using Nailhang.Services.Interfaces;
 using Newtonsoft.Json;
+using Orleans;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Nailhang.Web.Controllers
 {
     public class ModuleController : Controller
     {
         private readonly IModulesStorage modulesStorage;
-        private readonly IHistoryStorage historyStorage;
+        private readonly IGrainFactory grainFactory;
 
-        public ModuleController(IModulesStorage modulesStorage, IHistoryStorage historyStorage)
+        public ModuleController(IModulesStorage modulesStorage, IGrainFactory grainFactory)
         {
             this.modulesStorage = modulesStorage;
-            this.historyStorage = historyStorage;
+            this.grainFactory = grainFactory;
         }        
 
         string GetNamespace(string module)
@@ -30,9 +33,15 @@ namespace Nailhang.Web.Controllers
             return nameSp;
         }
 
-        public ActionResult Index(string module, Models.DisplaySettings displaySettings, bool formUpdate = false)
-        {   
-            var changes = historyStorage.GetChanges(GetNamespace(module));
+        public async Task<ActionResult> Index(string module, Models.DisplaySettings displaySettings, bool formUpdate = false)
+        {
+            var ns = GetNamespace(module);
+            var changes = new Change[] { };
+            if (ns != null)
+            {
+                var historyGrain = grainFactory.GetGrain<IModulesHistory>(ns);
+                changes = await historyGrain.GetChanges();
+            }            
 
             var groups = from c in changes
                          where (c.Modification & Modification.Modification) != 0

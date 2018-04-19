@@ -13,7 +13,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Nailhang.IndexBase\Nailhang.IndexBase.csproj" />
     <ProjectReference Include="..\Nailhang.Mongodb\Nailhang.Mongodb.csproj" />
+    <ProjectReference Include="..\Nailhang.Services.Interfaces\Nailhang.Services.Interfaces.csproj" />
     <ProjectReference Include="..\Nailhang\Nailhang.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Orleans.Core" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
