@@ -92,7 +92,7 @@ namespace Nailhang.Svn
                             {
                                 using (var svnConnection = kernel.Get<SvnProcessor.Base.ISvn>().Connect(rep))
                                 {
-                                    async void processChanges(int revision)
+                                    async Task processChanges(int revision)
                                     {
                                         var rev = svnConnection.GetRevision(revision);
                                         Console.WriteLine("Processing revision:" + new { rev.Number, rev.User, rev.UtcDateTime });
@@ -135,10 +135,10 @@ namespace Nailhang.Svn
                                     var count = numArg("count");
                                     var revisionParameter = numArg("revision");
                                     if (revisionParameter != null)
-                                        processChanges(revisionParameter.Value);
+                                        await processChanges(revisionParameter.Value);
                                     else
                                         foreach (var v in svnConnection.LastRevisions(count ?? int.MaxValue))
-                                            processChanges(v.Number);
+                                            await processChanges(v.Number);
                                 }
                             }
                         }
