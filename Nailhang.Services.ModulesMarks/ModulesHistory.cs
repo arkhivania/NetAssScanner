@@ -15,47 +15,60 @@ namespace Nailhang.Services.ModulesMarks
 {
     class ModuleState
     {
-        [LiteDB.BsonId]
-        public string Namespace { get; set; }
-
-        public Dictionary<int, Change> Changes { get; set; } = new Dictionary<int, Change>();
+        public Dictionary<int, Change> Changes { get; } = new Dictionary<int, Change>();
         public int SVersion { get; set; }
     }
 
-    class ModulesHistory : Orleans.Grain, IModulesHistory
+    [StorageProvider(ProviderName = "GlobalDB")]
+    class ModulesHistory : Orleans.Grain<ModuleState>, IModulesHistory
     {
         const int STOREVERSION = 2;
 
         private readonly IGrainFactory grainFactory;
-        private readonly LiteDB.LiteDatabase liteDatabase;
         private readonly ILogger<ModulesHistory> logger;
-        ModuleState state = new ModuleState();
 
-        public ModulesHistory(IGrainFactory grainFactory, 
-            LiteDB.LiteDatabase liteDatabase, ILogger<ModulesHistory> logger)
+        public ModulesHistory(IGrainFactory grainFactory, ILogger<ModulesHistory> logger)
         {
             this.grainFactory = grainFactory;
-            this.liteDatabase = liteDatabase;
             this.logger = logger;
+        }
+
+        protected override async Task ReadStateAsync()
+        {
+            try
+            {
+                await base.ReadStateAsync();
+                if (State.SVersion < STOREVERSION)
+                    State = new ModuleState();
+            }catch
+            {
+                logger.LogError("error reading state");
+                State = new ModuleState();
+            }            
+        }
+
+        static int strSumm(string num)
+        {
+            int res = 0;
+            for (int i = 0; i < num.Length; i++)
+                res += (int)num[i];
+            return res;
         }
 
         public override async Task OnActivateAsync()
         {
-            var key = this.GetPrimaryKeyString();
-            var c = liteDatabase.GetCollection<ModuleState>();
-            var ms = c.FindOne(q => q.Namespace == key);
-
-            if (ms == null || ms.SVersion < STOREVERSION)
-                state = new ModuleState { Namespace = key };
-            else
-                state = ms;
-            
             await base.OnActivateAsync();
+
+            var nameSpace = this.GetPrimaryKeyString();
+            var index = strSumm(nameSpace) % 100;
+
+            var catalogGrain = grainFactory.GetGrain<INamespacesCatalog>(index);
+            await catalogGrain.RegisterNamespace(nameSpace);
         }
 
         public Task<Change[]> GetChanges()
         {
-            return Task.FromResult(state.Changes.Values.ToArray());
+            return Task.FromResult(State.Changes.Values.ToArray());
         }
 
         string GetNamespace(string name)
@@ -68,25 +81,24 @@ namespace Nailhang.Services.ModulesMarks
 
         public async Task StoreChangeToNamespace(Change change)
         {
-            if (state.Changes.TryGetValue(change.Revision.Id, out Change v))
+            if (State.Changes.TryGetValue(change.Revision.Id, out Change v))
             {
                 if ((v.Modification & change.Modification) != 0)
                     return;
 
                 v.Modification = v.Modification | change.Modification;
-                state.Changes[change.Revision.Id] = v;
+                State.Changes[change.Revision.Id] = v;
             }
             else
-                state.Changes.Add(change.Revision.Id, change);
+                State.Changes.Add(change.Revision.Id, change);
 
-            var parent = GetNamespace(this.GetGrainIdentity().PrimaryKeyString);
+            var parent = GetNamespace(this.GetPrimaryKeyString());
             if (parent != null)
                 await grainFactory.GetGrain<IModulesHistory>(parent).StoreChangeToNamespace(change);
 
-            state.SVersion = STOREVERSION;
-            var c = liteDatabase.GetCollection<ModuleState>();
-            var ms = c.Upsert(state);
-            logger.LogInformation($"{state.Namespace} stored");
+            State.SVersion = STOREVERSION;
+            await WriteStateAsync();
+            logger.LogInformation($"{this.GetPrimaryKeyString()} stored");
         }
     }
 }

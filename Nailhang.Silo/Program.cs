@@ -53,7 +53,6 @@ namespace Nailhang.Silo
         private static async Task<ISiloHost> StartSilo()
         {
             var mongoCS = GetConfig()["MongoConnectionString"];
-            var liteDatabase = new LiteDB.LiteDatabase("litedb.db");
 
             var builder = new SiloHostBuilder()
                 .UseMongoDBClustering(options =>
@@ -64,12 +63,11 @@ namespace Nailhang.Silo
                 {
                     options.ConnectionString = mongoCS;
                 })
-                .AddMongoDBGrainStorage("ModulesStoreProvider", options =>
+                .AddMongoDBGrainStorage("GlobalDB", options =>
                 {
                     options.ConnectionString = mongoCS;
                 })
                 .Configure<ClusterOptions>(options => options.ClusterId = "cluster_machine_1")
-                .ConfigureServices(w => w.AddSingleton(liteDatabase))
                 .AddStartupTask(InitWork)
                 .UseLocalhostClustering()
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
