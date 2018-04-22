@@ -26,6 +26,8 @@ namespace Nailhang.Services.ModulesMarks
 
         private readonly IGrainFactory grainFactory;
         private readonly ILogger<ModulesHistory> logger;
+        bool changed = false;
+        IDisposable saveTimer;
 
         public ModulesHistory(IGrainFactory grainFactory, ILogger<ModulesHistory> logger)
         {
@@ -62,8 +64,13 @@ namespace Nailhang.Services.ModulesMarks
 
         public override async Task OnDeactivateAsync()
         {
-            await WriteStateAsync();
-            logger.LogInformation($"{this.GetPrimaryKeyString()} stored");
+            if (changed)
+            {
+                await WriteStateAsync();
+                logger.LogInformation($"{this.GetPrimaryKeyString()} stored on deactivation");
+                changed = false;
+            }
+            
             await base.OnDeactivateAsync();
         }
 
@@ -80,11 +87,28 @@ namespace Nailhang.Services.ModulesMarks
             else
                 State.Changes.Add(change.Revision.Id, change);
 
+            changed = true;
+            SaveTimerRun();
+
             var parent = GetNamespace(this.GetPrimaryKeyString());
             if (parent != null)
                 await grainFactory.GetGrain<IModulesHistory>(parent).StoreChangeToNamespace(change);
 
-            State.SVersion = STOREVERSION;                        
+            State.SVersion = STOREVERSION;
+        }
+
+        private void SaveTimerRun()
+        {
+            if (saveTimer == null)
+                saveTimer = this.RegisterTimer(async a =>
+                {
+                    await WriteStateAsync();
+                    changed = false;
+                    saveTimer.Dispose();
+                    saveTimer = null;
+
+                    logger.LogInformation($"{this.GetPrimaryKeyString()} stored");
+                }, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
         }
 
         public async Task Delete()

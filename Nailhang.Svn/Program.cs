@@ -29,7 +29,7 @@ namespace Nailhang.Svn
                 {
                     client = new ClientBuilder()
                         .UseLocalhostClustering()
-                        .ConfigureLogging(logging => logging.AddConsole())
+                        //.ConfigureLogging(logging => logging.AddConsole())
                         .Build();
 
                     await client.Connect();

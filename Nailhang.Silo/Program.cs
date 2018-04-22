@@ -8,6 +8,7 @@ using Orleans.Runtime;
 using System;
 using System.Linq;
 using System.Net;
+using System.Runtime.Loader;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,15 +24,29 @@ namespace Nailhang.Silo
             return builder.Build();
         }
 
+        static bool needed = true;
+
         public static async Task<int> Main(string[] args)
         {
             try
             {
+                var ended = new ManualResetEventSlim();
+
+                AssemblyLoadContext.Default.Unloading += ctx =>
+                {
+                    System.Console.WriteLine("Unloding fired");
+                    needed = false;
+
+                    System.Console.WriteLine("Waiting for completion");
+                    ended.Wait();
+                };
+
+
                 var host = await StartSilo();
 
                 if (args.Contains("/service", StringComparer.InvariantCultureIgnoreCase))
                 {
-                    while (true)
+                    while (needed)
                         await Task.Delay(TimeSpan.FromSeconds(10));
                 }
                 else
@@ -41,6 +56,7 @@ namespace Nailhang.Silo
                 }
 
                 await host.StopAsync();
+                ended.Set();
                 return 0;
             }
             catch (Exception ex)
