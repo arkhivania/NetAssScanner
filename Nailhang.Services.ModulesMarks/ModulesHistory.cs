@@ -100,5 +100,11 @@ namespace Nailhang.Services.ModulesMarks
             await WriteStateAsync();
             logger.LogInformation($"{this.GetPrimaryKeyString()} stored");
         }
+
+        public async Task Delete()
+        {
+            State.Changes.Clear();
+            await WriteStateAsync();
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace Nailhang.Services.Interfaces.History
     {
         Task<Change[]> GetChanges();
         Task StoreChangeToNamespace(Change change);
+        Task Delete();
     }
 }

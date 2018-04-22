@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Binder;
 using Microsoft.Extensions.Logging;
+using Nailhang.Services.Interfaces;
 using Nailhang.Services.Interfaces.History;
 using Nailhang.Svn.SvnProcessor.Base;
 using Ninject;
@@ -137,10 +138,39 @@ namespace Nailhang.Svn
                                     if (revisionParameter != null)
                                         await processChanges(revisionParameter.Value);
                                     else
-                                        foreach (var v in svnConnection.LastRevisions(count ?? int.MaxValue))
-                                            await processChanges(v.Number);
+                                    {
+                                        var revisions = svnConnection.LastRevisions(count ?? int.MaxValue);
+                                        var tasks = revisions.Select(async v => processChanges(v.Number));
+                                        await Task.WhenAll(tasks);
+                                    }
+
+                                    
                                 }
                             }
+                        }else if(args.Contains("/list", StringComparer.InvariantCultureIgnoreCase))
+                        {
+                            var list = new List<string>();
+                            foreach (var ci in Enumerable.Range(0, 100))
+                                foreach (var r in await client.GetGrain<INamespacesCatalog>(ci).GetNamespaces())
+                                    list.Add(r);
+
+                            foreach (var r in list.OrderBy(q => q))
+                                Console.WriteLine(r);
+                            Console.WriteLine($"{list.Count} namespaces found");
+                        }else if(args.Contains("/drop", StringComparer.InvariantCultureIgnoreCase))
+                        {
+                            int count = 0;
+                            foreach (var ci in Enumerable.Range(0, 100))
+                            {
+                                var catalog = client.GetGrain<INamespacesCatalog>(ci);
+                                foreach (var r in await catalog.GetNamespaces())
+                                {
+                                    await catalog.RemoveNamespace(r);
+                                    await client.GetGrain<IModulesHistory>(r).Delete();
+                                    count++;
+                                }
+                            }
+                            Console.Write($"{count} namespaces droped");
                         }
 
                         if (!haveArg("service"))

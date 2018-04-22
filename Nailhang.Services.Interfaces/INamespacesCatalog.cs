@@ -9,5 +9,7 @@ namespace Nailhang.Services.Interfaces
     public interface INamespacesCatalog : IGrainWithIntegerKey
     {
         Task RegisterNamespace(string @namespace);
+        Task RemoveNamespace(string @namespace);
+        Task<string[]> GetNamespaces();
     }
 }
