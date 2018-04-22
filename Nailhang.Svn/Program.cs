@@ -114,9 +114,8 @@ namespace Nailhang.Svn
                                                         for (int i = 0; i < namespace_matches.Count; ++i)
                                                         {
                                                             var ns = namespace_matches[i].Groups["namespace"].Value;
-
-                                                            var nsGrain = client.GetGrain<IModulesHistory>(ns);
-
+                                                            
+                                                            var nsGrain = await client.GetGrain<Services.Interfaces.INamespaces>(0).GetNamespace(ns);
                                                             await nsGrain.StoreChangeToNamespace(new Services.Interfaces.History.Change
                                                             {
                                                                 Revision = new Services.Interfaces.History.Revision { UtcDateTime = rev.UtcDateTime, Id = rev.Number, User = rev.User },

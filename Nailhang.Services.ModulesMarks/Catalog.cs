@@ -22,6 +22,11 @@ namespace Nailhang.Services.ModulesMarks
             return Task.FromResult(State.Namespaces.ToArray());
         }
 
+        public override Task OnActivateAsync()
+        {
+            return base.OnActivateAsync();
+        }
+
         public async Task RegisterNamespace(string @namespace)
         {
             if (State.Namespaces.Add(@namespace))

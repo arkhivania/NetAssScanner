@@ -47,25 +47,6 @@ namespace Nailhang.Services.ModulesMarks
             }            
         }
 
-        static int strSumm(string num)
-        {
-            int res = 0;
-            for (int i = 0; i < num.Length; i++)
-                res += (int)num[i];
-            return res;
-        }
-
-        public override async Task OnActivateAsync()
-        {
-            await base.OnActivateAsync();
-
-            var nameSpace = this.GetPrimaryKeyString();
-            var index = strSumm(nameSpace) % 100;
-
-            var catalogGrain = grainFactory.GetGrain<INamespacesCatalog>(index);
-            await catalogGrain.RegisterNamespace(nameSpace);
-        }
-
         public Task<Change[]> GetChanges()
         {
             return Task.FromResult(State.Changes.Values.ToArray());
@@ -77,6 +58,13 @@ namespace Nailhang.Services.ModulesMarks
             if (name_split.Length == 1)
                 return null;
             return string.Join(".", name_split.Take(name_split.Length - 1));
+        }
+
+        public override async Task OnDeactivateAsync()
+        {
+            await WriteStateAsync();
+            logger.LogInformation($"{this.GetPrimaryKeyString()} stored");
+            await base.OnDeactivateAsync();
         }
 
         public async Task StoreChangeToNamespace(Change change)
@@ -96,15 +84,13 @@ namespace Nailhang.Services.ModulesMarks
             if (parent != null)
                 await grainFactory.GetGrain<IModulesHistory>(parent).StoreChangeToNamespace(change);
 
-            State.SVersion = STOREVERSION;
-            await WriteStateAsync();
-            logger.LogInformation($"{this.GetPrimaryKeyString()} stored");
+            State.SVersion = STOREVERSION;                        
         }
 
         public async Task Delete()
         {
             State.Changes.Clear();
-            await WriteStateAsync();
+            await ClearStateAsync();
         }
     }
 }
