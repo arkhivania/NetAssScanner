@@ -140,7 +140,7 @@ namespace Nailhang.Svn
                                     else
                                     {
                                         var revisions = svnConnection.LastRevisions(count ?? int.MaxValue);
-                                        var tasks = revisions.Select(async v => processChanges(v.Number));
+                                        var tasks = revisions.Select(async v => await processChanges(v.Number));
                                         await Task.WhenAll(tasks);
                                     }
 
