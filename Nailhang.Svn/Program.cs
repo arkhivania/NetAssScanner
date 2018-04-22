@@ -29,7 +29,7 @@ namespace Nailhang.Svn
                 {
                     client = new ClientBuilder()
                         .UseLocalhostClustering()
-                        //.ConfigureLogging(logging => logging.AddConsole())
+                        .ConfigureLogging(logging => logging.AddConsole())
                         .Build();
 
                     await client.Connect();
@@ -95,8 +95,7 @@ namespace Nailhang.Svn
                                 {
                                     async Task processChanges(int revision)
                                     {
-                                        var rev = svnConnection.GetRevision(revision);
-                                        Console.WriteLine("Processing revision:" + new { rev.Number, rev.User, rev.UtcDateTime });
+                                        var rev = svnConnection.GetRevision(revision);                                        
 
                                         foreach (var c in svnConnection.GetChanges(revision))
                                         {
@@ -115,7 +114,7 @@ namespace Nailhang.Svn
                                                         {
                                                             var ns = namespace_matches[i].Groups["namespace"].Value;
                                                             
-                                                            var nsGrain = await client.GetGrain<Services.Interfaces.INamespaces>(0).GetNamespace(ns);
+                                                            var nsGrain = await client.GetGrain<INamespaces>(0).GetNamespace(ns);
                                                             await nsGrain.StoreChangeToNamespace(new Services.Interfaces.History.Change
                                                             {
                                                                 Revision = new Services.Interfaces.History.Revision { UtcDateTime = rev.UtcDateTime, Id = rev.Number, User = rev.User },
@@ -130,6 +129,8 @@ namespace Nailhang.Svn
                                                 }
                                             }
                                         }
+
+                                        Console.WriteLine("Processed revision:" + new { rev.Number, rev.User, rev.UtcDateTime });
                                     }
 
                                     var count = numArg("count");
@@ -139,11 +140,10 @@ namespace Nailhang.Svn
                                     else
                                     {
                                         var revisions = svnConnection.LastRevisions(count ?? int.MaxValue);
-                                        var tasks = revisions.Select(async v => await processChanges(v.Number));
-                                        await Task.WhenAll(tasks);
-                                    }
 
-                                    
+                                        revisions.AsParallel()
+                                            .ForAll(v => processChanges(v.Number).Wait());
+                                    }
                                 }
                             }
                         }else if(args.Contains("/list", StringComparer.InvariantCultureIgnoreCase))

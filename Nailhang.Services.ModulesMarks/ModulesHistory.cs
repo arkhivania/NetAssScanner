@@ -102,10 +102,11 @@ namespace Nailhang.Services.ModulesMarks
             if (saveTimer == null)
                 saveTimer = this.RegisterTimer(async a =>
                 {
-                    await WriteStateAsync();
-                    changed = false;
                     saveTimer.Dispose();
                     saveTimer = null;
+
+                    await WriteStateAsync();
+                    changed = false;
 
                     logger.LogInformation($"{this.GetPrimaryKeyString()} stored");
                 }, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
