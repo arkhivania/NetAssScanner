@@ -110,7 +110,7 @@ namespace Nailhang.Services.ModulesMarks
                 if (capID != timerWriteID)
                     return;
 
-                await Task.Delay(TimeSpan.FromSeconds(3));
+                await Task.Delay(TimeSpan.FromSeconds(15));
                 if (capID != timerWriteID)
                     return;
 

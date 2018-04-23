@@ -71,20 +71,11 @@ namespace Nailhang.Silo
             var mongoCS = GetConfig()["MongoConnectionString"];
 
             var builder = new SiloHostBuilder()
-                .UseMongoDBClustering(options =>
-                {
-                    options.ConnectionString = mongoCS;
-                })
-                .UseMongoDBReminders(options =>
-                {
-                    options.ConnectionString = mongoCS;
-                })
                 .AddMongoDBGrainStorage("GlobalDB", options =>
                 {
                     options.ConnectionString = mongoCS;
                 })
                 //.Configure<ClusterOptions>(options => options.ClusterId = "cluster_machine_1")
-                .AddStartupTask(InitWork)
                 .UseLocalhostClustering()
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole());
@@ -93,11 +84,5 @@ namespace Nailhang.Silo
             await host.StartAsync();
             return host;
         }
-
-        private static async Task InitWork(IServiceProvider sp, CancellationToken cancel)
-        {            
-            var gf = sp.GetRequiredService<IGrainFactory>();
-            await Task.CompletedTask;
-         }
     }
 }
