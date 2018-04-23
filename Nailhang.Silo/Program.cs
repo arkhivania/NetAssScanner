@@ -47,7 +47,7 @@ namespace Nailhang.Silo
                 if (args.Contains("/service", StringComparer.InvariantCultureIgnoreCase))
                 {
                     while (needed)
-                        await Task.Delay(TimeSpan.FromSeconds(10));
+                        await Task.Delay(TimeSpan.FromSeconds(1));
                 }
                 else
                 {

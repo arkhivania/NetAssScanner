@@ -27,7 +27,6 @@ namespace Nailhang.Services.ModulesMarks
         private readonly IGrainFactory grainFactory;
         private readonly ILogger<ModulesHistory> logger;
         bool changed = false;
-        IDisposable saveTimer;
 
         public ModulesHistory(IGrainFactory grainFactory, ILogger<ModulesHistory> logger)
         {
@@ -42,11 +41,12 @@ namespace Nailhang.Services.ModulesMarks
                 await base.ReadStateAsync();
                 if (State.SVersion < STOREVERSION)
                     State = new ModuleState();
-            }catch
+            }
+            catch
             {
                 logger.LogError("error reading state");
                 State = new ModuleState();
-            }            
+            }
         }
 
         public Task<Change[]> GetChanges()
@@ -69,8 +69,9 @@ namespace Nailhang.Services.ModulesMarks
                 await WriteStateAsync();
                 logger.LogInformation($"{this.GetPrimaryKeyString()} stored on deactivation");
                 changed = false;
+                timerWriteID = Guid.Empty;
             }
-            
+
             await base.OnDeactivateAsync();
         }
 
@@ -86,8 +87,7 @@ namespace Nailhang.Services.ModulesMarks
             }
             else
                 State.Changes.Add(change.Revision.Id, change);
-
-            changed = true;
+            
             SaveTimerRun();
 
             var parent = GetNamespace(this.GetPrimaryKeyString());
@@ -97,25 +97,40 @@ namespace Nailhang.Services.ModulesMarks
             State.SVersion = STOREVERSION;
         }
 
+        Guid timerWriteID = Guid.Empty;
         private void SaveTimerRun()
         {
-            if (saveTimer == null)
-                saveTimer = this.RegisterTimer(async a =>
-                {
-                    saveTimer.Dispose();
-                    saveTimer = null;
+            changed = true;
+            timerWriteID = Guid.NewGuid();
 
-                    await WriteStateAsync();
-                    changed = false;
+            var capID = timerWriteID;
 
-                    logger.LogInformation($"{this.GetPrimaryKeyString()} stored");
-                }, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
+            Task.Factory.StartNew(async () =>
+            {
+                if (capID != timerWriteID)
+                    return;
+
+                await Task.Delay(TimeSpan.FromSeconds(3));
+                if (capID != timerWriteID)
+                    return;
+
+                await this.AsReference<IModulesHistory>().WriteChanges();
+            });            
         }
 
-        public async Task Delete()
+        public Task Delete()
         {
             State.Changes.Clear();
-            await ClearStateAsync();
+            SaveTimerRun();
+
+            return Task.CompletedTask;
+        }
+
+        public async Task WriteChanges()
+        {
+            await WriteStateAsync();
+            changed = false;
+            logger.LogInformation($"{this.GetPrimaryKeyString()} stored on write request");
         }
     }
 }
