@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Nailhang.Services.Interfaces;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
@@ -68,16 +69,47 @@ namespace Nailhang.Silo
 
         private static async Task<ISiloHost> StartSilo()
         {
-            var mongoCS = GetConfig()["MongoConnectionString"];
+            var config = GetConfig();
+            var mongoCS = config["MongoConnectionString"];
 
             var builder = new SiloHostBuilder()
                 .AddMongoDBGrainStorage("GlobalDB", options =>
                 {
                     options.ConnectionString = mongoCS;
                 })
-                //.Configure<ClusterOptions>(options => options.ClusterId = "cluster_machine_1")
-                .UseLocalhostClustering()
-                .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
+                .UseMongoDBClustering(c => c.ConnectionString = mongoCS)
+                .UseMongoDBReminders(options =>
+                {
+                    options.ConnectionString = mongoCS;
+                })
+                .AddMongoDBGrainStorage("MongoDBStore", options =>
+                {
+                    options.ConnectionString = mongoCS;
+                })
+                .ConfigureServices(s =>
+                {
+                    new Nailhang.Services.ModulesMarks.Statistics.Module().Load(s);
+                })
+                .AddStartupTask(async (s, ct) =>
+                {
+                    var logger = s.GetRequiredService<ILogger<Program>>();
+                    logger.LogInformation("StartUp services");
+                    foreach (var start in s.GetServices<IStartUp>())
+                    {
+                        try
+                        {
+                            await start.StartUp();
+                        }catch(Exception e)
+                        {
+                            logger.LogError("StartUp failed:" + e);
+                        }
+                    }
+                })
+                .Configure<ClusterOptions>(options =>
+                {
+                    options.ClusterId = config["ClusterID"];
+                })
+                .ConfigureEndpoints(IPAddress.Parse(GetConfig()["IPAddress"]), 11111, 30000)
                 .ConfigureLogging(logging => logging.AddConsole());
 
             var host = builder.Build();

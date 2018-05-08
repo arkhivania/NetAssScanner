@@ -14,6 +14,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
 using Orleans;
 using Orleans.Runtime;
+using System.Net;
+using Orleans.Configuration;
 
 namespace Nailhang.Web
 {
@@ -21,7 +23,7 @@ namespace Nailhang.Web
     {
         readonly IClusterClient clusterClient;
 
-        private static async Task<IClusterClient> StartClientWithRetries(int initializeAttemptsBeforeFailing = 5)
+        private static async Task<IClusterClient> StartClientWithRetries(IConfigurationRoot config, int initializeAttemptsBeforeFailing = 15)
         {
             int attempt = 0;
             IClusterClient client;
@@ -29,8 +31,11 @@ namespace Nailhang.Web
             {
                 try
                 {
+                    var mongoCS = config["MongoConnectionString"];
+
                     client = new ClientBuilder()
-                        .UseLocalhostClustering()
+                        .UseMongoDBClustering(c => c.ConnectionString = mongoCS)
+                        .Configure<ClusterOptions>(options => options.ClusterId = config["ClusterID"])
                         .ConfigureLogging(logging => logging.AddConsole())
                         .Build();
 
@@ -38,7 +43,7 @@ namespace Nailhang.Web
                     Console.WriteLine("Client successfully connect to silo host");
                     break;
                 }
-                catch (SiloUnavailableException)
+                catch
                 {
                     attempt++;
                     Console.WriteLine($"Attempt {attempt} of {initializeAttemptsBeforeFailing} failed to initialize the Orleans client.");
@@ -49,18 +54,18 @@ namespace Nailhang.Web
             }
 
             return client;
-        }        
+        }
 
         public Startup(IHostingEnvironment env)
         {
-            clusterClient = StartClientWithRetries().Result;
-
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            clusterClient = StartClientWithRetries(Configuration, 15).Result;
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -79,7 +84,7 @@ namespace Nailhang.Web
                 .ToMethod(q => Configuration).InSingletonScope();
             rok.Bind<MD5Cache.IMD5Cache>().To<MD5Cache.MD5NonBlockingCache>().InSingletonScope();
 
-            
+
             services.AddTransient<IModulesStorage>(sp => rok.Get<IModulesStorage>());
             services.AddSingleton<IGrainFactory>(clusterClient);
             services.AddTransient<MD5Cache.IMD5Cache>(sp => rok.Get<MD5Cache.IMD5Cache>());

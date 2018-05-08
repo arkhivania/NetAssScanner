@@ -6,6 +6,7 @@ using Nailhang.Services.Interfaces.History;
 using Nailhang.Svn.SvnProcessor.Base;
 using Ninject;
 using Orleans;
+using Orleans.Configuration;
 using Orleans.Runtime;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace Nailhang.Svn
 {
     class Program
     {
-        private static async Task<IClusterClient> StartClientWithRetries(int initializeAttemptsBeforeFailing = 5)
+        private static async Task<IClusterClient> StartClientWithRetries(IConfigurationRoot config, int initializeAttemptsBeforeFailing = 15)
         {
             int attempt = 0;
             IClusterClient client;
@@ -27,8 +28,11 @@ namespace Nailhang.Svn
             {
                 try
                 {
+                    var mongoCS = config["MongoConnectionString"];
+
                     client = new ClientBuilder()
-                        .UseLocalhostClustering()
+                        .UseMongoDBClustering(c => c.ConnectionString = mongoCS)
+                        .Configure<ClusterOptions>(options => options.ClusterId = config["ClusterID"])
                         .ConfigureLogging(logging => logging.AddConsole())
                         .Build();
 
@@ -36,7 +40,7 @@ namespace Nailhang.Svn
                     Console.WriteLine("Client successfully connect to silo host");
                     break;
                 }
-                catch (SiloUnavailableException)
+                catch
                 {
                     attempt++;
                     Console.WriteLine($"Attempt {attempt} of {initializeAttemptsBeforeFailing} failed to initialize the Orleans client.");
@@ -52,15 +56,15 @@ namespace Nailhang.Svn
 
         static async Task Main(string[] args)
         {
-            using (var client = await StartClientWithRetries())
-            {
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-                var builder = new ConfigurationBuilder()
+            var builder = new ConfigurationBuilder()
                                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                                 .AddEnvironmentVariables();
-                var config = builder.Build();
+            var config = builder.Build();
 
+            using (var client = await StartClientWithRetries(config))
+            {
                 bool haveArg(string argName)
                 {
                     return args.Contains($"/{argName}", StringComparer.InvariantCultureIgnoreCase);

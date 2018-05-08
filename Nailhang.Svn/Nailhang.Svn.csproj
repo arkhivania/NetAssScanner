@@ -22,6 +22,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
     <PackageReference Include="Microsoft.Orleans.Core" Version="2.0.0" />
+    <PackageReference Include="Orleans.Providers.MongoDB" Version="2.0.*" />
   </ItemGroup>
 
   <ItemGroup>
