@@ -1,0 +1,23 @@
+﻿{
+  "MongoConnectionString": "mongodb://192.168.0.32/nh_modules",
+  "ClusterID": "nailhang_prod",
+  "IPAddress": "192.168.0.32",
+  "codePage": 1251,
+  "pollingPeriodSeconds": 600,
+  "repositories": ["https://192.168.0.4:8443/svn/dev3"]
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Debug",
+      "System": "Information",
+      "Microsoft": "Information"
+    }
+  },
+  "Mongo": {
+    "DbName": "nailhang",
+    "ConnectionString": "mongodb://192.168.0.32"
+  },
+  "general": {
+    "wwwRoot": "/nailhang"
+  }
+}
