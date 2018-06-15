@@ -42,7 +42,7 @@ namespace Nailhang.Web.Controllers
 
             model.HotModules = hotModules
                 .Where(q => q.LastRevisions.Length > 0)
-                .OrderByDescending(q => q.LastRevisions.Select(q2 => q2.Revision.UtcDateTime).Last())
+                .OrderBy(q => q.Module)
                 .ToArray();
 
             var allModules = modulesStorage.GetModules()

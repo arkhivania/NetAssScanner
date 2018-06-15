@@ -24,19 +24,19 @@
 }
 
 <div class="hot-module-columns">
-    <h2>Недавние изменения:</h2>
+    <h2>Недавние изменения</h2>
     <ul>
         @foreach (var hm in Model.HotModules)
         {
             <li>
-                @hm.Module <b> (@string.Join(", ", @hm.LastRevisions.Select(q => q.Revision.User).Distinct())) </b>
+                @hm.Module <b> (@string.Join(", ", @hm.LastRevisions.Select(q => q.Revision.User).Distinct())) </b> - [@hm.LastRevisions.Select(q => q.Revision.UtcDateTime).Max().ToLocalTime().ToShortDateString()]
             </li>
         }
     </ul>
 </div>
 
 <div class="module-columns">
-    <h2>Модули:</h2>
+    <h2>Модули</h2>
     <ul>
         @foreach (var m in Model.Modules.OrderBy(w => w.Module.FullName))
         {

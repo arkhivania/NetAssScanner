@@ -6,6 +6,7 @@
   "pollingPeriodSeconds": 600,
   "repositories": ["https://192.168.0.4:8443/svn/dev3"],
   "StatHotDaysCount": 5,
+  "StatRebuildPeriodMinutes": 15,
   "Logging": {
     "IncludeScopes": false,
     "LogLevel": {

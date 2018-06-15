@@ -36,6 +36,8 @@ namespace Nailhang.Services.ModulesMarks.Statistics
 
         public async Task BuildStat()
         {
+            var daysCount = configurationRoot.GetSection("StatHotDaysCount")?.Get<int>() ?? 7;
+
             for (int i = 0; i < 100; ++i)
             {   
                 var namespaces = grainFactory.GetGrain<INamespaces>(0);
@@ -46,11 +48,10 @@ namespace Nailhang.Services.ModulesMarks.Statistics
                     var @namespace = await namespaces.GetNamespace(n);
                     var changes = await @namespace.GetChanges();
 
-                    var daysCount = configurationRoot.GetSection("StatHotDaysCount")?.Get<int>() ?? 7;
-                    
-
                     var now = DateTime.UtcNow;
-                    var newChanges = changes.Where(q => (now - q.Revision.UtcDateTime) < TimeSpan.FromDays(7)).ToArray();
+                    var newChanges = changes
+                        .Where(q => (q.Modification & Interfaces.History.Modification.Modification) != 0)
+                        .Where(q => (now - q.Revision.UtcDateTime) < TimeSpan.FromDays(daysCount)).ToArray();
                     if (newChanges.Length > 0)
                         hotInfos.Add(new HotInfo { Module = n, LastRevisions = newChanges });
                 }
