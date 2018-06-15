@@ -13,7 +13,7 @@
 </div>
 
 @using (Html.BeginForm("Index", "Home", FormMethod.Get))
-{   
+{
     <div class="panel panel-default">
         <div class="panel-heading">Пространство имен</div>
         <div class="panel-body">
@@ -23,7 +23,20 @@
     </div>
 }
 
+<div class="hot-module-columns">
+    <h2>Недавние изменения:</h2>
+    <ul>
+        @foreach (var hm in Model.HotModules)
+        {
+            <li>
+                @hm.Module <b> (@string.Join(", ", @hm.LastRevisions.Select(q => q.Revision.User).Distinct())) </b>
+            </li>
+        }
+    </ul>
+</div>
+
 <div class="module-columns">
+    <h2>Модули:</h2>
     <ul>
         @foreach (var m in Model.Modules.OrderBy(w => w.Module.FullName))
         {
@@ -38,23 +51,23 @@
     Всего модулей: @Model.Modules.Count()
 </p>
 
-    @*<div class="container">
-            <div>
-                <ul>
-                    @foreach (var m in Model.Modules.OrderBy(w => w.Module.FullName))
-                    {
-                        <li>
-                            @{string nameSpace = m.Namespace;}
-                            <h2>
-                                @Html.ActionLink(@nameSpace, "Index", "Module", new { module = @m.Module.FullName }, null)
-                            </h2>
+@*<div class="container">
+        <div>
+            <ul>
+                @foreach (var m in Model.Modules.OrderBy(w => w.Module.FullName))
+                {
+                    <li>
+                        @{string nameSpace = m.Namespace;}
+                        <h2>
+                            @Html.ActionLink(@nameSpace, "Index", "Module", new { module = @m.Module.FullName }, null)
+                        </h2>
 
-                            @Html.Partial("~/Views/Module/ModuleView.cshtml", m)
-                        </li>
-                                }
-                </ul>
-            </div>
-        </div>*@
+                        @Html.Partial("~/Views/Module/ModuleView.cshtml", m)
+                    </li>
+                            }
+            </ul>
+        </div>
+    </div>*@
 
 
 

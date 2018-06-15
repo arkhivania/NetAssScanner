@@ -1,5 +1,4 @@
 ﻿using Nailhang.Services.Interfaces;
-using Nailhang.Services.Interfaces.Statistics;
 using Orleans;
 using System;
 using System.Collections.Generic;
@@ -21,7 +20,6 @@ namespace Nailhang.Services.ModulesMarks.Statistics
         {
             var sp = grainFactory.GetGrain<IStatProcessor>(0);
             await sp.StartReminder(TimeSpan.FromMinutes(1));
-            await sp.UpdateStat();
         }
     }
 }

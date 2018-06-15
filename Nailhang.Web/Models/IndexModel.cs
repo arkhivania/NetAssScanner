@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Nailhang.Services.ModulesMarks.HotModulesBuilder.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,12 +11,13 @@ namespace Nailhang.Web.Models
     public class IndexModel
     {
         public IndexModel()
-        {
+        {            
             AllModules = new ModuleModel[] { };
             Modules = new ModuleModel[] { };
             RootNamespaces = new SelectListItem[] { };
         }
-        
+
+        public HotInfo[] HotModules { get; set; } = new HotInfo[] { };
 
         public IEnumerable<ModuleModel> Modules { get; set; }
         public IEnumerable<ModuleModel> AllModules { get; set; }

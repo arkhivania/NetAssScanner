@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nailhang.Services.Interfaces.Statistics
+namespace Nailhang.Services.ModulesMarks.Statistics
 {
     public interface IStatProcessor : IGrainWithIntegerKey, IRemindable
     {

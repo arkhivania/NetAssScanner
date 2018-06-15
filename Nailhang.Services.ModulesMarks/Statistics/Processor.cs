@@ -1,9 +1,11 @@
-﻿using Nailhang.Services.Interfaces;
-using Nailhang.Services.Interfaces.Statistics;
+﻿using Microsoft.Extensions.Configuration;
+using Nailhang.Services.Interfaces;
+using Nailhang.Services.ModulesMarks.HotModulesBuilder.Base;
 using Orleans;
 using Orleans.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,10 +14,12 @@ namespace Nailhang.Services.ModulesMarks.Statistics
     class Processor : Grain, IStatProcessor
     {
         private readonly IGrainFactory grainFactory;
+        private readonly IConfigurationRoot configurationRoot;
 
-        public Processor(IGrainFactory grainFactory)
+        public Processor(IGrainFactory grainFactory, IConfigurationRoot configurationRoot)
         {
             this.grainFactory = grainFactory;
+            this.configurationRoot = configurationRoot;
         }
 
         public async Task RemoveReminder()
@@ -27,21 +31,31 @@ namespace Nailhang.Services.ModulesMarks.Statistics
         public async Task<IGrainReminder> StartReminder(TimeSpan? p = null)
         {
             var usePeriod = p ?? TimeSpan.FromMinutes(10);
-            IGrainReminder r = null;
-            return await RegisterOrUpdateReminder("main", usePeriod - TimeSpan.FromSeconds(2), usePeriod);
+            return await RegisterOrUpdateReminder("main", usePeriod, usePeriod);
         }
 
         public async Task BuildStat()
         {
             for (int i = 0; i < 100; ++i)
-            {
+            {   
                 var namespaces = grainFactory.GetGrain<INamespaces>(0);
                 var catalog = await grainFactory.GetGrain<INamespacesCatalog>(i).GetNamespaces();
-                //foreach (var n in catalog)
-                //{
-                //    var @namespace = await namespaces.GetNamespace(n);
-                //    var changes = await @namespace.GetChanges();
-                //}
+                var hotInfos = new List<HotInfo>();
+                foreach (var n in catalog)
+                {
+                    var @namespace = await namespaces.GetNamespace(n);
+                    var changes = await @namespace.GetChanges();
+
+                    var daysCount = configurationRoot.GetSection("StatHotDaysCount")?.Get<int>() ?? 7;
+                    
+
+                    var now = DateTime.UtcNow;
+                    var newChanges = changes.Where(q => (now - q.Revision.UtcDateTime) < TimeSpan.FromDays(7)).ToArray();
+                    if (newChanges.Length > 0)
+                        hotInfos.Add(new HotInfo { Module = n, LastRevisions = newChanges });
+                }
+
+                await grainFactory.GetGrain<OrleansHotModules.IHotModules>(i).Update(hotInfos.ToArray());
             }
         }
 

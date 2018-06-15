@@ -32,7 +32,11 @@ namespace Nailhang.Svn
 
                     client = new ClientBuilder()
                         .UseMongoDBClustering(c => c.ConnectionString = mongoCS)
-                        .Configure<ClusterOptions>(options => options.ClusterId = config["ClusterID"])
+                        .Configure<ClusterOptions>(options =>
+                        {
+                            options.ClusterId = config["ClusterID"];
+                            options.ServiceId = "nailhang";
+                        })
                         .ConfigureLogging(logging => logging.AddConsole())
                         .Build();
 

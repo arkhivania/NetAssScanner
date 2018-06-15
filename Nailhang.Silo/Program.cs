@@ -88,6 +88,7 @@ namespace Nailhang.Silo
                 })
                 .ConfigureServices(s =>
                 {
+                    s.AddTransient<IConfigurationRoot>(q => config);
                     new Nailhang.Services.ModulesMarks.Statistics.Module().Load(s);
                 })
                 .AddStartupTask(async (s, ct) =>
@@ -99,7 +100,8 @@ namespace Nailhang.Silo
                         try
                         {
                             await start.StartUp();
-                        }catch(Exception e)
+                        }
+                        catch (Exception e)
                         {
                             logger.LogError("StartUp failed:" + e);
                         }
@@ -108,9 +110,10 @@ namespace Nailhang.Silo
                 .Configure<ClusterOptions>(options =>
                 {
                     options.ClusterId = config["ClusterID"];
+                    options.ServiceId = "nailhang";
                 })
                 .ConfigureEndpoints(IPAddress.Parse(GetConfig()["IPAddress"]), 11111, 30000)
-                .ConfigureLogging(logging => logging.AddConsole());
+                .ConfigureLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning));
 
             var host = builder.Build();
             await host.StartAsync();

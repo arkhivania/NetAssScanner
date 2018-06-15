@@ -6,27 +6,44 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Orleans;
+using System.Threading.Tasks;
+using Nailhang.Services.ModulesMarks.HotModulesBuilder.Base;
 
 namespace Nailhang.Web.Controllers
 {
     public class HomeController : Controller
     {
         private readonly Nailhang.IndexBase.Storage.IModulesStorage modulesStorage;
+        private readonly IGrainFactory grainFactory;
 
-        public HomeController(Nailhang.IndexBase.Storage.IModulesStorage modulesStorage)
+        public HomeController(Nailhang.IndexBase.Storage.IModulesStorage modulesStorage, IGrainFactory grainFactory)
         {
             this.modulesStorage = modulesStorage;
+            this.grainFactory = grainFactory;
         }
 
-        public ActionResult Index(Models.IndexModel model, Models.DisplaySettings displaySettings, bool formUpdate = false)
+        public async Task<ActionResult> Index(Models.IndexModel model, Models.DisplaySettings displaySettings, bool formUpdate = false)
         {
-            UpdateIndexModel(model, displaySettings);            
+            model = await UpdateIndexModel(model, displaySettings);            
             return View(model);
         }
 
-        private void UpdateIndexModel(IndexModel model, Models.DisplaySettings displaySettings)
+        private async Task<IndexModel> UpdateIndexModel(IndexModel model, Models.DisplaySettings displaySettings)
         {
             var rootDeep = 3;
+
+            var hotModules = new List<HotInfo>();
+            for (int m = 0; m < 100; ++m)
+                hotModules.AddRange(await grainFactory.GetGrain<Nailhang.Services.ModulesMarks.OrleansHotModules.IHotModules>(m).GetInfos());
+
+            if (!string.IsNullOrEmpty(model.SelectedRoot))
+                hotModules.RemoveAll(q => !q.Module.StartsWith(model.SelectedRoot));
+
+            model.HotModules = hotModules
+                .Where(q => q.LastRevisions.Length > 0)
+                .OrderByDescending(q => q.LastRevisions.Select(q2 => q2.Revision.UtcDateTime).Last())
+                .ToArray();
 
             var allModules = modulesStorage.GetModules()
                                            .Select(w => new Models.ModuleModel { Module = w })
@@ -49,6 +66,7 @@ namespace Nailhang.Web.Controllers
 
             if (!string.IsNullOrEmpty(model.SelectedRoot))
                 model.Modules = allModules.Where(w => w.Module.FullName.StartsWith(model.SelectedRoot));
+            return model;
         }
 
         private IEnumerable<string> GetNamespaces(string @namespace)
