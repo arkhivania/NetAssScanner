@@ -17,7 +17,7 @@ namespace Nailhang.Web.Models
             RootNamespaces = new SelectListItem[] { };
         }
 
-        public HotInfo[] HotModules { get; set; } = new HotInfo[] { };
+        public HotModule[] HotModules { get; set; } = new HotModule[] { };
 
         public IEnumerable<ModuleModel> Modules { get; set; }
         public IEnumerable<ModuleModel> AllModules { get; set; }

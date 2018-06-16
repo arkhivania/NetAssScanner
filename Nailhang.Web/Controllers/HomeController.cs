@@ -33,21 +33,31 @@ namespace Nailhang.Web.Controllers
         {
             var rootDeep = 3;
 
-            var hotModules = new List<HotInfo>();
+            var hotModules = new Dictionary<string, HotInfo>();
             for (int m = 0; m < 100; ++m)
-                hotModules.AddRange(await grainFactory.GetGrain<Nailhang.Services.ModulesMarks.OrleansHotModules.IHotModules>(m).GetInfos());
-
-            if (!string.IsNullOrEmpty(model.SelectedRoot))
-                hotModules.RemoveAll(q => !q.Module.StartsWith(model.SelectedRoot));
-
-            model.HotModules = hotModules
-                .Where(q => q.LastRevisions.Length > 0)
-                .OrderBy(q => q.Module)
-                .ToArray();
+                foreach (var h in await grainFactory.GetGrain<Nailhang.Services.ModulesMarks.OrleansHotModules.IHotModules>(m).GetInfos())
+                {
+                    if(h.LastRevisions.Length > 0)
+                    if (string.IsNullOrEmpty(model.SelectedRoot)
+                        || h.Module.StartsWith(model.SelectedRoot))
+                    {
+                        hotModules[h.Module] = h;
+                    }
+                }
 
             var allModules = modulesStorage.GetModules()
                                            .Select(w => new Models.ModuleModel { Module = w })
                                            .ToArray();
+
+            var hotModuleModels = new List<HotModule>();
+            foreach(var m in allModules)
+            {
+                HotInfo hotInfo;
+                if(hotModules.TryGetValue(m.Namespace, out hotInfo))
+                    hotModuleModels.Add(new HotModule { Module = m, HotInfo = hotInfo });
+            }
+
+            model.HotModules = hotModuleModels.OrderBy(q => q.Module.Module.FullName).ToArray();
 
             model.Modules = allModules;
             model.AllModules = allModules;

@@ -23,20 +23,21 @@
     </div>
 }
 
-<div class="hot-module-columns">
     <h2>Недавние изменения</h2>
+<div class="hot-module-columns">    
     <ul>
         @foreach (var hm in Model.HotModules)
         {
-            <li>
-                @hm.Module <b> (@string.Join(", ", @hm.LastRevisions.Select(q => q.Revision.User).Distinct())) </b> - [@hm.LastRevisions.Select(q => q.Revision.UtcDateTime).Max().ToLocalTime().ToShortDateString()]
+            <li title="@hm.Module.Module.Description">
+                @Html.ActionLink(hm.Module.Module.FullName, "Index", "Module", new { module = @hm.Module.Module.FullName }, null) <b> (@string.Join(", ", @hm.HotInfo.LastRevisions.Select(q => q.Revision.User).Distinct())) </b> - [@hm.HotInfo.LastRevisions.Select(q => q.Revision.UtcDateTime).Max().ToLocalTime().ToShortDateString()]
             </li>
         }
     </ul>
 </div>
 
+<h2>Модули</h2>
 <div class="module-columns">
-    <h2>Модули</h2>
+    
     <ul>
         @foreach (var m in Model.Modules.OrderBy(w => w.Module.FullName))
         {
