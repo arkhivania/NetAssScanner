@@ -1,0 +1,86 @@
+﻿@page "/interface"
+
+@using Nailhang.Blazor.Data
+@using Microsoft.AspNetCore.WebUtilities
+
+@inject NavigationManager navigationManager
+@inject NailhangModulesService nailhangModulesService
+
+<div class="jumbotron">
+    <div class="container">
+        <h2>
+            @interfaceModel.Name
+        </h2>
+    </div>
+</div>
+
+@{var moduleInterfaceN = interfaceModel.Interface;}
+@if (moduleInterfaceN.HasValue)
+{
+    var moduleInterface = moduleInterfaceN.Value;
+
+    <h3>Сигнатура</h3>
+    @if (moduleInterface.Methods != null && moduleInterface.Methods.Length > 0)
+    {
+        <ul>
+            @foreach (var meth in moduleInterface.Methods)
+            {
+                <li>
+                    <p class="method-name">@meth.MethodString</p>
+                    @if (meth.InvocationRestriction != null)
+                    {
+                        <p class="method-restriction">@meth.InvocationRestriction.Value</p>
+                    }
+                </li>
+            }
+        </ul>
+    }
+}
+
+<h3>Привязывают модули:</h3>
+
+
+<ul>
+    @foreach (var s in interfaceModel.InterfaceModules.OrderBy(w => w.Module.FullName))
+    {
+        <li>
+            <NavLink href=@("module/?module=" + @s.Module.FullName)>
+                @s.Module.FullName
+            </NavLink>
+
+            <br />
+            <span class="little-text">
+                Сборка: @s.Module.Assembly
+            </span>
+        </li>
+    }
+</ul>
+
+<h3>Зависят модули:</h3>
+
+<ul>
+    @foreach (var s in interfaceModel.ModulesWithInterfaceDependencies.OrderBy(w => w.Module.FullName))
+    {
+        <li>
+            <NavLink href=@("module/?module=" + @s.Module.FullName)>
+                @s.Module.FullName
+            </NavLink>
+
+            <span class="label label-info">
+                (@s.Module.Assembly)
+            </span>
+        </li>
+    }
+</ul>
+
+@code {
+    Display.Models.InterfaceModel interfaceModel;
+
+    protected override Task OnInitializedAsync()
+    {
+        var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("interfaceHash", out var token))
+            interfaceModel = nailhangModulesService.GetInterface(Guid.Parse(token.First()));
+        return Task.CompletedTask;
+    }
+}

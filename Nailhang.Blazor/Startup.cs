@@ -43,6 +43,9 @@ namespace Nailhang.Blazor
                 .ToMethod(q => Configuration).InSingletonScope();
             rok.Bind<IMD5Cache>().To<MD5NonBlockingCache>().InSingletonScope();
 
+            services.AddTransient<Nailhang.Display.Controllers.IndexController>();
+            services.AddTransient<Nailhang.Display.Controllers.InterfaceController>();
+
             services.AddTransient<IModulesStorage>(sp => rok.Get<IModulesStorage>());
             services.AddTransient<IMD5Cache>(sp => rok.Get<IMD5Cache>());           
 

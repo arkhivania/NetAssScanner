@@ -13,17 +13,17 @@ namespace Nailhang.Display.Controllers
         public IndexController(IndexBase.Storage.IModulesStorage modulesStorage)
         {
             this.modulesStorage = modulesStorage;
-        }
+        }        
 
         public IndexModel Get(string rootNamespace)
         {
             var model = new IndexModel();
-            var rootDeep = 3;            
+            var rootDeep = 3;
 
             var allModules = modulesStorage.GetModules()
                                            .Select(w => new ModuleModel { Module = w })
-                                           .ToArray();            
-            
+                                           .ToArray();
+
 
             model.Modules = allModules;
             model.AllModules = allModules;

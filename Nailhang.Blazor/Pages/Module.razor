@@ -1,0 +1,135 @@
+﻿@page "/Module"
+
+@using Nailhang.Blazor.Data
+@using Microsoft.AspNetCore.WebUtilities
+
+@inject NailhangModulesService NailhangModulesService
+@inject NavigationManager navigationManager
+
+<div class="jumbotron">
+    <div class="container">
+        <h2>
+            @moduleModel.Module.FullName
+        </h2>
+    </div>
+</div>
+
+<p>@moduleModel.Module.Description</p>
+
+<br />
+
+@if (moduleModel.Module.Interfaces != null && moduleModel.Module.Interfaces.Length > 0)
+{
+    <p>Интерфейсы:</p>
+    <ul>
+        @foreach (var i in moduleModel.Module.Interfaces)
+        {
+            <li>
+                <p class="interface-name">
+                    @i.TypeReference.FullName
+                </p>
+                @if (!string.IsNullOrEmpty(i.Description))
+                {
+                    <p class="interface-description">
+                        @i.Description
+                    </p>
+                }
+
+                @if (i.Methods != null && i.Methods.Length > 0)
+                {
+                    <ul>
+                        @foreach (var meth in i.Methods)
+                        {
+                            <li>
+                                <p class="method-name">@meth.MethodString</p>
+                                @if (meth.InvocationRestriction != null)
+                                {
+                                    <p class="method-restriction">@meth.InvocationRestriction.Value</p>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    </ul>
+
+    <br />
+}
+
+
+
+@if (moduleModel.Module.Objects != null && moduleModel.Module.Objects.Length > 0)
+{
+    <p><i>Объекты:</i></p>
+    <ul>
+        @foreach (var i in moduleModel.Module.Objects.OrderBy(w => w.TypeReference.FullName))
+        {
+            <li>
+                <p>
+                    @i.TypeReference.FullName
+                </p>
+                @if (!string.IsNullOrEmpty(i.Description))
+                {
+                    <p class="interface-description">
+                        @i.Description
+                    </p>
+                }
+            </li>
+        }
+    </ul>
+
+    <br />
+}
+
+@if (moduleModel.Module.ModuleBinds != null && moduleModel.Module.ModuleBinds.Length > 0)
+{
+    <br />
+    <p><i>Модуль привязывает:</i></p>
+    <ul>
+        @foreach (var nd in moduleModel.Module.ModuleBinds.OrderBy(w => w.FullName))
+        {
+            <li>
+                <p>
+                    <NavLink href=@("interface/?interfaceHash=" + Nailhang.Display.StringUtils.ToMD5(nd.FullName).ToString())>
+                        @nd.FullName
+                    </NavLink>
+                </p>
+            </li>
+        }
+    </ul>
+}
+
+
+@if (moduleModel.Module.FullName != moduleModel.Namespace)
+{
+    <p class="little-text">
+        Класс модуля: @moduleModel.Module.FullName
+        <br />
+        Сборка: @moduleModel.Module.Assembly
+    </p>
+}
+else
+{
+    <p class="little-text">
+        Сборка: @moduleModel.Module.Assembly
+    </p>
+}
+
+<hr />
+
+@code {    
+    public string module { get; set; }
+
+    Display.Models.ModuleModel moduleModel;
+
+    protected override Task OnInitializedAsync()
+    {
+        var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("module", out var token))
+            module = token.First();
+
+        moduleModel = NailhangModulesService.GetModule(module);
+        return Task.CompletedTask;
+    }
+}

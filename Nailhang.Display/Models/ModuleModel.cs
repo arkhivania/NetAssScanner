@@ -16,8 +16,5 @@ namespace Nailhang.Display.Models
                 return Module.FullName.ToNamespace();
             }
         }
-
-        public DependencyItem[] DependencyItems { get; set; } = new DependencyItem[] { };
-        public DependencyItem[] ItemsWithThisDependency { get; set; } = new DependencyItem[] { };
     }
 }
