@@ -22,15 +22,12 @@ namespace Nailhang.Blazor.Data
             return Task.FromResult(model.RootNamespaces.ToArray());
         }
 
-        public Task<NailhangModule[]> GetModules(string baseNamespace)
+        public Task<Nailhang.Display.Models.ModuleModel[]> GetModules(string baseNamespace)
         {
             var controller = new Display.Controllers.IndexController(modulesStorage);
             var model = controller.Get(baseNamespace);
             
-            return Task.FromResult(model.Modules
-                .Where(w => w.Namespace.StartsWith(baseNamespace))
-                .Select(w => new NailhangModule { Name = w.Module.FullName, Namespace = w.Namespace })
-                .ToArray());
+            return Task.FromResult(model.Modules.ToArray());
         }
     }
 }

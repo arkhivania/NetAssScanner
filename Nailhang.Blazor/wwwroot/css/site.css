@@ -14,6 +14,10 @@ a, .btn-link {
   border-color: #1861ac;
 }
 
+.interface-name {
+    font-weight: bold;
+}
+
 app {
     position: relative;
     display: flex;
@@ -93,6 +97,13 @@ app {
 
 .content {
     padding-top: 1.1rem;
+}
+
+.module-columns {
+    -webkit-columns: 200px 2; /* Chrome, Safari, Opera */
+    -moz-columns: 200px 2; /* Firefox */
+    columns: 200px 2;
+    margin: 10px
 }
 
 .navbar-toggler {

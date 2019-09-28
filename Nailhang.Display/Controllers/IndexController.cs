@@ -35,8 +35,8 @@ namespace Nailhang.Display.Controllers
                                              .OrderBy(w => w)
                                              .ToArray();
 
-            if (!string.IsNullOrEmpty(model.SelectedRoot))
-                model.Modules = allModules.Where(w => w.Module.FullName.StartsWith(model.SelectedRoot));
+            if (!string.IsNullOrEmpty(rootNamespace))
+                model.Modules = allModules.Where(w => w.Module.FullName.StartsWith(rootNamespace));
             return model;
         }
 

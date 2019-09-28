@@ -18,7 +18,6 @@ namespace Nailhang.Display.Models
         public IEnumerable<ModuleModel> AllModules { get; set; }
 
         public IEnumerable<string> RootNamespaces { get; set; }
-        public string SelectedRoot { get; set; }
 
         public IEnumerable<ModuleModel> ModulesWithDependencies
         {

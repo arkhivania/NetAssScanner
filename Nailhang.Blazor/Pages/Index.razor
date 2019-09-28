@@ -21,27 +21,30 @@ else
         </select>
     </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Имя</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var module in loadedModules)
+    <h2>Модули</h2>
+    <div class="module-columns">
+
+        <ul>
+            @foreach (var m in loadedModules.OrderBy(w => w.Module.FullName))
             {
-                <tr>
-                    <td>@module.Name</td>
-                </tr>
+                <li title="@m.Module.Description">
+                    @m.Module.FullName
+                    @*@Html.ActionLink(m.Module.FullName, "Index", "Module", new { module = @m.Module.FullName }, null)*@
+                </li>
             }
-        </tbody>
-    </table>
+        </ul>
+    </div>
+
+    <p class="interface-name">
+        Всего модулей: @loadedModules.Length
+    </p>
 }
 
 @code {
     string[] namespaces;
-    NailhangModule[] loadedModules;
-    string selectedNamespace = "";    
+    
+    Nailhang.Display.Models.ModuleModel[] loadedModules;
+    string selectedNamespace = "";
 
     protected override async Task OnInitializedAsync()
     {
