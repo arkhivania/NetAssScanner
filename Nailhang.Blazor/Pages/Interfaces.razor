@@ -1,5 +1,60 @@
 ﻿@page "/interfaces"
 
+@using Nailhang.Blazor.Data
+@inject Nailhang.Display.Controllers.InterfaceController interfaceController;
+
 <h1>Элементы привязок</h1>
 
+<div class="panel panel-default">
+    <div class="panel-heading">Поиск:</div>
+    <div class="panel-body">
+        <input type="text" @bind-value="containsText" 
+               @bind-value:event="oninput" 
+               @onkeyup="@UpdateFromText"/>        
+    </div>
+</div>
 
+<br/>
+
+@if (displayInterfaces == null)
+{
+    <p><em>Загрузка списка интерфейсов...</em></p>
+}
+else
+{
+    foreach (var s in displayInterfaces)
+    {
+        <NavLink href=@("interface/?interfaceHash=" + Nailhang.Display.StringUtils.ToMD5(s.Name).ToString())>
+            @s.Name
+        </NavLink>
+        <br />
+    }
+}
+
+
+@code {
+    string containsText { get; set; } = "";
+    Nailhang.Display.Models.InterfaceMD5KV[] allInterfaces;
+    Nailhang.Display.Models.InterfaceMD5KV[] displayInterfaces;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var interfacesModel = await Task.Run(() => interfaceController.GetInterfacesModel(""));
+        allInterfaces = interfacesModel.Interfaces;
+        displayInterfaces = interfacesModel.Interfaces;
+    }
+
+    string lastSearchReq;
+
+    async Task UpdateFromText(KeyboardEventArgs e)
+    {
+        displayInterfaces = null;
+
+        var text = containsText.ToLower();
+
+        lastSearchReq = text;
+        await Task.Delay(500);
+        if(lastSearchReq == text)        
+            displayInterfaces = await Task.Run(() => allInterfaces.Where(w => w.Name.ToLower().Contains(text)).ToArray());
+    }
+}

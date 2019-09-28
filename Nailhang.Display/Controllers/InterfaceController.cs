@@ -18,6 +18,34 @@ namespace Nailhang.Display.Controllers
             this.modulesStorage = modulesStorage;
         }
 
+        public Models.InterfacesModel GetInterfacesModel(string contains)
+        {
+            var bindObjects = modulesStorage
+                .GetModules()
+                .Where(w => w.ModuleBinds != null)
+                .SelectMany(w => w.ModuleBinds)
+                .Select(w => w.FullName)
+                .OrderBy(w => w)
+                .Distinct();
+
+            if (!string.IsNullOrEmpty(contains))
+            {
+                var query = contains.ToLower();
+                bindObjects = bindObjects.Where(w => w.ToLower().Contains(query));
+            }
+
+            return new Models.InterfacesModel
+            {
+                Interfaces = bindObjects
+                .Select(q => new Models.InterfaceMD5KV
+                {
+                    Name = q,
+                    MD5 = md5Cache.ToMD5(q)
+                })
+                .ToArray()
+            };
+        }
+
         // GET: Interface
         public Models.InterfaceModel GetModel(Guid interfaceHash)
         {

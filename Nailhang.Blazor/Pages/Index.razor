@@ -7,7 +7,7 @@
 
 @if (namespaces == null || loadedModules == null)
 {
-    <p><em>Загрузка...</em></p>
+    <p><em>Загрузка списка модулей...</em></p>
 }
 else
 {
@@ -52,13 +52,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        namespaces = await NailhangModulesService.GetNamespaces();
-        loadedModules = await NailhangModulesService.GetModules(selectedNamespace);
+        namespaces = await Task.Run(() => NailhangModulesService.GetNamespaces());
+        loadedModules = await Task.Run(() => NailhangModulesService.GetModules(selectedNamespace));
     }
 
     private async Task UpdateModules(ChangeEventArgs e)
     {
         selectedNamespace = e.Value.ToString();
-        loadedModules = await NailhangModulesService.GetModules(selectedNamespace);
+        loadedModules = await Task.Run(() => NailhangModulesService.GetModules(selectedNamespace));
     }
 }

@@ -28,24 +28,24 @@ namespace Nailhang.Blazor.Data
         {
             var controller = new Display.Controllers.IndexController(modulesStorage);
             var model = controller.Get("");
-            return model.Modules                
+            return model.Modules
                 .First(w => w.Module.FullName == moduleName);
         }
 
-        public Task<string[]> GetNamespaces()
+        public string[] GetNamespaces()
         {
             var controller = new Display.Controllers.IndexController(modulesStorage);
             var model = controller.Get("");
 
-            return Task.FromResult(model.RootNamespaces.ToArray());
+            return model.RootNamespaces.ToArray();
         }
 
-        public Task<Nailhang.Display.Models.ModuleModel[]> GetModules(string baseNamespace)
+        public ModuleModel[] GetModules(string baseNamespace)
         {
             var controller = new Display.Controllers.IndexController(modulesStorage);
             var model = controller.Get(baseNamespace);
 
-            return Task.FromResult(model.Modules.ToArray());
+            return model.Modules.ToArray();
         }
     }
 }
