@@ -1,0 +1,57 @@
+﻿@page "/"
+
+@using Nailhang.Blazor.Data
+@inject NailhangModulesService NailhangModulesService
+
+<h1>Список модулей</h1>
+
+@if (namespaces == null || loadedModules == null)
+{
+    <p><em>Загрузка...</em></p>
+}
+else
+{
+    <div>
+        <p>Пространство имен</p>
+        <select @onchange="@UpdateModules">
+            @foreach (var ns in namespaces)
+            {
+                <option value=@ns>@ns</option>
+            }
+        </select>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Имя</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var module in loadedModules)
+            {
+                <tr>
+                    <td>@module.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    string[] namespaces;
+    NailhangModule[] loadedModules;
+    string selectedNamespace = "";    
+
+    protected override async Task OnInitializedAsync()
+    {
+        namespaces = await NailhangModulesService.GetNamespaces();
+        loadedModules = await NailhangModulesService.GetModules(selectedNamespace);
+    }
+
+    private async Task UpdateModules(ChangeEventArgs e)
+    {
+        selectedNamespace = e.Value.ToString();
+        loadedModules = await NailhangModulesService.GetModules(selectedNamespace);
+    }
+}
