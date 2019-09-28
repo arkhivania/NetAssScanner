@@ -8,15 +8,15 @@
 <div class="panel panel-default">
     <div class="panel-heading">Поиск:</div>
     <div class="panel-body">
-        <input type="text" @bind-value="containsText" 
-               @bind-value:event="oninput" 
-               @onkeyup="@UpdateFromText"/>        
+        <input type="text" @bind-value="containsText"
+               @bind-value:event="oninput"
+               @onkeyup="@UpdateFromText" />
     </div>
 </div>
 
-<br/>
+<br />
 
-@if (displayInterfaces == null)
+@if (allInterfaces == null || displayInterfaces == null)
 {
     <p><em>Загрузка списка интерфейсов...</em></p>
 }
@@ -34,14 +34,14 @@ else
 
 @code {
     string containsText { get; set; } = "";
-    Nailhang.Display.Models.InterfaceMD5KV[] allInterfaces;
-    Nailhang.Display.Models.InterfaceMD5KV[] displayInterfaces;
+    Nailhang.Display.Models.InterfaceMD5KV[] allInterfaces { get; set; }
+    Nailhang.Display.Models.InterfaceMD5KV[] displayInterfaces { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var interfacesModel = await Task.Run(() => interfaceController.GetInterfacesModel(""));
         allInterfaces = interfacesModel.Interfaces;
-        displayInterfaces = interfacesModel.Interfaces;
+        displayInterfaces = allInterfaces;
     }
 
     string lastSearchReq;
@@ -54,7 +54,7 @@ else
 
         lastSearchReq = text;
         await Task.Delay(500);
-        if(lastSearchReq == text)        
+        if (lastSearchReq == text)
             displayInterfaces = await Task.Run(() => allInterfaces.Where(w => w.Name.ToLower().Contains(text)).ToArray());
     }
 }

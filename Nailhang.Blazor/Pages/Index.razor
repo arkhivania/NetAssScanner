@@ -5,7 +5,7 @@
 
 <h1>Модули:</h1>
 
-@if (namespaces == null || loadedModules == null)
+@if (namespaces == null || displayModules == null)
 {
     <p><em>Загрузка списка модулей...</em></p>
 }
@@ -27,12 +27,12 @@ else
 
 
     <p class="little-text">
-        Всего модулей: @loadedModules.Length
+        Всего модулей: @displayModules.Length
     </p>
     <div class="module-columns">
 
         <ul>
-            @foreach (var m in loadedModules.OrderBy(w => w.Module.FullName))
+            @foreach (var m in displayModules.OrderBy(w => w.Module.FullName))
             {
                 <li title="@m.Module.Description">
                     <NavLink href=@("module/?module=" + @m.Module.FullName)>
@@ -46,19 +46,19 @@ else
 
 @code {
     string[] namespaces;
-
-    Nailhang.Display.Models.ModuleModel[] loadedModules;
-    string selectedNamespace = "";
+    Nailhang.Display.Models.ModuleModel[] allModules;
+    Nailhang.Display.Models.ModuleModel[] displayModules;
 
     protected override async Task OnInitializedAsync()
     {
         namespaces = await Task.Run(() => NailhangModulesService.GetNamespaces());
-        loadedModules = await Task.Run(() => NailhangModulesService.GetModules(selectedNamespace));
+        allModules = await Task.Run(() => NailhangModulesService.GetModules(""));
+        displayModules = allModules;
     }
 
     private async Task UpdateModules(ChangeEventArgs e)
     {
-        selectedNamespace = e.Value.ToString();
-        loadedModules = await Task.Run(() => NailhangModulesService.GetModules(selectedNamespace));
+        var selectedNamespace = e.Value.ToString().ToLower();
+        displayModules = allModules.Where(w => w.Module.FullName.ToLower().StartsWith(selectedNamespace)).ToArray();
     }
 }
