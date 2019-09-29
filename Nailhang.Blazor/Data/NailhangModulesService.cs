@@ -34,7 +34,7 @@ namespace Nailhang.Blazor.Data
 
         public string[] GetNamespaces()
         {
-            var controller = new Display.Controllers.IndexController(modulesStorage);
+            var controller = new IndexController(modulesStorage);
             var model = controller.Get("");
 
             return model.RootNamespaces.ToArray();
@@ -42,7 +42,7 @@ namespace Nailhang.Blazor.Data
 
         public ModuleModel[] GetModules(string baseNamespace)
         {
-            var controller = new Display.Controllers.IndexController(modulesStorage);
+            var controller = new IndexController(modulesStorage);
             var model = controller.Get(baseNamespace);
 
             return model.Modules.ToArray();

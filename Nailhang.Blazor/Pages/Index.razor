@@ -51,12 +51,15 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        namespaces = await Task.Run(() => NailhangModulesService.GetNamespaces());
-        allModules = await Task.Run(() => NailhangModulesService.GetModules(""));
+        if(namespaces == null)
+            namespaces = await Task.Run(() => NailhangModulesService.GetNamespaces());
+        if(allModules == null)
+            allModules = await Task.Run(() => NailhangModulesService.GetModules(""));
+
         displayModules = allModules;
     }
 
-    private async Task UpdateModules(ChangeEventArgs e)
+    private void UpdateModules(ChangeEventArgs e)
     {
         var selectedNamespace = e.Value.ToString().ToLower();
         displayModules = allModules.Where(w => w.Module.FullName.ToLower().StartsWith(selectedNamespace)).ToArray();
