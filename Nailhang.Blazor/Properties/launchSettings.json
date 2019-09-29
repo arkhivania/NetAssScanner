@@ -17,8 +17,9 @@
       }
     },
     "Nailhang.Blazor": {
-      "commandName": "Project",
+      "commandName": "Executable",
       "launchBrowser": true,
+      "launchUrl": "/nailhang/interfaces",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
