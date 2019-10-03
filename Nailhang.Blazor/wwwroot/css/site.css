@@ -36,6 +36,14 @@ app {
     align-items: center;
 }
 
+div.module-columns li {
+    word-break: break-all;
+}
+
+div.interfaces-list {
+    word-break: break-all;
+}
+
 .main {
     flex: 1;
 }

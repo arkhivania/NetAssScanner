@@ -22,13 +22,15 @@
 }
 else
 {
-    foreach (var s in displayInterfaces)
-    {
+    <div class="interfaces-list">
+        @foreach (var s in displayInterfaces)
+        {
         <NavLink href=@("interface/?interfaceHash=" + Nailhang.Display.StringUtils.ToMD5(s.Name).ToString())>
             @s.Name
         </NavLink>
         <br />
-    }
+        }
+    </div>
 }
 
 
