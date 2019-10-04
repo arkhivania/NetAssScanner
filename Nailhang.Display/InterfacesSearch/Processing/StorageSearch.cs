@@ -27,10 +27,12 @@ namespace Nailhang.Display.InterfacesSearch.Processing
             if (string.IsNullOrEmpty(name))
                 throw new InvalidOperationException("Name can't be empty");
 
+            name = name.ToLower();
+
             var resp = search
                 .Search(new Request { Message = name })
                 .OrderByDescending(w => w.Relevance)
-                .Where(w => w.Relevance > 0.1f)
+                .Where(w => w.Relevance > 0.5f || interfaces[w.DocumentIndex].Name.ToLower().Contains(name))
                 .ToArray();
 
             var res = resp
