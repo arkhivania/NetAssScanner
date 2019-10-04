@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Tools\Text\**" />
+    <EmbeddedResource Remove="Tools\Text\**" />
+    <None Remove="Tools\Text\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Nailhang.IndexBase\Nailhang.IndexBase.csproj" />
   </ItemGroup>
 
