@@ -42,6 +42,9 @@ namespace Nailhang.Blazor
 
             var rok = new StandardKernel();
             rok.Load<Nailhang.Mongodb.Module>();
+            rok.Load<Nailhang.Display.Tools.TextSearch.Module>();
+            rok.Load<Nailhang.Display.InterfacesSearch.Module>();
+
             rok.Bind<IConfiguration>()
                 .ToMethod(q => Configuration).InSingletonScope();
             rok.Bind<IMD5Cache>().To<MD5NonBlockingCache>().InSingletonScope();
@@ -51,6 +54,7 @@ namespace Nailhang.Blazor
 
             services.AddTransient<IModulesStorage>(sp => rok.Get<IModulesStorage>());
             services.AddTransient<IMD5Cache>(sp => rok.Get<IMD5Cache>());           
+            services.AddTransient<Display.InterfacesSearch.Base.IInterfacesSearch>(sp => rok.Get<Display.InterfacesSearch.Base.IInterfacesSearch>());           
 
         }
 

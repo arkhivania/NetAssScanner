@@ -9,7 +9,8 @@ namespace Nailhang.Display.InterfacesSearch
     {
         public override void Load()
         {
-            throw new NotImplementedException();
+            Kernel.Bind<Base.IInterfacesSearch>()
+                .To<Processing.StorageSearch>();
         }
     }
 }

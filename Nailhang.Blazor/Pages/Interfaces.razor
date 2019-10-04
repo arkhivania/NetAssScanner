@@ -2,6 +2,7 @@
 
 @using Nailhang.Blazor.Data
 @inject Nailhang.Display.Controllers.InterfaceController interfaceController;
+@inject Nailhang.Display.InterfacesSearch.Base.IInterfacesSearch interfacesSearch;
 
 <h1>Элементы привязок</h1>
 
@@ -57,6 +58,11 @@ else
         lastSearchReq = text;
         await Task.Delay(500);
         if (lastSearchReq == text)
-            displayInterfaces = await Task.Run(() => allInterfaces.Where(w => w.Name.ToLower().Contains(text)).ToArray());
+        {
+            if (string.IsNullOrEmpty(text))
+                displayInterfaces = await Task.Run(() => allInterfaces.Where(w => w.Name.ToLower().Contains(text)).ToArray());
+            else
+                displayInterfaces = await Task.Run(() => interfacesSearch.Search(text).ToArray());
+        }
     }
 }
