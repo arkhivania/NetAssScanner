@@ -1,0 +1,12 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: build
+  image: mcr.microsoft.com/dotnet/core/sdk:3.0
+  commands:
+  - cd ./Nailhang.Blazor
+  - mkdir ./out
+  - dotnet publish -c Release -r linux-x64 -o ./out/
