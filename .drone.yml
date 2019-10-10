@@ -6,7 +6,7 @@ pipeline:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
       - cd ./Nailhang.Blazor/docker
-      - docker build -t $$DOCKER_REGISTRY/nailhangblazor:latest .
+      - docker build --no-cache -t $$DOCKER_REGISTRY/nailhangblazor:latest .
       - docker push $$DOCKER_REGISTRY/nailhangblazor:latest
     secrets: [ docker_registry ]
     when:
@@ -20,7 +20,7 @@ pipeline:
     commands:
       - echo ${DRONE_TAG##v}
       - cd ./Nailhang.Blazor/docker
-      - docker build -t $$DOCKER_REGISTRY/nailhangblazor:$$DRONE_TAG .
+      - docker build --no-cache -t $$DOCKER_REGISTRY/nailhangblazor:$$DRONE_TAG .
       - docker push $$DOCKER_REGISTRY/nailhangblazor:$$DRONE_TAG
     secrets: [ docker_registry ]
     when:
