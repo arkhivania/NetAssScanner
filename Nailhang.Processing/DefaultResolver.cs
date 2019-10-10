@@ -57,8 +57,8 @@ namespace Nailhang.Processing
         string SearchFile(string name)
         {
             foreach (var f in folders)
-                if (new FileInfo(System.IO.Path.Combine(f, name)).Exists)
-                    return System.IO.Path.Combine(f, name);
+                if (new FileInfo(Path.Combine(f, name)).Exists)
+                    return Path.Combine(f, name);
 
             return null;
         }
@@ -77,7 +77,7 @@ namespace Nailhang.Processing
         }
 
         public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters)
-        {   
+        {
             throw new NotImplementedException();
         }
 
@@ -86,10 +86,10 @@ namespace Nailhang.Processing
             gacFolder = Path.Combine(gacFolder, name.Name);
             if (Directory.Exists(gacFolder))
             {
-                foreach (var dir_name in new[] 
+                foreach (var dir_name in new[]
                 {
-                    name.Version.ToString() + "__" + String.Concat(name.PublicKeyToken.Select(i => i.ToString("x2"))),
-                    "v4.0_" + name.Version.ToString() + "__" + String.Concat(name.PublicKeyToken.Select(i => i.ToString("x2")))
+                    name.Version.ToString() + "__" + string.Concat(name.PublicKeyToken.Select(i => i.ToString("x2"))),
+                    "v4.0_" + name.Version.ToString() + "__" + string.Concat(name.PublicKeyToken.Select(i => i.ToString("x2")))
                 })
                 {
                     var assFolder = Path.Combine(gacFolder, dir_name);
@@ -122,7 +122,7 @@ namespace Nailhang.Processing
 
         public void Dispose()
         {
-            this.definitions.Clear();
+            definitions.Clear();
         }
     }
 }

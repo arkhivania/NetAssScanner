@@ -15,7 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Nailhang.Blazor.Data;
 using Nailhang.Display.MD5Cache;
 using Nailhang.IndexBase.Storage;
-using Nailhang.Mongodb.ModulesStorage;
+using Nailhang.Mongodb;
 using Ninject;
 
 namespace Nailhang.Blazor

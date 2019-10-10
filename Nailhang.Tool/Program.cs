@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Configuration;
-using Nailhang.Mongodb.ModulesStorage;
+using Nailhang.IndexBase.PublicApi;
 
 namespace Nailhang.Tool
 {
@@ -18,9 +18,12 @@ namespace Nailhang.Tool
         static void Main(string[] args)
         {
             using (var kernel = new StandardKernel(
-                new Module(),
-                new ModuleDefault(),
-                new Nailhang.Processing.CecilModule(),
+                new Nailhang.Mongodb.Module(),
+                new Nailhang.Mongodb.ModuleDefault(),
+                new Nailhang.Mongodb.ModulesStorage.Module(),
+                new Nailhang.Mongodb.PublicStorage.Module(),
+                new Nailhang.Processing.ModuleBuilder.Module(),
+                new Nailhang.Processing.PublicExtract.Module(),
                 new Nailhang.MVoxLease.AgarLease.Module()))
             {
                 var builder = new ConfigurationBuilder()
@@ -63,62 +66,97 @@ namespace Nailhang.Tool
                         targetFiles.Add(envParam.Substring("-file:".Length));
                 }
 
-                var filesBlock = new BufferBlock<string>();
-                var getModulesBlock = new TransformManyBlock<string, IndexBase.Module>(w =>
-                    {
-                        try
-                        {
-                            return processor.ExtractModules(w).ToArray();
-                        }
-                        catch (BadImageFormatException)
-                        {
-                            Console.WriteLine("Skip bad image: " + w + Environment.NewLine);
-                            return Enumerable.Empty<IndexBase.Module>();
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine("Fail to extract from: " + w + Environment.NewLine + e.ToString());
-                            return Enumerable.Empty<IndexBase.Module>();
-                        }
-                    }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 1 });
-
-                var broadcastBlock = new BroadcastBlock<IndexBase.Module>(w => w);
-                var printModuleBlock = new ActionBlock<IndexBase.Module>(m => Console.WriteLine(string.Format("Store module: {0}", m.FullName)));
-
-                int stored = 0;
-                var storeBlock = new ActionBlock<IndexBase.Module>(m =>
+                if (args[0] == "public")
                 {
-                    storage.StoreModule(m);
-                    System.Threading.Interlocked.Increment(ref stored);
-                }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 4, BoundedCapacity = 2000 });
-
-                filesBlock.LinkTo(getModulesBlock, new DataflowLinkOptions { PropagateCompletion = true });
-                getModulesBlock.LinkTo(broadcastBlock, new DataflowLinkOptions { PropagateCompletion = true });
-                broadcastBlock.LinkTo(printModuleBlock, new DataflowLinkOptions { PropagateCompletion = true });
-                broadcastBlock.LinkTo(storeBlock, new DataflowLinkOptions { PropagateCompletion = true });
-
-                var esw = new Stopwatch();
-                var sw = new Stopwatch();
-                sw.Start();
-                esw.Start();
-
-                foreach (var fp in targetFiles)
-                    filesBlock.Post(fp);
-
-                getModulesBlock.Completion.ContinueWith(w =>
-                    {
-                        esw.Stop();
-                        Console.WriteLine(string.Format("Modules extracting complete: {0} ms", esw.ElapsedMilliseconds));
-                    });
-
-                filesBlock.Complete();
-                storeBlock.Completion.Wait();
-
-                sw.Stop();
-
-                Console.WriteLine(string.Format("Complete: {0} ms", sw.ElapsedMilliseconds));
-                Console.WriteLine("Modules stored:" + stored);
+                    PublicAssembliesPipeline(
+                        kernel.Get<IPublicApiStorage>(),
+                        kernel.Get<IPublicProcessor>(), targetFiles);
+                }
+                else
+                    ModulesPipeLine(storage, processor, targetFiles);
             }
+        }
+
+        private static void PublicAssembliesPipeline(IPublicApiStorage publicApiStorage, IPublicProcessor publicProcessor, List<string> targetFiles)
+        {
+            int index = 0;
+            foreach (var fileName in targetFiles)
+            {
+                AssemblyPublic[] assemblies = null;
+                try
+                {
+                    assemblies = publicProcessor.Extract(fileName).ToArray();
+                }catch(Exception e)
+                {
+                    Console.WriteLine($"Error processing: {fileName}");
+                    index++;
+                    continue;
+                }
+
+                publicApiStorage.UpdateAssemblies(assemblies);
+                Console.WriteLine($"{index:D3}/{targetFiles.Count:D3} {fileName} processed.");
+                index++;
+            }
+        }
+
+        private static void ModulesPipeLine(IModulesStorage storage, IndexBase.Index.IIndexProcessor processor, List<string> targetFiles)
+        {
+            var filesBlock = new BufferBlock<string>();
+            var getModulesBlock = new TransformManyBlock<string, IndexBase.Module>(w =>
+            {
+                try
+                {
+                    return processor.ExtractModules(w).ToArray();
+                }
+                catch (BadImageFormatException)
+                {
+                    Console.WriteLine("Skip bad image: " + w + Environment.NewLine);
+                    return Enumerable.Empty<IndexBase.Module>();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Fail to extract from: " + w + Environment.NewLine + e.ToString());
+                    return Enumerable.Empty<IndexBase.Module>();
+                }
+            }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 1 });
+
+            var broadcastBlock = new BroadcastBlock<IndexBase.Module>(w => w);
+            var printModuleBlock = new ActionBlock<IndexBase.Module>(m => Console.WriteLine(string.Format("Store module: {0}", m.FullName)));
+
+            int stored = 0;
+            var storeBlock = new ActionBlock<IndexBase.Module>(m =>
+            {
+                storage.StoreModule(m);
+                System.Threading.Interlocked.Increment(ref stored);
+            }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 4, BoundedCapacity = 2000 });
+
+            filesBlock.LinkTo(getModulesBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            getModulesBlock.LinkTo(broadcastBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            broadcastBlock.LinkTo(printModuleBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            broadcastBlock.LinkTo(storeBlock, new DataflowLinkOptions { PropagateCompletion = true });
+
+            var esw = new Stopwatch();
+            var sw = new Stopwatch();
+            sw.Start();
+            esw.Start();
+
+            foreach (var fp in targetFiles)
+                filesBlock.Post(fp);
+
+            getModulesBlock.Completion.ContinueWith(w =>
+            {
+                esw.Stop();
+                Console.WriteLine(string.Format("Modules extracting complete: {0} ms", esw.ElapsedMilliseconds));
+            });
+
+            filesBlock.Complete();
+            storeBlock.Completion
+                .ConfigureAwait(false).GetAwaiter().GetResult();
+
+            sw.Stop();
+
+            Console.WriteLine(string.Format("Complete: {0} ms", sw.ElapsedMilliseconds));
+            Console.WriteLine("Modules stored:" + stored);
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nailhang.Mongodb.ModulesStorage.Base
+namespace Nailhang.Mongodb.Base
 {
     public class MongoConnection
     {

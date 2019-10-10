@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Nailhang.Processing.ModuleBuilder
+namespace Nailhang.Processing.ModuleBuilder.Processing
 {
     class NailhangModuleBuilder : Base.IModuleBuilder
     {
-        public IEnumerable<Module> CreateModules(Mono.Cecil.AssemblyDefinition assemblyDefinition)
+        public IEnumerable<IndexBase.Module> CreateModules(AssemblyDefinition assemblyDefinition)
         {
-            var moduleType = typeof(Nailhang.ModuleAttribute).FullName;
+            var moduleType = typeof(ModuleAttribute).FullName;
 
 
 
@@ -42,7 +42,7 @@ namespace Nailhang.Processing.ModuleBuilder
             return false;
         }
 
-        static IEnumerable<Mono.Cecil.TypeReference> ModuleActivates(Mono.Cecil.TypeDefinition module)
+        static IEnumerable<Mono.Cecil.TypeReference> ModuleActivates(TypeDefinition module)
         {
             foreach (var meth in module.Methods
                 .Where(w => w.Body != null))
@@ -72,7 +72,7 @@ namespace Nailhang.Processing.ModuleBuilder
         }
 
 
-        static IEnumerable<Mono.Cecil.TypeReference> ModuleBinds(Mono.Cecil.TypeDefinition module)
+        static IEnumerable<Mono.Cecil.TypeReference> ModuleBinds(TypeDefinition module)
         {
             var methods = module.GetBases()
                         .ToDefs()
@@ -99,15 +99,15 @@ namespace Nailhang.Processing.ModuleBuilder
             }
         }
 
-        private IEnumerable<Module> ExtractModule(TypeDefinition moduleType, AssemblyDefinition assDef, CustomAttribute modAttr)
+        private IEnumerable<IndexBase.Module> ExtractModule(TypeDefinition moduleType, AssemblyDefinition assDef, CustomAttribute modAttr)
         {
-            var res = new Module();
+            var res = new IndexBase.Module();
             res.Assembly = assDef.Name.Name;
             res.Description = moduleType.GetDescription();
             res.FullName = moduleType.FullName;
 
             if (modAttr != null)
-                res.Significance = (Nailhang.Significance)modAttr.Properties.Where(w => w.Name == "Significance").Select(w => (int)w.Argument.Value).FirstOrDefault();
+                res.Significance = (Significance)modAttr.Properties.Where(w => w.Name == "Significance").Select(w => (int)w.Argument.Value).FirstOrDefault();
             else
                 res.Significance = Significance.Low;
 
@@ -151,7 +151,7 @@ namespace Nailhang.Processing.ModuleBuilder
                 .Select(w => w.ToIndexBaseTypeReference())
                 .ToArray();
 
-            if(res.InterfaceDependencies.Any()
+            if (res.InterfaceDependencies.Any()
                 || res.Interfaces.Any()
                 || res.ModuleBinds.Any()
                 || res.ObjectDependencies.Any()

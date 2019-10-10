@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Nailhang.Mongodb.ModulesStorage.Base;
+using Nailhang.Mongodb.Base;
 using Ninject;
 using Ninject.Modules;
 using System;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nailhang.Mongodb.ModulesStorage
+namespace Nailhang.Mongodb
 {
     public class ModuleDefault : NinjectModule
     {

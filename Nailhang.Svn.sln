@@ -29,8 +29,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Display", "Nailhan
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LegacySVN", "LegacySVN", "{5E22F4B2-EAD3-448E-889F-9E2B7DE2CB51}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Tool2", "Nailhang.Tool2\Nailhang.Tool2.csproj", "{6DA321C7-5320-45E4-B0F8-236A0D940B8D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,10 +83,6 @@ Global
 		{A059F6BF-4063-4E58-975F-E15832BBAD7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A059F6BF-4063-4E58-975F-E15832BBAD7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A059F6BF-4063-4E58-975F-E15832BBAD7B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6DA321C7-5320-45E4-B0F8-236A0D940B8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6DA321C7-5320-45E4-B0F8-236A0D940B8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6DA321C7-5320-45E4-B0F8-236A0D940B8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6DA321C7-5320-45E4-B0F8-236A0D940B8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Nailhang.IndexBase.PublicApi
 {
-    public interface IStorage
+    public interface IPublicApiStorage
     {
         void UpdateAssemblies(IEnumerable<AssemblyPublic> assemblies);
         IEnumerable<AssemblyPublic> LoadAssemblies();
