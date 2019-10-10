@@ -9,6 +9,8 @@ namespace Nailhang.Display.NetPublicSearch.Base
     {
         public ClassType ClassType { get; set; }
         public string ClassName { get; set; }
+        public string Namespace { get; set; }
+        public string FullName => $"{Namespace}.{ClassName}";
         public string AssemblyName { get; set; }
         public string AssemblyVersion { get; set; }
         public string MethodName { get; set; }

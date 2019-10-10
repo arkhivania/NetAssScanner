@@ -29,14 +29,14 @@ else
       .GroupBy(q => new { q.AssemblyName, q.AssemblyVersion }))
         {
             <div class="assembly_desc_dev">
-                <p class="descr_assembly">@ass.Key.AssemblyName ({@ass.Key.AssemblyVersion})</p>
+                <p class="descr_assembly">Сборка: @ass.Key.AssemblyName (@ass.Key.AssemblyVersion)</p>
                 <br />
 
                 @foreach (var cl in ass
-                       .OrderBy(w => w.ClassName)
-                       .GroupBy(w => w.ClassName))
+                       .OrderBy(w => w.FullName)
+                       .GroupBy(w => w.FullName))
                 {
-                    <p class="descr_class">@cl.Key</p>
+                    <p class="descr_class">Класс: @cl.Key</p>
                     <br />
                     <ul>
                         @foreach (var method in cl

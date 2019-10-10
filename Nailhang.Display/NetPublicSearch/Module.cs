@@ -2,7 +2,9 @@
 using Ninject.Modules;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Nailhang.Display.NetPublicSearch
 {
@@ -14,19 +16,38 @@ namespace Nailhang.Display.NetPublicSearch
                 .ToSelf();
 
             DateTime? lastCreatedTime = null;
-            Base.INetSearch created = null;
+            var created = new List<Base.INetSearch>();
 
             Kernel.Bind<Base.INetSearch>()
                 .ToMethod(q =>
                 {
                     var curTime = DateTime.UtcNow;
-                    if (created == null || (curTime - lastCreatedTime.Value) > TimeSpan.FromSeconds(15))
-                    {
-                        created = q.Kernel.Get<Processing.NetSearch>();
-                        lastCreatedTime = curTime;
-                    }
+                    Task createTask = null;
+                    lock (created)
+                        if (created.Count == 0
+                        || (curTime - lastCreatedTime.Value) > TimeSpan.FromMinutes(1))
+                        {
+                            createTask = Task.Factory.StartNew(() =>
+                            {
+                                var cr = q.Kernel.Get<Processing.NetSearch>();
+                                lock (created)
+                                {
+                                    created.Insert(0, cr);
+                                    while (created.Count > 1)
+                                        created.RemoveAt(0);
+                                }
+                            });
 
-                    return created;
+                            lastCreatedTime = curTime;
+                        }
+
+                    lock (created)
+                        if (created.Any())
+                            return created.Last();
+
+                    createTask.ConfigureAwait(false)
+                        .GetAwaiter().GetResult();
+                    return created.First();
                 });
         }
     }

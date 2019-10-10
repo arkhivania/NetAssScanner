@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Nailhang.Display.NetPublicSearch.Base;
 using Nailhang.Display.Tools.TextSearch.Base;
 using Nailhang.IndexBase.PublicApi;
@@ -11,16 +10,7 @@ namespace Nailhang.Display.NetPublicSearch.Processing
 {
     class NetSearch : Base.INetSearch
     {
-        struct Searcher 
-        {
-            public Base.SearchItem[] SearchItems { get; set; }
-            public ISearch ClassSearch { get; set; }
-            public ISearch MethodSearch { get; set; }
-        }
-
-        readonly Task<Searcher> searcher;
-
-        
+        readonly Base.SearchItem[] searchItems;
 
         static IEnumerable<Base.SearchItem> Prepare(AssemblyPublic assemblyPublic)
         {
@@ -35,53 +25,56 @@ namespace Nailhang.Display.NetPublicSearch.Processing
                         MethodName = m.Name,
                         ParametersString = m.Parameters.Length > 0 ? string.Join(", ", m.Parameters.Select(p => $"{p.Type} {p.Name}")) : "",
                         ResultType = m.Returns,
-                        ClassName = c.Name
+                        ClassName = c.Name, 
+                        Namespace = c.Namespace
                     };
                 }
         }
 
-        Searcher Create(IWSBuilder wSBuilder, IPublicApiStorage publicApiStorage)
-        {
-            var res = new Searcher();
-            res.SearchItems = publicApiStorage.LoadAssemblies().SelectMany(a => Prepare(a))
-                .ToArray();
-
-            {
-                var search_strings = res.SearchItems.Select(w => w.ClassName);
-                var stat = wSBuilder.BuildStat(search_strings);
-                var index = wSBuilder.Index(search_strings.Select(w => new Bulk { Sentence = w }), stat);
-                res.ClassSearch = wSBuilder.CreateSearch(index);
-            }
-
-            {
-                var search_strings = res.SearchItems.Select(w => w.MethodName);
-                var stat = wSBuilder.BuildStat(search_strings);
-                var index = wSBuilder.Index(search_strings.Select(w => new Bulk { Sentence = w }), stat);
-                res.MethodSearch = wSBuilder.CreateSearch(index);
-            }
-
-            return res;
-        }
+        readonly ISearch classSearch;
+        readonly ISearch methodSearch;
+        readonly ISearch namespaceSearch;
 
         public NetSearch(IWSBuilder wSBuilder, IPublicApiStorage publicApiStorage)
         {
-            this.searcher = Task.Factory
-                .StartNew(() => Create(wSBuilder, publicApiStorage), TaskCreationOptions.LongRunning);
+            searchItems = publicApiStorage.LoadAssemblies().SelectMany(a => Prepare(a))
+                .ToArray();
+
+            {
+                var search_strings = searchItems.Select(w => w.ClassName);
+                var stat = wSBuilder.BuildStat(search_strings);
+                var index = wSBuilder.Index(search_strings.Select(w => new Bulk { Sentence = w }), stat);
+                this.classSearch = wSBuilder.CreateSearch(index);
+            }
+
+            {
+                var search_strings = searchItems.Select(w => w.MethodName);
+                var stat = wSBuilder.BuildStat(search_strings);
+                var index = wSBuilder.Index(search_strings.Select(w => new Bulk { Sentence = w }), stat);
+                this.methodSearch = wSBuilder.CreateSearch(index);
+            }
+
+            {
+                var search_strings = searchItems.Select(w => w.Namespace ?? "");
+                var stat = wSBuilder.BuildStat(search_strings);
+                var index = wSBuilder.Index(search_strings.Select(w => new Bulk { Sentence = w }), stat);
+                this.namespaceSearch = wSBuilder.CreateSearch(index);
+            }
         }
 
         public IEnumerable<SearchItem> Search(string query)
         {
-            var sr = searcher.Result;
-            
-            var name = query;
-            return sr.ClassSearch.Search(new Request { Message = query })
-                .Concat(sr.MethodSearch.Search(new Request { Message = query }))
+            var name = query.ToLower();
+            return classSearch.Search(new Request { Message = query })
+                .Concat(methodSearch.Search(new Request { Message = query }))
+                .Concat(namespaceSearch.Search(new Request { Message = query }))
                 .OrderByDescending(w => w.Relevance)
-                .Where(w => w.Relevance > 0.50)
-                .Where(w => w.Relevance > 0.75f
-                        || sr.SearchItems[w.DocumentIndex].ClassName.ToLower().Contains(query)
-                        || sr.SearchItems[w.DocumentIndex].MethodName.ToLower().Contains(query))
-                .Select(q => sr.SearchItems[q.DocumentIndex])
+                .Where(w => w.Relevance > 0.75)
+                .Where(w => w.Relevance > 0.90f
+                        || searchItems[w.DocumentIndex].ClassName.ToLower().Contains(query)
+                        || searchItems[w.DocumentIndex].Namespace?.ToLower().Contains(query) == true
+                        || searchItems[w.DocumentIndex].MethodName.ToLower().Contains(query))
+                .Select(q => searchItems[q.DocumentIndex])
                 .Take(200)
                 .ToArray();
         }

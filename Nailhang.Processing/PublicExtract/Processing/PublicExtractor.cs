@@ -15,7 +15,7 @@ namespace Nailhang.Processing.PublicExtract.Processing
             {
                 if (t.IsPublic)
                 {
-                    var @class = new Class { Name = t.Name };
+                    var @class = new Class { Name = t.Name, Namespace = t.Namespace };
                     if (t.IsInterface)
                         @class.ClassType = ClassType.Interface;
                     else if (t.IsClass)
