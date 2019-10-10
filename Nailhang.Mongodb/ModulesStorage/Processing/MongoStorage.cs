@@ -9,15 +9,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nailhang.Mongodb
+namespace Nailhang.Mongodb.ModulesStorage.Processing
 {
     class MongoStorage : IModulesStorage
     {
         readonly IMongoCollection<ModuleEntity> modules;
 
         public MongoStorage(IMongoDatabase database)
-        {   
-            this.modules = database.GetCollection<ModuleEntity>("modules");
+        {
+            modules = database.GetCollection<ModuleEntity>("modules");
         }
 
         public void StoreModule(IndexBase.Module module)
@@ -30,12 +30,12 @@ namespace Nailhang.Mongodb
             };
 
             var filter = Builders<ModuleEntity>.Filter.Where(w => w.Id == mentity.Id);
-            var replaceResult = modules.ReplaceOne(filter, mentity, new UpdateOptions { IsUpsert = true });            
+            var replaceResult = modules.ReplaceOne(filter, mentity, new UpdateOptions { IsUpsert = true });
         }
 
         public IEnumerable<IndexBase.Module> GetModules()
-        {   
-            foreach (var moduleEntity in modules.AsQueryable<ModuleEntity>())
+        {
+            foreach (var moduleEntity in modules.AsQueryable())
                 yield return ToModule(moduleEntity.ModuleHeader);
         }
 

@@ -5,9 +5,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nailhang.Mongodb
+namespace Nailhang.Mongodb.ModulesStorage.Processing
 {
-    public static class Extensions
+    static class Extensions
     {
         static MD5 md5 = MD5.Create();
 

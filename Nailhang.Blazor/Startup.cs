@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Nailhang.Blazor.Data;
 using Nailhang.Display.MD5Cache;
 using Nailhang.IndexBase.Storage;
+using Nailhang.Mongodb.ModulesStorage;
 using Ninject;
 
 namespace Nailhang.Blazor
@@ -41,7 +42,8 @@ namespace Nailhang.Blazor
             //dirty place
 
             var rok = new StandardKernel();
-            rok.Load<Nailhang.Mongodb.Module>();
+            rok.Load<Module>();
+            rok.Load<ModuleDefault>();
             rok.Load<Nailhang.Display.Tools.TextSearch.Module>();
             rok.Load<Nailhang.Display.InterfacesSearch.Module>();
 

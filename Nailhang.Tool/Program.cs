@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Configuration;
+using Nailhang.Mongodb.ModulesStorage;
 
 namespace Nailhang.Tool
 {
@@ -17,7 +18,8 @@ namespace Nailhang.Tool
         static void Main(string[] args)
         {
             using (var kernel = new StandardKernel(
-                new Nailhang.Mongodb.Module(),
+                new Module(),
+                new ModuleDefault(),
                 new Nailhang.Processing.CecilModule(),
                 new Nailhang.MVoxLease.AgarLease.Module()))
             {

@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Blazor", "Nailhang
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Display", "Nailhang.Display\Nailhang.Display.csproj", "{A059F6BF-4063-4E58-975F-E15832BBAD7B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Server", "Nailhang.Server\Nailhang.Server.csproj", "{8A43B04B-81BE-489B-9F81-09A92A6ACEC5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LegacySVN", "LegacySVN", "{5E22F4B2-EAD3-448E-889F-9E2B7DE2CB51}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Tool2", "Nailhang.Tool2\Nailhang.Tool2.csproj", "{6DA321C7-5320-45E4-B0F8-236A0D940B8D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,13 +85,19 @@ Global
 		{A059F6BF-4063-4E58-975F-E15832BBAD7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A059F6BF-4063-4E58-975F-E15832BBAD7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A059F6BF-4063-4E58-975F-E15832BBAD7B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8A43B04B-81BE-489B-9F81-09A92A6ACEC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8A43B04B-81BE-489B-9F81-09A92A6ACEC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8A43B04B-81BE-489B-9F81-09A92A6ACEC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8A43B04B-81BE-489B-9F81-09A92A6ACEC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DA321C7-5320-45E4-B0F8-236A0D940B8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DA321C7-5320-45E4-B0F8-236A0D940B8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DA321C7-5320-45E4-B0F8-236A0D940B8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DA321C7-5320-45E4-B0F8-236A0D940B8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B2C4FAD7-1DA4-4550-AE1D-C9EF0CAEA288} = {5E22F4B2-EAD3-448E-889F-9E2B7DE2CB51}
+		{8AA190AB-749F-40C0-B86B-DFD23FC10206} = {5E22F4B2-EAD3-448E-889F-9E2B7DE2CB51}
+		{B4187AB8-3C3A-4D24-B012-B05FC67ED4E5} = {5E22F4B2-EAD3-448E-889F-9E2B7DE2CB51}
+		{02408D51-2F05-441D-987F-1F229DC6E999} = {5E22F4B2-EAD3-448E-889F-9E2B7DE2CB51}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {85473518-79C6-4C2A-8D72-F8E37CAFA36B}

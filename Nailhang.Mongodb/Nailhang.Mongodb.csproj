@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Nailhang.Mongodb</AssemblyName>
     <PackageId>Nailhang.Mongodb</PackageId>    
   </PropertyGroup>
@@ -12,15 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="MongoDB.Driver" Version="2.9.1" />
-    <PackageReference Include="MongoDB.Bson" Version="2.9.1" />
-    <PackageReference Include="MongoDB.Driver.Core" Version="2.9.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="MongoDB.Driver" Version="2.9.2" />
+    <PackageReference Include="MongoDB.Bson" Version="2.9.2" />
+    <PackageReference Include="MongoDB.Driver.Core" Version="2.9.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
     <PackageReference Include="Ninject" Version="3.3.4" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
-    <PackageReference Include="NUnit" Version="3.10.1" />    
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />    
   </ItemGroup>
 
 </Project>
