@@ -1,14 +1,4 @@
 pipeline:  
-  blazor_build_check:
-    image: mcr.microsoft.com/dotnet/core/sdk:3.0
-    volumes:
-      - /root/.docker:/root/.docker
-      - /var/run/docker.sock:/var/run/docker.sock
-    commands:
-    - cd ./Nailhang.Blazor
-    - dotnet build
-    when:
-      event: [push, tag]
   docker_latest:
     image: docker:latest
     volumes:
@@ -21,6 +11,7 @@ pipeline:
     secrets: [ docker_registry ]
     when:
       event: [push]
+      branch: [master]
   docker_release:
     image: docker:latest
     volumes:
@@ -34,3 +25,4 @@ pipeline:
     secrets: [ docker_registry ]
     when:
       event: tag
+      branch: [master]
