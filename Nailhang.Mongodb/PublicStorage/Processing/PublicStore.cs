@@ -27,7 +27,13 @@ namespace Nailhang.Mongodb.PublicStorage.Processing
 
         public IEnumerable<AssemblyPublic> LoadAssemblies()
         {
-            throw new NotImplementedException();
+            foreach (var entity in assembliesCollection.AsQueryable())
+                yield return ToAssemblyPublic(entity.Data);
+        }
+
+        private AssemblyPublic ToAssemblyPublic(string data)
+        {
+            return JsonConvert.DeserializeObject<AssemblyPublic>(data);
         }
 
         public void UpdateAssemblies(IEnumerable<AssemblyPublic> assemblies)

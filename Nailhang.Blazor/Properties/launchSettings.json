@@ -11,7 +11,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "interface/?interfaceHash=d26cf9d2-8d52-1a77-a435-751cf8f2c815",
+      "launchUrl": "netpublicsearch",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

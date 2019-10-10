@@ -14,8 +14,9 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Nailhang.Blazor.Data;
 using Nailhang.Display.MD5Cache;
+using Nailhang.Display.NetPublicSearch.Base;
+using Nailhang.IndexBase.PublicApi;
 using Nailhang.IndexBase.Storage;
-using Nailhang.Mongodb;
 using Ninject;
 
 namespace Nailhang.Blazor
@@ -42,9 +43,12 @@ namespace Nailhang.Blazor
             //dirty place
 
             var rok = new StandardKernel();
-            rok.Load<Module>();
-            rok.Load<ModuleDefault>();
+            rok.Load<Nailhang.Mongodb.Module>();
+            rok.Load<Nailhang.Mongodb.ModuleDefault>();
+            rok.Load<Nailhang.Mongodb.ModulesStorage.Module>();
+            rok.Load<Nailhang.Mongodb.PublicStorage.Module>();
             rok.Load<Nailhang.Display.Tools.TextSearch.Module>();
+            rok.Load<Nailhang.Display.NetPublicSearch.Module>();
             rok.Load<Nailhang.Display.InterfacesSearch.Module>();
 
             rok.Bind<IConfiguration>()
@@ -55,6 +59,8 @@ namespace Nailhang.Blazor
             services.AddTransient<Nailhang.Display.Controllers.InterfaceController>();
 
             services.AddTransient<IModulesStorage>(sp => rok.Get<IModulesStorage>());
+            services.AddTransient<INetSearch>(sp => rok.Get<INetSearch>());
+            services.AddTransient<IPublicApiStorage>(sp => rok.Get<IPublicApiStorage>());
             services.AddTransient<IMD5Cache>(sp => rok.Get<IMD5Cache>());           
             services.AddTransient<Display.InterfacesSearch.Base.IInterfacesSearch>(sp => rok.Get<Display.InterfacesSearch.Base.IInterfacesSearch>());           
 

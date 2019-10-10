@@ -1,0 +1,67 @@
+﻿@page "/netpublicsearch"
+
+@using Nailhang.Blazor.Data
+@using Nailhang.Display.NetPublicSearch.Base
+
+@inject Nailhang.Display.NetPublicSearch.Base.INetSearch netSearch;
+
+<h1>Поиск:</h1>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Поиск:</div>
+    <div class="panel-body">
+        <input type="text" @bind-value="containsText"
+               @bind-value:event="oninput"
+               @onkeyup="@UpdateFromText" />
+    </div>
+</div>
+
+<br />
+
+@if (displayItems == null)
+{
+    <p><em>Загрузка результата...</em></p>
+}
+else
+{
+<div class="interfaces-list">
+    @foreach (var s in displayItems)
+    {
+        <p>@s.ClassName</p>
+        <p>@s.ResultType</p>
+        <p>@s.MethodName</p>
+        <p>@s.ParametersString</p>
+        <br />
+    }
+</div>
+}
+
+
+@code {
+    string containsText { get; set; } = "";
+    SearchItem[] displayItems { get; set; }
+
+    protected override void OnInitialized()
+    {
+        displayItems = new SearchItem[] { };
+    }
+
+    string lastSearchReq;
+
+    async Task UpdateFromText(KeyboardEventArgs e)
+    {
+        displayItems = null;
+
+        var text = containsText.ToLower();
+
+        lastSearchReq = text;
+        await Task.Delay(500);
+        if (lastSearchReq == text)
+        {
+            if (string.IsNullOrEmpty(text))
+                displayItems = new SearchItem[] { };
+            else
+                displayItems = await Task.Run(() => netSearch.Search(text).ToArray());
+        }
+    }
+}
