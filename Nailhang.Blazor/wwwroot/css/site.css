@@ -14,10 +14,29 @@ a, .btn-link {
     color: darkgrey;
 }
 
+.descr_assembly {
+    font-size: larger;
+    color: brown;
+}
+
+.descr_result {
+    font-size: small;
+    color: darkred;
+}
+
+.descr_method{
+    font-weight: bolder;
+}
+
+.descr_class {
+    font-size: large;
+    color: darkslategray;
+}
+
 .btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
 }
 
 .interface-name {

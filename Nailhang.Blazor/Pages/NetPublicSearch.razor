@@ -24,16 +24,40 @@
 }
 else
 {
-<div class="interfaces-list">
-    @foreach (var s in displayItems)
-    {
-        <p>@s.ClassName</p>
-        <p>@s.ResultType</p>
-        <p>@s.MethodName</p>
-        <p>@s.ParametersString</p>
-        <br />
-    }
-</div>
+    <div class="interfaces-list">
+        @foreach (var ass in displayItems.OrderBy(q => q.AssemblyName)
+      .GroupBy(q => new { q.AssemblyName, q.AssemblyVersion }))
+        {
+            <div class="assembly_desc_dev">
+                <p class="descr_assembly">@ass.Key.AssemblyName ({@ass.Key.AssemblyVersion})</p>
+                <br />
+
+                @foreach (var cl in ass
+                       .OrderBy(w => w.ClassName)
+                       .GroupBy(w => w.ClassName))
+                {
+                    <p class="descr_class">@cl.Key</p>
+                    <br />
+                    <ul>
+                        @foreach (var method in cl
+                        .OrderBy(w => w.MethodName)
+                        .ThenBy(w => w.ParametersString))
+                        {
+                            <li>
+                                <span class="descr_result">@method.ResultType</span>
+                                <span class="descr_method">@method.MethodName</span>
+                                @if (method.GenericString != "")
+                                {
+                                    <span class="descr_method">@(method.GenericString != "" ? $"<{method.GenericString}>" : "")</span>
+                                }
+                                <span class="descr_parameters">(@(method.ParametersString))</span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        }
+    </div>
 }
 
 
