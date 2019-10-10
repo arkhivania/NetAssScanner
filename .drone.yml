@@ -1,12 +1,36 @@
----
-kind: pipeline
-type: docker
-name: default
-
-steps:
-- name: build
-  image: mcr.microsoft.com/dotnet/core/sdk:3.0
-  commands:
-  - cd ./Nailhang.Blazor
-  - mkdir ./out
-  - dotnet publish -c Release -r linux-x64 -o ./out/
+pipeline:  
+  blazor_build_check:
+    image: mcr.microsoft.com/dotnet/core/sdk:3.0
+    volumes:
+      - /root/.docker:/root/.docker
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+    - cd ./Nailhang.Blazor
+    - dotnet build
+    when:
+      event: [push, tag]
+  docker_latest:
+    image: docker:latest
+    volumes:
+      - /root/.docker:/root/.docker
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - cd ./Nailhang.Blazor/docker
+      - docker build -t $$DOCKER_REGISTRY/nailhangblazor:latest .
+      - docker push $$DOCKER_REGISTRY/nailhangblazor:latest
+    secrets: [ docker_registry ]
+    when:
+      event: [push]
+  docker_release:
+    image: docker:latest
+    volumes:
+      - /root/.docker:/root/.docker
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - echo ${DRONE_TAG##v}
+      - cd ./Nailhang.Blazor/docker
+      - docker build -t $$DOCKER_REGISTRY/nailhangblazor:$$DRONE_TAG .
+      - docker push $$DOCKER_REGISTRY/nailhangblazor:$$DRONE_TAG
+    secrets: [ docker_registry ]
+    when:
+      event: tag
