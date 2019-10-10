@@ -36,6 +36,10 @@ app {
     align-items: center;
 }
 
+div.jumbotron h2 {
+    word-break: break-all;
+}
+
 div.module-columns li {
     word-break: break-all;
 }
