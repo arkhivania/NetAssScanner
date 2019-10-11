@@ -15,21 +15,9 @@ namespace Nailhang.Display.NetPublicSearch
             Kernel.Bind<Processing.NetSearch>()
                 .ToSelf();
 
-            DateTime? lastCreatedTime = null;
-            Base.INetSearch created = null;
-
-            Kernel.Bind<Base.INetSearch>()
-                .ToMethod(q =>
-                {
-                    var curTime = DateTime.UtcNow;
-                    if (created == null || (curTime - lastCreatedTime.Value) > TimeSpan.FromMinutes(1))
-                    {
-                        created = q.Kernel.Get<Processing.NetSearch>();
-                        lastCreatedTime = curTime;
-                    }
-
-                    return created;
-                });
+            Kernel.Bind<Base.INetSearch>().To<Processing.NetSearch>()
+                .InSingletonScope();
+                
         }
     }
 }

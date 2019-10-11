@@ -1,0 +1,55 @@
+﻿@page "/classview/{Assembly}/{ClassName}/"
+
+@using Nailhang.IndexBase.PublicApi
+
+@inject Nailhang.IndexBase.PublicApi.IPublicApiStorage publicApiStorage
+
+@if (assemblyItem == null || classItem == null)
+{
+
+}
+else
+{
+    <p>
+        <h2>Класс: @classItem.Value.FullName</h2>
+        <br />
+        <span class="sp_assembly">
+            @assemblyItem.Value.FullName
+        </span>
+    </p>
+
+    <ul>
+        @foreach (var method in classItem.Value.Methods
+       .OrderBy(w => w.Name)
+       .ThenBy(w => w.ParametersString()))
+        {
+            <li>
+                <span class="descr_result">@method.Returns</span>
+                <span class="descr_method">@method.Name</span>
+                @if (method.GenericParameters.Length > 0)
+                {
+                    <span class="descr_method">@(method.GenericsString(true))</span>
+                }
+                <span class="descr_parameters">(@(method.ParametersString()))</span>
+            </li>
+        }
+    </ul>
+}
+
+
+@code {
+    [Parameter]
+    public string Assembly { get; set; }
+
+    [Parameter]
+    public string ClassName { get; set; }
+
+    AssemblyPublic? assemblyItem = null;
+    Class? classItem = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.assemblyItem = await Task.Factory.StartNew(() => publicApiStorage.LoadAssembly(Assembly).First());
+        this.classItem = assemblyItem.Value.Classes.First(c => c.FullName == ClassName);
+    }
+}

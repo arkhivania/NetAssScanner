@@ -58,25 +58,31 @@ namespace Nailhang.Display.Tools.TextSearch.Processing
 
         public double CompareStrings(string a, string b)
         {
+            if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b))
+                return 0;
+
             var tripletsA = StringTripletsStat(a);
             var tripletsB = StringTripletsStat(b);
 
-            int intersections = 0;
+            double scoreA = 0.0;
+            
             foreach (var ta in tripletsA)
             {
                 int cntB;
                 if (tripletsB.TryGetValue(ta.Key, out cntB))
-                    intersections++;
+                    scoreA += 1;
             }
+
+            double scoreB = 0.0;
 
             foreach (var tb in tripletsB)
             {
                 int cntA;
                 if (tripletsA.TryGetValue(tb.Key, out cntA))
-                    intersections++;
+                    scoreB += 1;
             }
 
-            return (double)intersections;
+            return scoreA/tripletsA.Count + scoreB/tripletsB.Count;
         }
     }
 }

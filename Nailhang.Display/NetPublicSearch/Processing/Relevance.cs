@@ -26,7 +26,7 @@ namespace Nailhang.Display.NetPublicSearch.Processing
         {
             var source = searchItems
                 .Select(w => new RelItem { Item = w, Relevance = 0 })
-                .ToList();
+                .ToArray();
 
             foreach (var ri in source)
             {
@@ -43,14 +43,14 @@ namespace Nailhang.Display.NetPublicSearch.Processing
                     }
                 }
 
-                ri.Relevance = 150.0 * classNameRelevance + 10 * namespaceRelevance;
+                ri.Relevance = 10.0 * classNameRelevance + 2 * namespaceRelevance;
                 if (ri.Item.Class.Methods.Length > 0)
                     ri.Relevance += methodRelevance / ri.Item.Class.Methods.Length;
             }
 
-
-            source.Sort((a, b) => -a.Relevance.CompareTo(b.Relevance));
-            return source.Select(w => w.Item);
+            return source
+                .OrderByDescending(q => q.Relevance)
+                .Select(w => w.Item);
         }
     }
 }

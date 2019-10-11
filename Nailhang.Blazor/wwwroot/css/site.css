@@ -8,6 +8,15 @@ a, .btn-link {
     color: #0366d6;
 }
 
+.sp_assembly {
+    font-size: small;
+    color: brown;
+}
+
+.sp_class {
+
+}
+
 .little-text {
     font-size: 80%;
     font-style: italic;

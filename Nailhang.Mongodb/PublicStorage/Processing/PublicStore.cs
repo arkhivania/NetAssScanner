@@ -3,6 +3,7 @@ using Nailhang.IndexBase.PublicApi;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Nailhang.Mongodb.PublicStorage.Processing
@@ -50,6 +51,16 @@ namespace Nailhang.Mongodb.PublicStorage.Processing
                 var filter = Builders<AssemblyEntity>.Filter.Where(w => w.Id == entity.Id);
                 var replaceResult = assembliesCollection
                     .ReplaceOne(filter, entity, new UpdateOptions { IsUpsert = true });
+            }
+        }
+
+        public IEnumerable<AssemblyPublic> LoadAssembly(string fullName)
+        {
+            foreach (var entity in assembliesCollection
+                .AsQueryable()
+                .Where(q => q.StringId.StartsWith(fullName)))
+            {
+                yield return ToAssemblyPublic(entity.Data);
             }
         }
     }

@@ -10,5 +10,6 @@ namespace Nailhang.IndexBase.PublicApi
         public Version AssemblyVersion { get; set; }
         public string FullName { get; set; }
         public Class[] Classes { get; set; }
+        public string ShortName => FullName.Split(',')[0];
     }
 }
