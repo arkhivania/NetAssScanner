@@ -54,6 +54,7 @@ else
         displayItems = new SearchItem[] { };
         if (!string.IsNullOrEmpty(Query))
         {
+            displayItems = null;
             var search = Query;
             lastSearchReq = search;
             var searchres = await Task.Run(() => netSearch.Search(search, 50).ToArray());
