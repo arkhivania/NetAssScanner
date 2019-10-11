@@ -25,7 +25,7 @@ namespace Nailhang.Display.Tools.TextSearch.Processing
                 .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(q => q.ToLower()))
             {
-                foreach(var t in index.Triplets(w))
+                foreach(var t in index.Statistics.Triplets(w))
                     tripletCodes.Add(t);
             }
 

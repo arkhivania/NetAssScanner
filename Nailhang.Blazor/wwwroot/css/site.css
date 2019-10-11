@@ -55,6 +55,10 @@ app {
     align-items: center;
 }
 
+div.panel-body input {
+    width: 300px;
+}
+
 div.jumbotron h2 {
     word-break: break-all;
 }

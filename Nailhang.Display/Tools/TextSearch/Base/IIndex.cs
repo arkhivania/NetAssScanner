@@ -7,5 +7,6 @@ namespace Nailhang.Display.Tools.TextSearch.Base
 {
     public interface IIndex
     {
+        
     }
 }

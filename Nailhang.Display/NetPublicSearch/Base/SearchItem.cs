@@ -7,15 +7,7 @@ namespace Nailhang.Display.NetPublicSearch.Base
 {
     public struct SearchItem
     {
-        public ClassType ClassType { get; set; }
-        public string ClassName { get; set; }
-        public string Namespace { get; set; }
-        public string FullName => $"{Namespace}.{ClassName}";
-        public string AssemblyName { get; set; }
-        public string AssemblyVersion { get; set; }
-        public string MethodName { get; set; }
-        public string ParametersString { get; set; }
-        public string GenericString { get; set; }
-        public string ResultType { get; set; }
+        public Class Class { get; set; }
+        public AssemblyPublic Assembly { get; set; }
     }
 }

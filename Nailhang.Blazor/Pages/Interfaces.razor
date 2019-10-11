@@ -9,9 +9,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">Поиск:</div>
     <div class="panel-body">
-        <input type="text" @bind-value="containsText"
-               @bind-value:event="oninput"
-               @onkeyup="@UpdateFromText" />
+        <input type="text" @oninput="@UpdateFromText" />
     </div>
 </div>
 
@@ -36,9 +34,8 @@ else
 
 
 @code {
-    string containsText { get; set; } = "";
-    Nailhang.Display.Models.InterfaceMD5KV[] allInterfaces { get; set; }
-    Nailhang.Display.Models.InterfaceMD5KV[] displayInterfaces { get; set; }
+        Nailhang.Display.Models.InterfaceMD5KV[] allInterfaces { get; set; }
+        Nailhang.Display.Models.InterfaceMD5KV[] displayInterfaces { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,10 +46,11 @@ else
 
     string lastSearchReq;
 
-    async Task UpdateFromText(KeyboardEventArgs e)
+    async Task UpdateFromText(ChangeEventArgs e)
     {
         displayInterfaces = null;
 
+        var containsText = (string)e.Value;
         var text = containsText.ToLower();
 
         lastSearchReq = text;
@@ -62,7 +60,11 @@ else
             if (string.IsNullOrEmpty(text))
                 displayInterfaces = await Task.Run(() => allInterfaces.Where(w => w.Name.ToLower().Contains(text)).ToArray());
             else
-                displayInterfaces = await Task.Run(() => interfacesSearch.Search(text).ToArray());
+            {
+                var res = await Task.Run(() => interfacesSearch.Search(text).ToArray());
+                if(lastSearchReq == text)
+                    displayInterfaces = res;
+            }
         }
     }
 }

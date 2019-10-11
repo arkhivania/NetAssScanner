@@ -6,6 +6,6 @@ namespace Nailhang.Display.NetPublicSearch.Base
 {
     public interface INetSearch
     {
-        IEnumerable<SearchItem> Search(string query);
+        IEnumerable<SearchItem> Search(string query, int maxCount);
     }
 }

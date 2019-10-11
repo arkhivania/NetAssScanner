@@ -14,6 +14,8 @@ namespace Nailhang.Display.Tools.TextSearch.Processing
 
         int documentIndex = 0;
 
+        internal Statistics Statistics => statistics;
+
         public Index(Statistics statistics)
         {
             this.statistics = statistics;
@@ -28,33 +30,7 @@ namespace Nailhang.Display.Tools.TextSearch.Processing
                     yield return tr;
             }
         }
-
-        internal byte ToCode(char c)
-        {
-            byte bc;
-            if (!statistics.ToCode.TryGetValue(c, out bc))
-                bc = 255;
-            return bc;
-        }
-
-        public IEnumerable<int> Triplets(string word)
-        {
-            var letterCodes = new List<byte>(new byte[] { 255, 255 });
-            letterCodes.AddRange(word.Where(char.IsLetter).Select(ToCode));
-            letterCodes.AddRange(new byte[] { 255, 255 });
-
-            for (int j = 0; j <= letterCodes.Count - 3; ++j)
-            {
-                int code = 0;
-                for (int x = 0; x < 3; ++x)
-                {
-                    int lc = letterCodes[j + x];
-                    code |= lc << x * 8;
-                }
-
-                yield return code;
-            }
-        }
+        
 
         public IEnumerable<string> Words(string sentence)
         {
@@ -66,7 +42,7 @@ namespace Nailhang.Display.Tools.TextSearch.Processing
         {
             foreach (var w in Words(bulk.Sentence))
             {
-                foreach (var code in Triplets(w))
+                foreach (var code in statistics.Triplets(w))
                 {
                     Triplets tr;
                     if (!triplets.TryGetValue(code, out tr))
@@ -80,5 +56,9 @@ namespace Nailhang.Display.Tools.TextSearch.Processing
 
             documentIndex++;
         }
+
+        
+
+        
     }
 }

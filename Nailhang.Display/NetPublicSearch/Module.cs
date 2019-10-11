@@ -16,38 +16,19 @@ namespace Nailhang.Display.NetPublicSearch
                 .ToSelf();
 
             DateTime? lastCreatedTime = null;
-            var created = new List<Base.INetSearch>();
+            Base.INetSearch created = null;
 
             Kernel.Bind<Base.INetSearch>()
                 .ToMethod(q =>
                 {
                     var curTime = DateTime.UtcNow;
-                    Task createTask = null;
-                    lock (created)
-                        if (created.Count == 0
-                        || (curTime - lastCreatedTime.Value) > TimeSpan.FromMinutes(1))
-                        {
-                            createTask = Task.Factory.StartNew(() =>
-                            {
-                                var cr = q.Kernel.Get<Processing.NetSearch>();
-                                lock (created)
-                                {
-                                    created.Insert(0, cr);
-                                    while (created.Count > 1)
-                                        created.RemoveAt(0);
-                                }
-                            });
+                    if (created == null || (curTime - lastCreatedTime.Value) > TimeSpan.FromMinutes(1))
+                    {
+                        created = q.Kernel.Get<Processing.NetSearch>();
+                        lastCreatedTime = curTime;
+                    }
 
-                            lastCreatedTime = curTime;
-                        }
-
-                    lock (created)
-                        if (created.Any())
-                            return created.Last();
-
-                    createTask.ConfigureAwait(false)
-                        .GetAwaiter().GetResult();
-                    return created.First();
+                    return created;
                 });
         }
     }
