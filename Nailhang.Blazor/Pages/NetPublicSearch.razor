@@ -2,6 +2,7 @@
 
 @using Nailhang.Blazor.Data
 @using Nailhang.Display.NetPublicSearch.Base
+@using Nailhang.IndexBase.PublicApi
 
 @inject Nailhang.Display.NetPublicSearch.Base.INetSearch netSearch;
 
@@ -10,9 +11,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">Поиск:</div>
     <div class="panel-body">
-        <input type="text" @bind-value="containsText"
-               @bind-value:event="oninput"
-               @onkeyup="@UpdateFromText" />
+        <input type="text" @oninput="@UpdateFromText"/>
     </div>
 </div>
 
@@ -25,32 +24,30 @@
 else
 {
     <div class="interfaces-list">
-        @foreach (var ass in displayItems.OrderBy(q => q.AssemblyName)
-      .GroupBy(q => new { q.AssemblyName, q.AssemblyVersion }))
+        @foreach (var ass in displayItems.OrderBy(q => q.Assembly.FullName)
+              .GroupBy(q => new { q.Assembly.FullName, q.Assembly.AssemblyVersion }))
         {
             <div class="assembly_desc_dev">
-                <p class="descr_assembly">Сборка: @ass.Key.AssemblyName (@ass.Key.AssemblyVersion)</p>
+                <p class="descr_assembly">Сборка: @ass.Key.FullName (@ass.Key.AssemblyVersion)</p>
                 <br />
 
-                @foreach (var cl in ass
-                       .OrderBy(w => w.FullName)
-                       .GroupBy(w => w.FullName))
+                @foreach (var cl in ass.OrderBy(w => w.Class.Name))
                 {
-                    <p class="descr_class">Класс: @cl.Key</p>
+                    <p class="descr_class">Класс: @cl.Class.FullName</p>
                     <br />
                     <ul>
-                        @foreach (var method in cl
-                        .OrderBy(w => w.MethodName)
-                        .ThenBy(w => w.ParametersString))
+                        @foreach (var method in cl.Class.Methods
+                            .OrderBy(w => w.Name)
+                            .ThenBy(w => w.ParametersString()))
                         {
                             <li>
-                                <span class="descr_result">@method.ResultType</span>
-                                <span class="descr_method">@method.MethodName</span>
-                                @if (method.GenericString != "")
+                                <span class="descr_result">@method.Returns</span>
+                                <span class="descr_method">@method.Name</span>
+                                @if (method.GenericParameters.Length > 0)
                                 {
-                                    <span class="descr_method">@(method.GenericString != "" ? $"<{method.GenericString}>" : "")</span>
+                                    <span class="descr_method">@(method.GenericsString(true))</span>
                                 }
-                                <span class="descr_parameters">(@(method.ParametersString))</span>
+                                <span class="descr_parameters">(@(method.ParametersString())</span>
                             </li>
                         }
                     </ul>
@@ -61,8 +58,7 @@ else
 }
 
 
-@code {
-    string containsText { get; set; } = "";
+@code {        
     SearchItem[] displayItems { get; set; }
 
     protected override void OnInitialized()
@@ -72,10 +68,11 @@ else
 
     string lastSearchReq;
 
-    async Task UpdateFromText(KeyboardEventArgs e)
+    async Task UpdateFromText(ChangeEventArgs e)
     {
         displayItems = null;
 
+        var containsText = (string)e.Value;
         var text = containsText.ToLower();
 
         lastSearchReq = text;
@@ -85,7 +82,11 @@ else
             if (string.IsNullOrEmpty(text))
                 displayItems = new SearchItem[] { };
             else
-                displayItems = await Task.Run(() => netSearch.Search(text).ToArray());
+            {
+                var searchres = await Task.Run(() => netSearch.Search(text, 50).ToArray());
+                if(lastSearchReq == text)
+                    displayItems = searchres;
+            }
         }
     }
 }
