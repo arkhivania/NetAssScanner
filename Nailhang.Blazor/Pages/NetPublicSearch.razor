@@ -84,9 +84,9 @@ else
                 if (lastSearchReq == text)
                 {
                     displayItems = searchres;
-                    var dataEncoded = System.Uri.EscapeDataString(text);
-                    navigationManager.NavigateTo($"/netpublicsearch/{dataEncoded}");
-                    Query = text;
+                    var dataEncoded = Uri.EscapeDataString(text);
+                    var beforenet = navigationManager.Uri.Split("netpublicsearch")[0];
+                    navigationManager.NavigateTo($"{beforenet}netpublicsearch/{dataEncoded}", false);
                 }
             }
         }
