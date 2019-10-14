@@ -57,8 +57,21 @@ namespace Nailhang.Display.Tools.TextSearch.Processing
             documentIndex++;
         }
 
-        
+        public void Throttle(float quantile)
+        {
+            if (triplets.Count == 0)
+                return;
 
-        
+            var triplets_stat = triplets.Select(w => w.Value.Bulks.Count).ToList();
+            triplets_stat.Sort();
+            var threshold = triplets_stat[(int)((float)triplets_stat.Count - quantile * (float)triplets_stat.Count)];
+            int removed = 0;
+            foreach(var tv in triplets.ToArray())
+                if(tv.Value.Bulks.Count > threshold)
+                {
+                    triplets.Remove(tv.Key);
+                    removed++;
+                }
+        }
     }
 }

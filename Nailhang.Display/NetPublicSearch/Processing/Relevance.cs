@@ -43,7 +43,7 @@ namespace Nailhang.Display.NetPublicSearch.Processing
                     }
                 }
 
-                ri.Relevance = 10.0 * classNameRelevance + 2 * namespaceRelevance;
+                ri.Relevance = 2.0 * classNameRelevance + 1 * namespaceRelevance;
                 if (ri.Item.Class.Methods.Length > 0)
                     ri.Relevance += methodRelevance / ri.Item.Class.Methods.Length;
             }

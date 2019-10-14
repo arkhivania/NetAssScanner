@@ -61,6 +61,7 @@ namespace Nailhang.Display.Tools.TextSearch.Processing
             var index = new Index((Statistics)stat);
             foreach (var b in bulks)
                 index.Run(b);
+            index.Throttle(0.1f);
             return index;
         }
     }
