@@ -66,9 +66,9 @@ namespace Nailhang.Tool
                         targetFiles.Add(envParam.Substring("-file:".Length));
                 }
 
-                if (args[0] == "public")
+                if (args[0] == "classes")
                 {
-                    PublicAssembliesPipeline(
+                    ClassesAssembliesPipeline(
                         kernel.Get<IPublicApiStorage>(),
                         kernel.Get<IPublicProcessor>(), targetFiles);
                 }
@@ -77,7 +77,7 @@ namespace Nailhang.Tool
             }
         }
 
-        private static void PublicAssembliesPipeline(IPublicApiStorage publicApiStorage, IPublicProcessor publicProcessor, List<string> targetFiles)
+        private static void ClassesAssembliesPipeline(IPublicApiStorage publicApiStorage, IPublicProcessor publicProcessor, List<string> targetFiles)
         {
             int index = 0;
             foreach (var fileName in targetFiles)

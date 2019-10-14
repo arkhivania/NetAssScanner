@@ -10,5 +10,6 @@ namespace Nailhang.IndexBase.PublicApi
         public string Name { get; set; }
         public Parameter[] Parameters { get; set; }
         public string[] GenericParameters { get; set; }
+        public bool IsPublic { get; set; }
     }
 }

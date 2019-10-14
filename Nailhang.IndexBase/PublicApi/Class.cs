@@ -11,5 +11,6 @@ namespace Nailhang.IndexBase.PublicApi
         public ClassType ClassType { get; set; }
         public string Namespace { get; set; }
         public string FullName => $"{Namespace}.{Name}";
+        public bool IsPublic { get; set; }
     }
 }

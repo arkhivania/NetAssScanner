@@ -13,37 +13,35 @@ namespace Nailhang.Processing.PublicExtract.Processing
         {
             foreach (var t in module.GetTypes())
             {
-                if (t.IsPublic)
+                var @class = new Class { Name = t.Name, Namespace = t.Namespace, IsPublic = t.IsPublic };
+                if (t.IsInterface)
+                    @class.ClassType = ClassType.Interface;
+                else if (t.IsClass)
+                    @class.ClassType = ClassType.Class;
+                else if (t.IsEnum)
+                    @class.ClassType = ClassType.Enum;
+                else
+                    throw new InvalidOperationException("Unknown public class");
+
+                var methods = new List<Method>();
+                foreach (var m in t.Methods)
                 {
-                    var @class = new Class { Name = t.Name, Namespace = t.Namespace };
-                    if (t.IsInterface)
-                        @class.ClassType = ClassType.Interface;
-                    else if (t.IsClass)
-                        @class.ClassType = ClassType.Class;
-                    else if (t.IsEnum)
-                        @class.ClassType = ClassType.Enum;
-                    else
-                        throw new InvalidOperationException("Unknown public class");
-
-                    var methods = new List<Method>();
-                    foreach(var m in t.Methods)
+                    if (m.IsPublic)
                     {
-                        if(m.IsPublic)
+                        var constructed = new Method
                         {
-                            var constructed = new Method
-                            {
-                                Name = m.Name,
-                                Returns = m.ReturnType.ToString(),
-                                Parameters = m.Parameters.Select(q => new Parameter { Name = q.Name, Type = q.ParameterType.Name }).ToArray(),
-                                GenericParameters = m.GenericParameters.Select(q => q.ToString()).ToArray()
-                            };
+                            Name = m.Name,
+                            Returns = m.ReturnType.ToString(),
+                            Parameters = m.Parameters.Select(q => new Parameter { Name = q.Name, Type = q.ParameterType.Name }).ToArray(),
+                            GenericParameters = m.GenericParameters.Select(q => q.ToString()).ToArray(), 
+                            IsPublic = m.IsPublic
+                        };
 
-                            methods.Add(constructed);
-                        }
+                        methods.Add(constructed);
                     }
-                    @class.Methods = methods.ToArray();
-                    yield return @class;
                 }
+                @class.Methods = methods.ToArray();
+                yield return @class;
             }
 
             yield break;
