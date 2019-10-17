@@ -9,5 +9,7 @@ namespace Nailhang.IndexBase.PublicApi
         void UpdateAssemblies(IEnumerable<AssemblyPublic> assemblies);
         IEnumerable<AssemblyPublic> LoadAssemblies();
         IEnumerable<AssemblyPublic> LoadAssembly(string fullName);
+
+        long Drop(DropRequest dropRequest);
     }
 }

@@ -63,5 +63,20 @@ namespace Nailhang.Mongodb.PublicStorage.Processing
                 yield return ToAssemblyPublic(entity.Data);
             }
         }
+
+        public long Drop(DropRequest dropRequest)
+        {
+            var filter = Builders<AssemblyEntity>.Filter.Empty;
+            if (!string.IsNullOrEmpty(dropRequest.NameStartsWith))
+            {
+                filter = Builders<AssemblyEntity>
+                    .Filter
+                    .Where(t => t.StringId.StartsWith(dropRequest.NameStartsWith));
+            }
+
+            var deleteResult = assembliesCollection
+                .DeleteMany(filter);
+            return deleteResult.DeletedCount;
+        }
     }
 }

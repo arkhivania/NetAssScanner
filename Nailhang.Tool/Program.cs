@@ -5,11 +5,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Configuration;
 using Nailhang.IndexBase.PublicApi;
+using System.Text.RegularExpressions;
 
 namespace Nailhang.Tool
 {
@@ -32,49 +31,123 @@ namespace Nailhang.Tool
                 var config = builder.Build();
                 kernel.Bind<IConfiguration>().ToConstant(config);
 
-
                 var storage = kernel.Get<IModulesStorage>();
                 var processor = kernel.Get<IndexBase.Index.IIndexProcessor>();
-
-                if (Environment.GetCommandLineArgs().Any(w => w.ToLower() == "-drop"))
-                    storage.DropModules(namespaceStartsWith: "");
-
-                foreach (var drop in Environment.GetCommandLineArgs().Where(w => w.ToLower().StartsWith("-drop:")))
-                    storage.DropModules(drop.Substring("-drop:".Length));
-
-                var targetFiles = new List<string>();
-
-                if (Environment.GetCommandLineArgs().Any(w => w.ToLower() == "-list"))
-                {
-                    Console.WriteLine("Stored modules:");
-                    Console.WriteLine(Environment.NewLine);
-                    foreach (var m in storage.GetModules())
-                    {
-
-                        Console.WriteLine(string.Format("Assembly: {0}", m.Assembly));
-                        Console.WriteLine(string.Format("ModuleName: {0}", m.FullName));
-                        Console.WriteLine(string.Format("Description: {0}", m.Description));
-                        Console.WriteLine(Environment.NewLine);
-                    }
-                }
-
-                foreach (var envParam in Environment.GetCommandLineArgs())
-                {
-                    if (envParam.ToLower().StartsWith("-folder:"))
-                        targetFiles.AddRange(Directory.GetFiles(envParam.Substring("-folder:".Length), "*.dll", SearchOption.AllDirectories));
-                    if (envParam.ToLower().StartsWith("-file:"))
-                        targetFiles.Add(envParam.Substring("-file:".Length));
-                }
+                var targetFiles = GetTargetFiles(Environment.GetCommandLineArgs());
 
                 if (args[0] == "classes")
                 {
+                    var apiStorage = kernel.Get<IPublicApiStorage>();
+
+                    if (HaveSwitch("drop"))
+                    {
+                        var dropped = apiStorage.Drop(new DropRequest { });
+                        Console.WriteLine($"Dropped: {dropped} assemblies");
+                    }
+
+                    foreach(var dropP in GetParameters("drop"))
+                    {
+                        var dropped = apiStorage.Drop(new DropRequest { NameStartsWith = dropP });
+                        Console.WriteLine($"Dropped: {dropped} assemblies");
+                    }
+                    
                     ClassesAssembliesPipeline(
-                        kernel.Get<IPublicApiStorage>(),
+                        apiStorage,
                         kernel.Get<IPublicProcessor>(), targetFiles);
                 }
                 else
+                {
+                    if (Environment.GetCommandLineArgs().Any(w => w.ToLower() == "-drop"))
+                        storage.DropModules(namespaceStartsWith: "");
+
+                    foreach (var drop in Environment.GetCommandLineArgs()
+                        .Where(w => w.ToLower().StartsWith("-drop:")))
+                        storage.DropModules(drop.Substring("-drop:".Length));
+
+                    if (Environment.GetCommandLineArgs().Any(w => w.ToLower() == "-list"))
+                    {
+                        Console.WriteLine("Stored modules:");
+                        Console.WriteLine(Environment.NewLine);
+                        foreach (var m in storage.GetModules())
+                        {
+                            Console.WriteLine(string.Format("Assembly: {0}", m.Assembly));
+                            Console.WriteLine(string.Format("ModuleName: {0}", m.FullName));
+                            Console.WriteLine(string.Format("Description: {0}", m.Description));
+                            Console.WriteLine(Environment.NewLine);
+                        }
+                    }
+
                     ModulesPipeLine(storage, processor, targetFiles);
+                }
             }
+        }
+
+        static string WildcardToRegex(string pattern)
+        {
+            return "^" + Regex.Escape(pattern).
+                            Replace("\\*", ".*").
+                            Replace("\\?", ".") + "$";
+        }
+
+        static bool HaveSwitch(string name)
+        {
+            return HaveSwitch(Environment.GetCommandLineArgs(), name);
+        }
+
+        static bool HaveSwitch(string[] args, string name)
+        {
+            var ln = $"-{name.ToLower()}";
+            return args.Any(w => w.ToLower() == ln);
+        }
+
+        static IEnumerable<string> GetParameters(string parameter)
+        {
+            return GetParameters(Environment.GetCommandLineArgs(), parameter);
+        }
+
+        static IEnumerable<string> GetParameters(string[] args, string parameter)
+        {
+            var prm = parameter.ToLower();
+            var subL = $"-{prm}:".Length;
+            return args
+                .Where(w => w.ToLower().StartsWith($"-{prm}:"))
+                .Select(w => w.Substring(subL));
+        }
+
+        private static List<string> GetTargetFiles(string[] args)
+        {
+            var targetFiles = new List<string>();
+
+            var folderMask = GetParameters(args, "folderMask").SingleOrDefault();
+            if (folderMask == null)
+                folderMask = "*.dll";
+
+            foreach (var envParam in args)
+            {
+                if (envParam.ToLower().StartsWith("-folder:"))
+                    targetFiles.AddRange(Directory.GetFiles(envParam.Substring("-folder:".Length), folderMask, SearchOption.AllDirectories));
+                if (envParam.ToLower().StartsWith("-file:"))
+                    targetFiles.Add(envParam.Substring("-file:".Length));
+            }
+
+            foreach (var envParam in args)
+            {
+                if(envParam.ToLower().StartsWith("-ignore:"))
+                {
+                    var param = envParam.Substring("-ignore:".Length);
+                    var reg = new Regex(WildcardToRegex(param));
+                    for(int i = 0; i < targetFiles.Count; ++i)
+                    {
+                        if (reg.IsMatch(targetFiles[i]))
+                        {
+                            targetFiles.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                }
+            }
+
+            return targetFiles;
         }
 
         private static void ClassesAssembliesPipeline(IPublicApiStorage publicApiStorage, IPublicProcessor publicProcessor, List<string> targetFiles)
@@ -86,9 +159,10 @@ namespace Nailhang.Tool
                 try
                 {
                     assemblies = publicProcessor.Extract(fileName).ToArray();
-                }catch(Exception e)
+                }
+                catch (Exception e)
                 {
-                    Console.WriteLine($"Error processing: {fileName}");
+                    Console.WriteLine($"Error processing: {fileName}: {e}");
                     index++;
                     continue;
                 }
