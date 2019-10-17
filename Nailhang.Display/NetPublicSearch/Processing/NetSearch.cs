@@ -17,34 +17,36 @@ namespace Nailhang.Display.NetPublicSearch.Processing
             public IStat stat;
             public ISearch classSearch;
             public DateTime BuildTime;
+            public Base.NamespaceInfo[] Namespaces { get; set; }
         }
 
-        static IEnumerable<Base.SearchItem> Prepare(AssemblyPublic assemblyPublic)
+        static IEnumerable<Base.SearchItem> Prepare(AssemblyPublic assemblyPublic, HashSet<string> namespaces)
         {
             foreach (var c in assemblyPublic.Classes)
+            {
+                namespaces.Add(c.Namespace);
                 yield return new SearchItem { Assembly = assemblyPublic, Class = c };
+            }
         }
 
         CurSearch? currentSearch;
         private readonly IWSBuilder wSBuilder;
         private readonly IPublicApiStorage publicApiStorage;
 
-
-
         //readonly ISearch namespaceSearch;
 
         readonly Timer refreshTimer;
 
         public NetSearch(IWSBuilder wSBuilder, IPublicApiStorage publicApiStorage)
-        {   
+        {
             this.wSBuilder = wSBuilder;
             this.publicApiStorage = publicApiStorage;
 
             refreshTimer = new Timer(state =>
             {
-                lock(this)
+                lock (this)
                 {
-                    if (currentSearch != null 
+                    if (currentSearch != null
                         && DateTime.UtcNow.Subtract(currentSearch.Value.BuildTime) > TimeSpan.FromMinutes(10))
                         currentSearch = null;
                 }
@@ -54,8 +56,14 @@ namespace Nailhang.Display.NetPublicSearch.Processing
         private CurSearch CreateSearch()
         {
             var res = new CurSearch();
-            res.searchItems = publicApiStorage.LoadAssemblies().SelectMany(a => Prepare(a))
-                            .ToArray();
+
+            var loadedAssemblies = publicApiStorage
+                .LoadAssemblies();
+
+            var namespaces = new HashSet<string>();
+            res.searchItems = loadedAssemblies
+                .SelectMany(a => Prepare(a, namespaces))
+                .ToArray();
 
             {
                 var search_strings = res.searchItems.Select(w => w.Class.Name);
@@ -65,21 +73,16 @@ namespace Nailhang.Display.NetPublicSearch.Processing
                 res.classSearch = wSBuilder.CreateSearch(index);
             }
             res.BuildTime = DateTime.UtcNow;
+            res.Namespaces = namespaces
+                .OrderBy(w => w)
+                .Select(w => new Base.NamespaceInfo { Namespace = w, Levels = w.Split('.').Length + 1 })
+                .ToArray();
             return res;
         }
 
         public IEnumerable<SearchItem> Search(string query, int maxCount)
         {
-            CurSearch search;
-            lock (this)
-            {
-                if (currentSearch == null 
-                    || DateTime.UtcNow.Subtract(currentSearch.Value.BuildTime) > TimeSpan.FromMinutes(10))
-                    currentSearch = CreateSearch();
-
-                search = currentSearch.Value;
-            }
-
+            CurSearch search = GetSearch();
             var name = query.ToLower();
 
             var relevance = new Relevance(search.stat);
@@ -94,9 +97,42 @@ namespace Nailhang.Display.NetPublicSearch.Processing
                 .Take(maxCount > 0 ? maxCount : int.MaxValue);
         }
 
+        private CurSearch GetSearch()
+        {
+            CurSearch search;
+            lock (this)
+            {
+                if (currentSearch == null
+                    || DateTime.UtcNow.Subtract(currentSearch.Value.BuildTime) > TimeSpan.FromMinutes(10))
+                {
+                    currentSearch = null;
+                    currentSearch = CreateSearch();
+                }
+
+                search = currentSearch.Value;
+            }
+
+            return search;
+        }
+
         public void Dispose()
         {
             refreshTimer.Dispose();
+        }
+
+        public void RebuildIndex()
+        {
+            lock (this)
+            {
+                currentSearch = null;
+                currentSearch = CreateSearch();
+            }
+        }
+
+        public IEnumerable<NamespaceInfo> GetNamespaces()
+        {
+            var search = GetSearch();
+            return search.Namespaces;
         }
     }
 }

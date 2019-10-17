@@ -7,20 +7,47 @@
 
 @inject Nailhang.Display.NetPublicSearch.Base.INetSearch netSearch;
 @inject NavigationManager navigationManager;
+@inject States.NetSearchState netSearchState;
 
-<h1>Поиск:</h1>
+    <form>
+        <div class="form-row">
+            <div class="col">
+                <label class="col-form-label">Пространство имен</label>
+                <select id="select_namespace" class="form-control"
+                        @bind="@netSearchState.SelectedNamespace">
+                    @if (netSearchState.Namespaces != null)
+                        @foreach (var ns in netSearchState.Namespaces)
+                        {
+                            <option value=@ns>@ns</option>
+                        }
+                </select>
+            </div>
+        </div>
 
-<div class="panel panel-default">
-    <div class="panel-heading">Поиск:</div>
-    <div class="panel-body">
-        <input type="text" @bind-value="Query" 
-               @oninput="@UpdateFromText"/>
-    </div>
-</div>
+        <div class="form-group">
+            <label class="col-form-label">Запрос</label>
+            <input class="form-control" type="text" @bind-value="Query"
+                   @oninput="@UpdateFromText" />
+        </div>
+
+        <div class="form-group row">            
+            <div class="col-sm-10">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" 
+                           id="chk_public" @bind="@netSearchState.ShowOnlyPublic"/>
+                    <label class="form-check-label" for="chk_public">
+                        Только публичные
+                    </label>
+                </div>
+            </div>
+        </div>        
+
+        <button class="btn btn-secondary" @onclick="@OnUpdateIndex">Update search index</button>
+    </form>
 
 <br />
 
-@if (displayItems == null)
+@if (netSearchState.DisplayItems == null)
 {
     <p><em>Загрузка результата...</em></p>
 }
@@ -28,8 +55,19 @@ else
 {
     <div class="interfaces-list">
         <ul>
-            @foreach (var displayResult in displayItems)
+            @{
+                displayCount = 0;
+            }
+
+            @foreach (var displayResult in netSearchState.DisplayItems)
             {
+                @if (!string.IsNullOrEmpty(netSearchState.SelectedNamespace))
+                    if (!displayResult.Class.Namespace.StartsWith(netSearchState.SelectedNamespace))
+                        continue;
+
+                @if (netSearchState.ShowOnlyPublic && !displayResult.Class.IsPublic)
+                    continue;
+
                 <li>
                     <p>
                         @if (displayResult.Class.IsPublic)
@@ -48,37 +86,57 @@ else
                         </span>
                     </p>
                 </li>
+
+                displayCount++;
             }
         </ul>
     </div>
+
+    <p>Найдено: @displayCount элементов.</p>
 }
 
 @code {
     [Parameter]
     public string Query { get; set; }
 
-    SearchItem[] displayItems { get; set; }
+    int displayCount = 0;
+
+    async Task OnUpdateIndex()
+    {
+        netSearchState.DisplayItems = null;
+        await Task.Run(() => netSearch.RebuildIndex());
+        lastSearchReq = null;
+        await UpdateFromText(new ChangeEventArgs { Value = Query });
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        displayItems = new SearchItem[] { };
+        netSearchState.DisplayItems = new SearchItem[] { };
         if (!string.IsNullOrEmpty(Query))
         {
-            displayItems = null;
+            netSearchState.DisplayItems = null;
             var search = Query;
             lastSearchReq = search;
             var searchres = await Task.Run(() => netSearch.Search(search, 50).ToArray());
 
             if (lastSearchReq == search)
-                displayItems = searchres;
+                netSearchState.DisplayItems = searchres;
         }
+
+        var namespaces = await Task.Run(() => netSearch.GetNamespaces()
+                .SelectMany(w => w.AllNamespaces)
+                .Distinct()
+                .Where(w => w.Levels < 3).ToArray());
+
+        netSearchState.Namespaces = @namespaces
+            .Select(w => w.Namespace).ToArray();
     }
 
     string lastSearchReq;
 
     async Task UpdateFromText(ChangeEventArgs e)
     {
-        displayItems = null;
+        netSearchState.DisplayItems = null;
 
         var containsText = (string)e.Value;
         var text = containsText.ToLower();
@@ -91,17 +149,18 @@ else
         if (lastSearchReq == text)
         {
             if (string.IsNullOrEmpty(text))
-                displayItems = new SearchItem[] { };
+                netSearchState.DisplayItems = new SearchItem[] { };
             else
             {
                 var searchres = await Task.Run(() => netSearch.Search(text, 50).ToArray());
                 if (lastSearchReq == text)
                 {
-                    displayItems = searchres;
+                    netSearchState.DisplayItems = searchres;
                     var dataEncoded = Uri.EscapeDataString(text);
                     var beforenet = navigationManager.Uri.Split("netpublicsearch")[0];
                     navigationManager.NavigateTo($"{beforenet}netpublicsearch/{dataEncoded}", false);
                 }
+
             }
         }
     }

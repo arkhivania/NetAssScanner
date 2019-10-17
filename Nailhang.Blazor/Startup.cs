@@ -38,7 +38,7 @@ namespace Nailhang.Blazor
             services.AddServerSideBlazor();
 
             services.AddSingleton<Data.NailhangModulesService>();
-
+            services.AddScoped<States.NetSearchState>();
 
             //dirty place
 
