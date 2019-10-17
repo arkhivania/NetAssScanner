@@ -9,41 +9,44 @@
 @inject NavigationManager navigationManager;
 @inject States.NetSearchState netSearchState;
 
-    <form>
-        <div class="form-row">
-            <div class="col">
-                <label class="col-form-label">Пространство имен</label>
-                <select id="select_namespace" class="form-control"
-                        @bind="@netSearchState.SelectedNamespace">
-                    @if (netSearchState.Namespaces != null)
-                        @foreach (var ns in netSearchState.Namespaces)
-                        {
-                            <option value=@ns>@ns</option>
-                        }
-                </select>
+<form>
+    <div class="form-row">
+        <div class="col">
+            <label class="col-form-label">Пространство имен</label>
+            <select id="select_namespace" class="form-control"
+                    @bind="@netSearchState.SelectedNamespace">
+                @if (netSearchState.Namespaces != null)
+                    @foreach (var ns in netSearchState.Namespaces)
+                    {
+                        <option value=@ns>@ns</option>
+                    }
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-form-label">Запрос</label>
+        <input class="form-control" type="text" @bind-value="Query"
+               @oninput="@UpdateFromText" />
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-7">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       id="chk_public" @bind="@netSearchState.ShowOnlyPublic" />
+                <label class="form-check-label" for="chk_public">
+                    Только публичные
+                </label>
             </div>
         </div>
 
-        <div class="form-group">
-            <label class="col-form-label">Запрос</label>
-            <input class="form-control" type="text" @bind-value="Query"
-                   @oninput="@UpdateFromText" />
+        <div class="col">
+            <button class="form-control btn btn-secondary" 
+                    @onclick="@OnUpdateIndex">Update search index</button>
         </div>
-
-        <div class="form-group row">            
-            <div class="col-sm-10">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" 
-                           id="chk_public" @bind="@netSearchState.ShowOnlyPublic"/>
-                    <label class="form-check-label" for="chk_public">
-                        Только публичные
-                    </label>
-                </div>
-            </div>
-        </div>        
-
-        <button class="btn btn-secondary" @onclick="@OnUpdateIndex">Update search index</button>
-    </form>
+    </div>
+</form>
 
 <br />
 
