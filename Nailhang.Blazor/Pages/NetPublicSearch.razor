@@ -108,8 +108,16 @@ else
     {
         netSearchState.DisplayItems = null;
         await Task.Run(() => netSearch.RebuildIndex());
-        lastSearchReq = null;
-        await UpdateFromText(new ChangeEventArgs { Value = Query });
+
+        if (string.IsNullOrEmpty(Query))
+            netSearchState.DisplayItems = new SearchItem[] { };
+        else
+        {
+            var req = Query;
+            var searchres = await Task.Run(() => netSearch.Search(Query, 50).ToArray());
+            if(req == Query)
+                netSearchState.DisplayItems = searchres;
+        }
     }
 
     protected override async Task OnInitializedAsync()

@@ -34,9 +34,9 @@ namespace Nailhang.Mongodb.PublicStorage.Processing
 
         private AssemblyPublic ToAssemblyPublic(string data)
         {
-            return JsonConvert.DeserializeObject<AssemblyPublic>(data);
+            return JsonConvert.DeserializeObject<AssemblyPublic>(data, new VersionConverter());
         }
-
+         
         public void UpdateAssemblies(IEnumerable<AssemblyPublic> assemblies)
         {
             foreach(var a in assemblies)
