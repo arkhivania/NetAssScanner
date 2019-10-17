@@ -61,6 +61,7 @@ namespace Nailhang.Display.NetPublicSearch.Processing
                 var search_strings = res.searchItems.Select(w => w.Class.Name);
                 res.stat = wSBuilder.BuildStat(search_strings);
                 var index = wSBuilder.Index(search_strings.Select(w => new Bulk { Sentence = w }), res.stat);
+                index.Throttle(0.1f);
                 res.classSearch = wSBuilder.CreateSearch(index);
             }
             res.BuildTime = DateTime.UtcNow;

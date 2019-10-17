@@ -72,6 +72,8 @@ namespace Nailhang.Display.Tools.TextSearch.Processing
                     triplets.Remove(tv.Key);
                     removed++;
                 }
+
+            System.Diagnostics.Trace.WriteLine($"Throttle removed: {removed}");
         }
     }
 }

@@ -31,12 +31,22 @@ else
             @foreach (var displayResult in displayItems)
             {
                 <li>
-                    <a class="sp_class" href=@($"classview/{@Uri.EscapeDataString(displayResult.Assembly.FullName)}/{@Uri.EscapeDataString(displayResult.Class.FullName)}/")>
-                        @displayResult.Class.FullName
-                    </a>
-                    <span class="sp_assembly">
-                        @displayResult.Assembly.FullName.Split(',').First()
-                    </span>
+                    <p>
+                        @if (displayResult.Class.IsPublic)
+                        {
+                            <span class="public_modifier_span">public</span>
+                        }
+                        else
+                        {
+                            <span class="notpublic_modifier_span">not public</span>
+                        }
+                        <a class="sp_class" href=@($"classview/{@Uri.EscapeDataString(displayResult.Assembly.FullName)}/{@Uri.EscapeDataString(displayResult.Class.FullName)}/")>
+                            @displayResult.Class.FullName
+                        </a>
+                        <span class="sp_assembly">
+                            @displayResult.Assembly.FullName.Split(',').First()
+                        </span>
+                    </p>
                 </li>
             }
         </ul>
@@ -72,6 +82,9 @@ else
 
         var containsText = (string)e.Value;
         var text = containsText.ToLower();
+
+        if (lastSearchReq == text)
+            return;
 
         lastSearchReq = text;
         await Task.Delay(500);

@@ -80,6 +80,14 @@ div.interfaces-list {
     word-break: break-all;
 }
 
+.public_modifier_span {
+    color: green;
+}
+
+.notpublic_modifier_span {
+    color: darkred;
+}
+
 .main {
     flex: 1;
 }
