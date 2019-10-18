@@ -10,7 +10,7 @@ namespace Nailhang.Display.Tools.TextSearch.Processing
     {
         private readonly Statistics statistics;
 
-        readonly Dictionary<int, Triplets> triplets = new Dictionary<int, Triplets>();
+        internal readonly Dictionary<int, Triplets> triplets = new Dictionary<int, Triplets>();
 
         int documentIndex = 0;
 

@@ -155,7 +155,7 @@ namespace Nailhang.Tool
             int index = 0;
             foreach (var fileName in targetFiles)
             {
-                AssemblyPublic[] assemblies = null;
+                (AssemblyPublic, Class[])[] assemblies = null;
                 try
                 {
                     assemblies = publicProcessor.Extract(fileName).ToArray();

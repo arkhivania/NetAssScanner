@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Nailhang.TestLauncher": {
+      "commandName": "Project",
+      "commandLineArgs": "Nailhang.IntegrationTests.dll --wait"
+    }
+  }
+}

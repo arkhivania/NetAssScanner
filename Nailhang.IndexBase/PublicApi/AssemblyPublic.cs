@@ -6,10 +6,8 @@ namespace Nailhang.IndexBase.PublicApi
 {
     public struct AssemblyPublic
     {
-        public string Id => $"{FullName}/{AssemblyVersion}";
-        public Version AssemblyVersion { get; set; }
         public string FullName { get; set; }
-        public Class[] Classes { get; set; }
+        public string Id => $"{FullName}";
         public string ShortName => FullName.Split(',')[0];
     }
 }

@@ -12,7 +12,10 @@ namespace Nailhang.Display.Tools.TextSearch.Processing
             Code = code;
         }
 
-        public HashSet<int> Bulks { get; } = new HashSet<int>();
+        /// <summary>
+        /// вектор при построении отсортированный
+        /// </summary>
+        public List<int> Bulks { get; } = new List<int>();
         public int Code { get; }
     }
 }

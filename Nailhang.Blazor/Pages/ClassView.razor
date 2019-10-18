@@ -69,7 +69,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        this.assemblyItem = await Task.Factory.StartNew(() => publicApiStorage.LoadAssembly(Assembly).First());
-        this.classItem = assemblyItem.Value.Classes.First(c => c.FullName == ClassName);
+        this.assemblyItem = await Task.Factory.StartNew(() => publicApiStorage.LoadAssembly(Assembly));
+        var classes = publicApiStorage.LoadClasses(assemblyItem.Value.Id);
+        this.classItem = classes.First(c => c.FullName == ClassName);
     }
 }

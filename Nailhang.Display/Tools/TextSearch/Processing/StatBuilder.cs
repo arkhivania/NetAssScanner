@@ -60,7 +60,18 @@ namespace Nailhang.Display.Tools.TextSearch.Processing
         {
             var index = new Index((Statistics)stat);
             foreach (var b in bulks)
-                index.Run(b);            
+                index.Run(b);
+
+            long memory = 0;
+
+            foreach(var tv in index.triplets)
+            {
+                memory += 4; // на ключ
+                memory += tv.Value.Bulks.Count * 4;
+            }
+
+            Console.WriteLine($"Index builded: memory usage {memory}");
+
             return index;
         }
     }

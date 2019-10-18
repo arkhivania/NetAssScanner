@@ -65,15 +65,15 @@ else
             @foreach (var displayResult in netSearchState.DisplayItems)
             {
                 @if (!string.IsNullOrEmpty(netSearchState.SelectedNamespace))
-                    if (!displayResult.Class.Namespace.StartsWith(netSearchState.SelectedNamespace))
+                    if (!displayResult.Namespace.StartsWith(netSearchState.SelectedNamespace))
                         continue;
 
-                @if (netSearchState.ShowOnlyPublic && !displayResult.Class.IsPublic)
+                @if (netSearchState.ShowOnlyPublic && !displayResult.IsPublic)
                     continue;
 
                 <li>
                     <p>
-                        @if (displayResult.Class.IsPublic)
+                        @if (displayResult.IsPublic)
                         {
                             <span class="public_modifier_span">public</span>
                         }
@@ -81,8 +81,8 @@ else
                         {
                             <span class="notpublic_modifier_span">not public</span>
                         }
-                        <a class="sp_class" href=@($"classview/{@Uri.EscapeDataString(displayResult.Assembly.FullName)}/{@Uri.EscapeDataString(displayResult.Class.FullName)}/")>
-                            @displayResult.Class.FullName
+                        <a class="sp_class" href=@($"classview/{@Uri.EscapeDataString(displayResult.Assembly.FullName)}/{@Uri.EscapeDataString(displayResult.FullClassName)}/")>
+                            @displayResult.FullClassName
                         </a>
                         <span class="sp_assembly">
                             @displayResult.Assembly.FullName.Split(',').First()

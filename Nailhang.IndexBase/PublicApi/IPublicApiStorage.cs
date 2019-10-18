@@ -6,9 +6,10 @@ namespace Nailhang.IndexBase.PublicApi
 {
     public interface IPublicApiStorage
     {
-        void UpdateAssemblies(IEnumerable<AssemblyPublic> assemblies);
+        void UpdateAssemblies(IEnumerable<(AssemblyPublic, Class[])> assemblies);
         IEnumerable<AssemblyPublic> LoadAssemblies();
-        IEnumerable<AssemblyPublic> LoadAssembly(string fullName);
+        IEnumerable<Class> LoadClasses(string assemblyId);
+        AssemblyPublic? LoadAssembly(string fullName);
 
         long Drop(DropRequest dropRequest);
     }

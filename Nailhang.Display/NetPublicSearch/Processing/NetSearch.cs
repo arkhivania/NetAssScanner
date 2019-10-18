@@ -13,19 +13,19 @@ namespace Nailhang.Display.NetPublicSearch.Processing
     {
         struct CurSearch
         {
-            public SearchItem[] searchItems;
+            public Base.SearchItem[] searchItems;
             public IStat stat;
             public ISearch classSearch;
             public DateTime BuildTime;
             public Base.NamespaceInfo[] Namespaces { get; set; }
         }
 
-        static IEnumerable<Base.SearchItem> Prepare(AssemblyPublic assemblyPublic, HashSet<string> namespaces)
+        IEnumerable<Base.SearchItem> Prepare(AssemblyPublic assemblyPublic, HashSet<string> namespaces)
         {
-            foreach (var c in assemblyPublic.Classes)
+            foreach (var c in publicApiStorage.LoadClasses(assemblyPublic.Id))
             {
                 namespaces.Add(c.Namespace);
-                yield return new SearchItem { Assembly = assemblyPublic, Class = c };
+                yield return new Base.SearchItem(assemblyPublic, c.FullName, c.IsPublic);
             }
         }
 
@@ -33,24 +33,10 @@ namespace Nailhang.Display.NetPublicSearch.Processing
         private readonly IWSBuilder wSBuilder;
         private readonly IPublicApiStorage publicApiStorage;
 
-        //readonly ISearch namespaceSearch;
-
-        readonly Timer refreshTimer;
-
         public NetSearch(IWSBuilder wSBuilder, IPublicApiStorage publicApiStorage)
         {
             this.wSBuilder = wSBuilder;
             this.publicApiStorage = publicApiStorage;
-
-            refreshTimer = new Timer(state =>
-            {
-                lock (this)
-                {
-                    if (currentSearch != null
-                        && DateTime.UtcNow.Subtract(currentSearch.Value.BuildTime) > TimeSpan.FromMinutes(10))
-                        currentSearch = null;
-                }
-            }, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
         }
 
         private CurSearch CreateSearch()
@@ -66,10 +52,9 @@ namespace Nailhang.Display.NetPublicSearch.Processing
                 .ToArray();
 
             {
-                var search_strings = res.searchItems.Select(w => w.Class.Name);
+                var search_strings = res.searchItems.Select(w => w.ClassName);
                 res.stat = wSBuilder.BuildStat(search_strings);
                 var index = wSBuilder.Index(search_strings.Select(w => new Bulk { Sentence = w }), res.stat);
-                index.Throttle(0.1f);
                 res.classSearch = wSBuilder.CreateSearch(index);
             }
             res.BuildTime = DateTime.UtcNow;
@@ -80,7 +65,7 @@ namespace Nailhang.Display.NetPublicSearch.Processing
             return res;
         }
 
-        public IEnumerable<SearchItem> Search(string query, int maxCount)
+        public IEnumerable<Base.SearchItem> Search(string query, int maxCount)
         {
             CurSearch search = GetSearch();
             var name = query.ToLower();
@@ -103,7 +88,7 @@ namespace Nailhang.Display.NetPublicSearch.Processing
             lock (this)
             {
                 if (currentSearch == null
-                    || DateTime.UtcNow.Subtract(currentSearch.Value.BuildTime) > TimeSpan.FromMinutes(10))
+                    || DateTime.UtcNow.Subtract(currentSearch.Value.BuildTime) > TimeSpan.FromDays(1))
                 {
                     currentSearch = null;
                     currentSearch = CreateSearch();
@@ -117,7 +102,7 @@ namespace Nailhang.Display.NetPublicSearch.Processing
 
         public void Dispose()
         {
-            refreshTimer.Dispose();
+            
         }
 
         public void RebuildIndex()
@@ -133,6 +118,6 @@ namespace Nailhang.Display.NetPublicSearch.Processing
         {
             var search = GetSearch();
             return search.Namespaces;
-        }
+        }        
     }
 }

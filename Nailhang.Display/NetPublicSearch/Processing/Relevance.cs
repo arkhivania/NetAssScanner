@@ -30,22 +30,22 @@ namespace Nailhang.Display.NetPublicSearch.Processing
 
             foreach (var ri in source)
             {
-                var classNameRelevance = stat.CompareStrings(ri.Item.Class.Name, query);
-                var namespaceRelevance = stat.CompareStrings(ri.Item.Class.Namespace ?? "", query);
-                double methodRelevance = 0.0;
-                foreach (var m in ri.Item.Class.Methods)
-                {
-                    if (!string.IsNullOrEmpty(m.Name))
-                    {
-                        var cs = stat.CompareStrings(m.Name, query);
-                        if (cs > 0)
-                            methodRelevance += cs;
-                    }
-                }
+                var classNameRelevance = stat.CompareStrings(ri.Item.ClassName, query);
+                var namespaceRelevance = stat.CompareStrings(ri.Item.Namespace ?? "", query);
+                //double methodRelevance = 0.0;
+                //foreach (var m in ri.Item.Class.Methods)
+                //{
+                //    if (!string.IsNullOrEmpty(m.Name))
+                //    {
+                //        var cs = stat.CompareStrings(m.Name, query);
+                //        if (cs > 0)
+                //            methodRelevance += cs;
+                //    }
+                //}
 
                 ri.Relevance = 2.0 * classNameRelevance + 1 * namespaceRelevance;
-                if (ri.Item.Class.Methods.Length > 0)
-                    ri.Relevance += methodRelevance / ri.Item.Class.Methods.Length;
+                //if (ri.Item.Class.Methods.Length > 0)
+                //    ri.Relevance += methodRelevance / ri.Item.Class.Methods.Length;
             }
 
             return source

@@ -10,12 +10,10 @@ namespace Nailhang.Mongodb.PublicStorage.Processing
 {
     class PublicStore : IPublicApiStorage
     {
-        private readonly IMongoDatabase database;
         readonly IMongoCollection<AssemblyEntity> assembliesCollection;
 
         public PublicStore(IMongoDatabase database)
         {
-            this.database = database;
             assembliesCollection = database.GetCollection<AssemblyEntity>("publicAssemblies");
 
             var indexOptions = new CreateIndexOptions();
@@ -26,26 +24,30 @@ namespace Nailhang.Mongodb.PublicStorage.Processing
             assembliesCollection.Indexes.CreateOne(indexModel);
         }
 
-        public IEnumerable<AssemblyPublic> LoadAssemblies()
+        IEnumerable<StoredAssembly> LoadAssemblies()
         {
             foreach (var entity in assembliesCollection.AsQueryable())
                 yield return ToAssemblyPublic(entity.Data);
         }
 
-        private AssemblyPublic ToAssemblyPublic(string data)
+        private StoredAssembly ToAssemblyPublic(string data)
         {
-            return JsonConvert.DeserializeObject<AssemblyPublic>(data, new VersionConverter());
+            return JsonConvert.DeserializeObject<StoredAssembly>(data);
         }
-         
-        public void UpdateAssemblies(IEnumerable<AssemblyPublic> assemblies)
+
+        public void UpdateAssemblies(IEnumerable<(AssemblyPublic, Class[])> assemblies)
         {
-            foreach(var a in assemblies)
+            foreach (var a in assemblies)
             {
                 var entity = new AssemblyEntity
                 {
-                    Data = JsonConvert.SerializeObject(a),
-                    Id = a.Id.GenerateGuid(), 
-                    StringId = a.Id
+                    Data = JsonConvert.SerializeObject(new StoredAssembly
+                    {
+                        Classes = a.Item2,
+                        FullName = a.Item1.FullName
+                    }),
+                    Id = a.Item1.Id.GenerateGuid(),
+                    StringId = a.Item1.Id
                 };
 
                 var filter = Builders<AssemblyEntity>.Filter.Where(w => w.Id == entity.Id);
@@ -54,7 +56,7 @@ namespace Nailhang.Mongodb.PublicStorage.Processing
             }
         }
 
-        public IEnumerable<AssemblyPublic> LoadAssembly(string fullName)
+        IEnumerable<StoredAssembly> LoadAssembly(string fullName)
         {
             foreach (var entity in assembliesCollection
                 .AsQueryable()
@@ -77,6 +79,26 @@ namespace Nailhang.Mongodb.PublicStorage.Processing
             var deleteResult = assembliesCollection
                 .DeleteMany(filter);
             return deleteResult.DeletedCount;
+        }
+
+        public IEnumerable<Class> LoadClasses(string assemblyId)
+        {
+            var f = assembliesCollection.AsQueryable()
+                    .Where(q => q.StringId == assemblyId).FirstOrDefault();
+            return ToAssemblyPublic(f.Data).Classes;
+        }
+
+        IEnumerable<AssemblyPublic> IPublicApiStorage.LoadAssemblies()
+        {
+            foreach (var a in LoadAssemblies())
+                yield return new AssemblyPublic { FullName = a.FullName };
+        }
+
+        AssemblyPublic? IPublicApiStorage.LoadAssembly(string fullName)
+        {
+            return LoadAssembly(fullName)
+                .Select(w => (AssemblyPublic?)new AssemblyPublic { FullName = w.FullName })
+                .FirstOrDefault();
         }
     }
 }

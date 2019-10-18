@@ -19,7 +19,7 @@ namespace Nailhang.Processing.PublicExtract.Processing
             this.extractors = extractors;
         }
 
-        public IEnumerable<AssemblyPublic> Extract(string filePath)
+        public IEnumerable<(AssemblyPublic, Class[])> Extract(string filePath)
         {
             var readerParameters = new ReaderParameters();
             var resolver = new DefaultAssemblyResolver();
@@ -44,12 +44,12 @@ namespace Nailhang.Processing.PublicExtract.Processing
             }
 
             var assDef = AssemblyDefinition.ReadAssembly(filePath, readerParameters);
-            var res = new AssemblyPublic() { AssemblyVersion = assDef.Name.Version, FullName = assDef.FullName };
+            var res = new AssemblyPublic() { FullName = assDef.FullName };
 
-            res.Classes = assDef.Modules.SelectMany(module => extractors.SelectMany(e => e.ExtractClasses(module)))
+            var classes = assDef.Modules.SelectMany(module => extractors.SelectMany(e => e.ExtractClasses(module)))
                 .ToArray();
 
-            yield return res;
+            yield return (res, classes);
         }
     }
 }
