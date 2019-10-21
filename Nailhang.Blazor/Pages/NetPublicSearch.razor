@@ -1,6 +1,7 @@
 ﻿@page "/netpublicsearch"
-@page "/netpublicsearch/{query}"
-@page "/netpublicsearch/{query}/{selectedNamespace}"
+@page "/netpublicsearch/{IsPublic}"
+@page "/netpublicsearch/{IsPublic}/{Query}"
+@page "/netpublicsearch/{IsPublic}/{Query}/{SelectedNamespace}"
 
 @using Nailhang.Blazor.Data
 @using Nailhang.Display.NetPublicSearch.Base
@@ -121,8 +122,8 @@ else
     public string SelectedNamespace { get; set; }
 
     [Parameter]
-    public bool IsPublic { get; set; }
-    
+    public string IsPublic { get; set; }
+
 
     int displayCount = 0;
 
@@ -171,7 +172,7 @@ else
         if (!string.IsNullOrEmpty(Query))
             netSearchState.Query = Query;
 
-        netSearchState.ShowOnlyPublic = IsPublic;
+        netSearchState.ShowOnlyPublic = IsPublic == "true";
 
         netSearchState.QueryChanged += QueryChanged;
         netSearchState.SelectedNamespaceChanged += UriStateHasChanged;
@@ -218,13 +219,16 @@ else
 
     void UpdateUri()
     {
+        var beforenet = navigationManager.Uri.Split("netpublicsearch")[0];
+
         if (!string.IsNullOrEmpty(netSearchState.Query))
         {
-            var beforenet = navigationManager.Uri.Split("netpublicsearch")[0];
             if (string.IsNullOrEmpty(netSearchState.SelectedNamespace))
-                navigationManager.NavigateTo($"{beforenet}netpublicsearch/{Uri.EscapeDataString(netSearchState.Query)}/", false);
+                navigationManager.NavigateTo($"{beforenet}netpublicsearch/{(netSearchState.ShowOnlyPublic ? "true" : "false")}/{Uri.EscapeDataString(netSearchState.Query)}/", false);
             else
-                navigationManager.NavigateTo($"{beforenet}netpublicsearch/{Uri.EscapeDataString(netSearchState.Query)}/{Uri.EscapeDataString(netSearchState.SelectedNamespace)}/", false);
+                navigationManager.NavigateTo($"{beforenet}netpublicsearch/{(netSearchState.ShowOnlyPublic ? "true" : "false")}/{Uri.EscapeDataString(netSearchState.Query)}/{Uri.EscapeDataString(netSearchState.SelectedNamespace)}/", false);
         }
+        else
+            navigationManager.NavigateTo($"{beforenet}netpublicsearch/{(netSearchState.ShowOnlyPublic ? "true" : "false")}/", false);
     }
 }
