@@ -1,5 +1,6 @@
 ﻿@page "/netpublicsearch"
-@page "/netpublicsearch/{query}/"
+@page "/netpublicsearch/{query}"
+@page "/netpublicsearch/{query}/{selectedNamespace}"
 
 @using Nailhang.Blazor.Data
 @using Nailhang.Display.NetPublicSearch.Base
@@ -9,13 +10,15 @@
 @inject NavigationManager navigationManager;
 @inject States.NetSearchState netSearchState;
 
+@implements IDisposable;
+
 <h1>.Net поиск</h1>
 
 <div class="form-group row">
     <div class="col">
         <label class="col-form-label">Запрос</label>
-        <input class="form-control" type="text" @bind-value="Query"
-               @oninput="@UpdateFromText" />
+        <input class="form-control" type="text"
+               @bind-value="@netSearchState.Query" @bind-value:event="oninput" />
     </div>
 </div>
 
@@ -114,6 +117,13 @@ else
     [Parameter]
     public string Query { get; set; }
 
+    [Parameter]
+    public string SelectedNamespace { get; set; }
+
+    [Parameter]
+    public bool IsPublic { get; set; }
+    
+
     int displayCount = 0;
 
     async Task OnUpdateIndex()
@@ -125,26 +135,47 @@ else
             netSearchState.DisplayItems = new ISearchItem[] { };
         else
         {
-            var req = Query;
-            var searchres = await Task.Run(() => netSearch.Search(Query, 50).ToArray());
-            if (req == Query)
-                netSearchState.DisplayItems = searchres;
+            lastSearchReq = Query;
+            await ProcessQuery();
         }
+    }
+
+    void UriStateHasChanged(object sender, EventArgs eventArgs)
+    {
+        UpdateUri();
+    }
+
+    void QueryChanged(object sender, EventArgs args)
+    {
+        UpdateUri();
+
+
+        Task.Run(() => UpdateFromStateChanged())
+            .ContinueWith(t => InvokeAsync(() => StateHasChanged()));
+    }
+
+
+    public void Dispose()
+    {
+        netSearchState.ShowOnlyPublicChanged -= UriStateHasChanged;
+        netSearchState.SelectedNamespaceChanged -= UriStateHasChanged;
+        netSearchState.QueryChanged -= QueryChanged;
     }
 
     protected override async Task OnInitializedAsync()
     {
         netSearchState.DisplayItems = new ISearchItem[] { };
-        if (!string.IsNullOrEmpty(Query))
-        {
-            netSearchState.DisplayItems = null;
-            var search = Query;
-            lastSearchReq = search;
-            var searchres = await Task.Run(() => netSearch.Search(search, 50).ToArray());
+        if (!string.IsNullOrEmpty(SelectedNamespace))
+            netSearchState.SelectedNamespace = SelectedNamespace;
 
-            if (lastSearchReq == search)
-                netSearchState.DisplayItems = searchres;
-        }
+        if (!string.IsNullOrEmpty(Query))
+            netSearchState.Query = Query;
+
+        netSearchState.ShowOnlyPublic = IsPublic;
+
+        netSearchState.QueryChanged += QueryChanged;
+        netSearchState.SelectedNamespaceChanged += UriStateHasChanged;
+        netSearchState.ShowOnlyPublicChanged += UriStateHasChanged;
 
         var namespaces = await Task.Run(() => netSearch.GetNamespaces()
                 .SelectMany(w => w.AllNamespaces)
@@ -153,37 +184,47 @@ else
 
         netSearchState.Namespaces = @namespaces
             .Select(w => w.Namespace).ToArray();
+
+        lastSearchReq = Query;
+        await ProcessQuery();
     }
 
     string lastSearchReq;
 
-    async Task UpdateFromText(ChangeEventArgs e)
+    async Task UpdateFromStateChanged()
     {
         netSearchState.DisplayItems = null;
 
-        var containsText = (string)e.Value;
+        var containsText = (string)netSearchState.Query;
         var text = containsText.ToLower();
-
-        if (lastSearchReq == text)
-            return;
 
         lastSearchReq = text;
         await Task.Delay(500);
         if (lastSearchReq == text)
+            await ProcessQuery();
+    }
+
+    async Task ProcessQuery()
+    {
+        if (string.IsNullOrEmpty(netSearchState.Query))
+            netSearchState.DisplayItems = new ISearchItem[] { };
+        else
         {
-            if (string.IsNullOrEmpty(text))
-                netSearchState.DisplayItems = new ISearchItem[] { };
+            var searchres = await Task.Run(() => netSearch.Search(netSearchState.Query, 50).ToArray());
+            if (lastSearchReq == netSearchState.Query)
+                netSearchState.DisplayItems = searchres;
+        }
+    }
+
+    void UpdateUri()
+    {
+        if (!string.IsNullOrEmpty(netSearchState.Query))
+        {
+            var beforenet = navigationManager.Uri.Split("netpublicsearch")[0];
+            if (string.IsNullOrEmpty(netSearchState.SelectedNamespace))
+                navigationManager.NavigateTo($"{beforenet}netpublicsearch/{Uri.EscapeDataString(netSearchState.Query)}/", false);
             else
-            {
-                var searchres = await Task.Run(() => netSearch.Search(text, 50).ToArray());
-                if (lastSearchReq == text)
-                {
-                    netSearchState.DisplayItems = searchres;
-                    var dataEncoded = Uri.EscapeDataString(text);
-                    var beforenet = navigationManager.Uri.Split("netpublicsearch")[0];
-                    navigationManager.NavigateTo($"{beforenet}netpublicsearch/{dataEncoded}", false);
-                }
-            }
+                navigationManager.NavigateTo($"{beforenet}netpublicsearch/{Uri.EscapeDataString(netSearchState.Query)}/{Uri.EscapeDataString(netSearchState.SelectedNamespace)}/", false);
         }
     }
 }
