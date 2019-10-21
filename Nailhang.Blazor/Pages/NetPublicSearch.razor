@@ -122,7 +122,7 @@ else
         await Task.Run(() => netSearch.RebuildIndex());
 
         if (string.IsNullOrEmpty(Query))
-            netSearchState.DisplayItems = new SearchItem[] { };
+            netSearchState.DisplayItems = new ISearchItem[] { };
         else
         {
             var req = Query;
@@ -134,7 +134,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        netSearchState.DisplayItems = new SearchItem[] { };
+        netSearchState.DisplayItems = new ISearchItem[] { };
         if (!string.IsNullOrEmpty(Query))
         {
             netSearchState.DisplayItems = null;
@@ -172,7 +172,7 @@ else
         if (lastSearchReq == text)
         {
             if (string.IsNullOrEmpty(text))
-                netSearchState.DisplayItems = new SearchItem[] { };
+                netSearchState.DisplayItems = new ISearchItem[] { };
             else
             {
                 var searchres = await Task.Run(() => netSearch.Search(text, 50).ToArray());

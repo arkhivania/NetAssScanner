@@ -11,21 +11,23 @@ namespace Nailhang.Display.NetPublicSearch.Processing
 {
     class NetSearch : Base.INetSearch, IDisposable
     {
+        readonly Processing.SplitStringStore splitStringStore = new SplitStringStore();
+
         struct CurSearch
         {
-            public Base.SearchItem[] searchItems;
+            public Base.ISearchItem[] searchItems;
             public IStat stat;
             public ISearch classSearch;
             public DateTime BuildTime;
             public Base.NamespaceInfo[] Namespaces { get; set; }
         }
 
-        IEnumerable<Base.SearchItem> Prepare(AssemblyPublic assemblyPublic, HashSet<string> namespaces)
+        IEnumerable<Base.ISearchItem> Prepare(AssemblyPublic assemblyPublic, HashSet<string> namespaces)
         {
             foreach (var c in publicApiStorage.LoadClasses(assemblyPublic.Id))
             {
                 namespaces.Add(c.Namespace);
-                yield return new Base.SearchItem(assemblyPublic, c.FullName, c.IsPublic);
+                yield return new Processing.SearchItem(assemblyPublic, splitStringStore.Store(c.FullName), c.IsPublic);
             }
         }
 
@@ -65,7 +67,7 @@ namespace Nailhang.Display.NetPublicSearch.Processing
             return res;
         }
 
-        public IEnumerable<Base.SearchItem> Search(string query, int maxCount)
+        public IEnumerable<Base.ISearchItem> Search(string query, int maxCount)
         {
             CurSearch search = GetSearch();
             var name = query.ToLower();

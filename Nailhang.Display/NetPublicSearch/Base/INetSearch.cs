@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nailhang.IndexBase.PublicApi;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,7 +9,7 @@ namespace Nailhang.Display.NetPublicSearch.Base
     {
         IEnumerable<NamespaceInfo> GetNamespaces();
 
-        IEnumerable<SearchItem> Search(string query, int maxCount);
-        void RebuildIndex();
+        IEnumerable<ISearchItem> Search(string query, int maxCount);
+        void RebuildIndex();        
     }
 }

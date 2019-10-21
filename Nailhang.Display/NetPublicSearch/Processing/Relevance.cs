@@ -18,11 +18,11 @@ namespace Nailhang.Display.NetPublicSearch.Processing
 
         class RelItem
         {
-            public Base.SearchItem Item { get; set; }
+            public Base.ISearchItem Item { get; set; }
             public double Relevance;
         }
 
-        public IEnumerable<Base.SearchItem> ProcessResults(string query, IEnumerable<Base.SearchItem> searchItems)
+        public IEnumerable<Base.ISearchItem> ProcessResults(string query, IEnumerable<Base.ISearchItem> searchItems)
         {
             var source = searchItems
                 .Select(w => new RelItem { Item = w, Relevance = 0 })

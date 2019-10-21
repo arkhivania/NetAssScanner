@@ -11,6 +11,6 @@ namespace Nailhang.Blazor.States
         public string[] Namespaces { get; set; }
         public string SelectedNamespace { get; set; }
         public bool ShowOnlyPublic { get; set; }
-        public SearchItem[] DisplayItems { get; set; }
+        public ISearchItem[] DisplayItems { get; set; }
     }
 }

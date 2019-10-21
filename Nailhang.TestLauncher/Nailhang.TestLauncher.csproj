@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Nailhang.Display\Nailhang.Display.csproj" />
     <ProjectReference Include="..\Nailhang.IntegrationTests\Nailhang.IntegrationTests.csproj" />
   </ItemGroup>
 
