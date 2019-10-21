@@ -11,10 +11,10 @@
 }
 else
 {
-    <div class="panel panel-default">
-        <div class="panel-heading">Пространство имен:</div>
-        <div class="panel-body">
-            <select @onchange="@UpdateModules">
+    <div class="form-row">
+        <div class="col">
+            <label class="col-form-label">Пространство имен</label>
+            <select class="form-control" @onchange="@UpdateModules">
                 @foreach (var ns in namespaces)
                 {
                     <option value=@ns>@ns</option>
@@ -22,9 +22,6 @@ else
             </select>
         </div>
     </div>
-
-    <br />
-
 
     <p class="little-text">
         Всего модулей: @displayModules.Length
@@ -51,9 +48,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        if(namespaces == null)
+        if (namespaces == null)
             namespaces = await Task.Run(() => NailhangModulesService.GetNamespaces());
-        if(allModules == null)
+        if (allModules == null)
             allModules = await Task.Run(() => NailhangModulesService.GetModules(""));
 
         displayModules = allModules;

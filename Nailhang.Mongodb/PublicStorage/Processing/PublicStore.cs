@@ -56,11 +56,11 @@ namespace Nailhang.Mongodb.PublicStorage.Processing
             }
         }
 
-        IEnumerable<StoredAssembly> LoadAssembly(string fullName)
+        IEnumerable<StoredAssembly> LoadAssembly(string namestarts)
         {
             foreach (var entity in assembliesCollection
                 .AsQueryable()
-                .Where(q => q.StringId.StartsWith(fullName)))
+                .Where(q => q.StringId.StartsWith(namestarts)))
             {
                 yield return ToAssemblyPublic(entity.Data);
             }
@@ -99,6 +99,12 @@ namespace Nailhang.Mongodb.PublicStorage.Processing
             return LoadAssembly(fullName)
                 .Select(w => (AssemblyPublic?)new AssemblyPublic { FullName = w.FullName })
                 .FirstOrDefault();
+        }
+
+        public IEnumerable<AssemblyPublic> FindByShortName(string shortName)
+        {
+            return LoadAssembly(shortName)
+                .Select(w => new AssemblyPublic { FullName = w.FullName });
         }
     }
 }

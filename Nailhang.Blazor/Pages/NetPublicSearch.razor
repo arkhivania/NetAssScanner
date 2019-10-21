@@ -9,26 +9,39 @@
 @inject NavigationManager navigationManager;
 @inject States.NetSearchState netSearchState;
 
+<h1>.Net поиск</h1>
 
-<div class="form-row">
+<div class="form-group row">
     <div class="col">
-        <label class="col-form-label">Пространство имен</label>
-        <select id="select_namespace" class="form-control"
-                @bind="@netSearchState.SelectedNamespace">
-            @if (netSearchState.Namespaces != null)
-                @foreach (var ns in netSearchState.Namespaces)
-                {
-                    <option value=@ns>@ns</option>
-                }
-        </select>
+        <label class="col-form-label">Запрос</label>
+        <input class="form-control" type="text" @bind-value="Query"
+               @oninput="@UpdateFromText" />
     </div>
 </div>
 
-<div class="form-group">
-    <label class="col-form-label">Запрос</label>
-    <input class="form-control" type="text" @bind-value="Query"
-           @oninput="@UpdateFromText" />
-</div>
+@if (netSearchState.Namespaces == null)
+{
+    <p>Загрузка пространств имен ...</p>
+    <div class="spinner-border" role="status" />
+}
+else
+{
+    <div class="form-group row">
+        <div class="col">
+            <label class="col-form-label">Пространство имен</label>
+            <select id="select_namespace" class="form-control"
+                    @bind="@netSearchState.SelectedNamespace">
+                @if (netSearchState.Namespaces != null)
+                    @foreach (var ns in netSearchState.Namespaces)
+                    {
+                        <option value=@ns>@ns</option>
+                    }
+            </select>
+        </div>
+    </div>
+}
+
+
 
 <div class="form-group row">
     <div class="col-sm-7">
@@ -43,8 +56,8 @@
 
     <div class="col">
         <button class="form-control btn btn-secondary"
-                @onclick="@OnUpdateIndex">
-            Update search index
+                @onclick="@OnUpdateIndex" title="Индекс перестраивается раз в день, если очень необходимо перестроить индекс прямо сейчас, жмем!">
+            Перестроить индекс поиска на сервере
         </button>
     </div>
 </div>
@@ -80,7 +93,7 @@ else
                         {
                             <span class="notpublic_modifier_span">not public</span>
                         }
-                        <a class="sp_class" href=@($"classview/{@Uri.EscapeDataString(displayResult.Assembly.FullName)}/{@Uri.EscapeDataString(displayResult.FullClassName)}/")>
+                        <a class="sp_class" href=@($"classview/{@Uri.EscapeDataString(displayResult.Assembly.ShortName)}/{@Uri.EscapeDataString(displayResult.FullClassName)}/")>
                             @displayResult.FullClassName
                         </a>
                         <span class="sp_assembly">
@@ -170,7 +183,6 @@ else
                     var beforenet = navigationManager.Uri.Split("netpublicsearch")[0];
                     navigationManager.NavigateTo($"{beforenet}netpublicsearch/{dataEncoded}", false);
                 }
-
             }
         }
     }

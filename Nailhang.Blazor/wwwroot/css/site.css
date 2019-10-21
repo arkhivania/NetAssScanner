@@ -103,7 +103,7 @@ div.interfaces-list {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-image: linear-gradient(180deg, rgb(104, 131, 179) 0%, rgb(104, 131, 179) 20%);
 }
 
 .sidebar .top-row {

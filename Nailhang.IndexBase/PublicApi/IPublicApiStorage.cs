@@ -10,6 +10,7 @@ namespace Nailhang.IndexBase.PublicApi
         IEnumerable<AssemblyPublic> LoadAssemblies();
         IEnumerable<Class> LoadClasses(string assemblyId);
         AssemblyPublic? LoadAssembly(string fullName);
+        IEnumerable<AssemblyPublic> FindByShortName(string shortName);
 
         long Drop(DropRequest dropRequest);
     }

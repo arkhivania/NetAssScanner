@@ -6,14 +6,10 @@
 
 <h1>Элементы привязок</h1>
 
-<div class="panel panel-default">
-    <div class="panel-heading">Поиск:</div>
-    <div class="panel-body">
-        <input type="text" @oninput="@UpdateFromText" />
-    </div>
+<div class="form-group">
+    <label class="col-form-label">Поиск:</label>
+    <input class="form-control" type="text" @oninput="@UpdateFromText"/>
 </div>
-
-<br />
 
 @if (allInterfaces == null || displayInterfaces == null)
 {
@@ -58,11 +54,13 @@ else
         if (lastSearchReq == text)
         {
             if (string.IsNullOrEmpty(text))
+            {
                 displayInterfaces = await Task.Run(() => allInterfaces.Where(w => w.Name.ToLower().Contains(text)).ToArray());
+            }
             else
             {
                 var res = await Task.Run(() => interfacesSearch.Search(text).ToArray());
-                if(lastSearchReq == text)
+                if (lastSearchReq == text)
                     displayInterfaces = res;
             }
         }
