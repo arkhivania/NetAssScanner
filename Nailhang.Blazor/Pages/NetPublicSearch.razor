@@ -131,14 +131,17 @@ else
     {
         netSearchState.DisplayItems = null;
         await Task.Run(() => netSearch.RebuildIndex());
+        
+        var namespaces = await Task.Run(() => netSearch.GetNamespaces()
+                .SelectMany(w => w.AllNamespaces)
+                .Distinct()
+                .Where(w => w.Levels < 3).ToArray());
 
-        if (string.IsNullOrEmpty(Query))
-            netSearchState.DisplayItems = new ISearchItem[] { };
-        else
-        {
-            lastSearchReq = Query;
-            await ProcessQuery();
-        }
+        netSearchState.Namespaces = @namespaces
+            .Select(w => w.Namespace).ToArray();
+
+        lastSearchReq = Query;
+        await ProcessQuery();
     }
 
     void UriStateHasChanged(object sender, EventArgs eventArgs)
@@ -150,9 +153,14 @@ else
     {
         UpdateUri();
 
+        lastSearchReq = netSearchState.Query;
 
         Task.Run(() => UpdateFromStateChanged())
-            .ContinueWith(t => InvokeAsync(() => StateHasChanged()));
+            .ContinueWith(t =>
+            {
+                if (t.Result) 
+                    InvokeAsync(() => StateHasChanged());
+            });
     }
 
 
@@ -166,13 +174,14 @@ else
     protected override async Task OnInitializedAsync()
     {
         netSearchState.DisplayItems = new ISearchItem[] { };
-        if (!string.IsNullOrEmpty(SelectedNamespace))
+        if (SelectedNamespace != null)
             netSearchState.SelectedNamespace = SelectedNamespace;
 
-        if (!string.IsNullOrEmpty(Query))
+        if (Query != null)
             netSearchState.Query = Query;
 
-        netSearchState.ShowOnlyPublic = IsPublic == "true";
+        if(IsPublic != null)
+            netSearchState.ShowOnlyPublic = IsPublic == "true";
 
         netSearchState.QueryChanged += QueryChanged;
         netSearchState.SelectedNamespaceChanged += UriStateHasChanged;
@@ -186,23 +195,27 @@ else
         netSearchState.Namespaces = @namespaces
             .Select(w => w.Namespace).ToArray();
 
-        lastSearchReq = Query;
+        lastSearchReq = netSearchState.Query;
         await ProcessQuery();
     }
 
     string lastSearchReq;
 
-    async Task UpdateFromStateChanged()
+    async Task<bool> UpdateFromStateChanged()
     {
         netSearchState.DisplayItems = null;
 
         var containsText = (string)netSearchState.Query;
         var text = containsText.ToLower();
 
-        lastSearchReq = text;
         await Task.Delay(500);
         if (lastSearchReq == text)
+        {
             await ProcessQuery();
+            return true;
+        }
+
+        return false;
     }
 
     async Task ProcessQuery()
