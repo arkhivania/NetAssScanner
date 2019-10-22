@@ -9,7 +9,7 @@ namespace Nailhang.Display.NetPublicSearch.Base
     {
         IEnumerable<NamespaceInfo> GetNamespaces();
 
-        IEnumerable<ISearchItem> Search(string query, int maxCount);
+        IEnumerable<ISearchItem> Search(string query);
         void RebuildIndex();        
     }
 }

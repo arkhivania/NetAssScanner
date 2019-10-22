@@ -124,14 +124,19 @@ else
     [Parameter]
     public string IsPublic { get; set; }
 
-
     int displayCount = 0;
+
+    struct Request
+    {
+        public string Query { get; set; }
+        public string Namespace { get; set; }
+    }
 
     async Task OnUpdateIndex()
     {
         netSearchState.DisplayItems = null;
         await Task.Run(() => netSearch.RebuildIndex());
-        
+
         var namespaces = await Task.Run(() => netSearch.GetNamespaces()
                 .SelectMany(w => w.AllNamespaces)
                 .Distinct()
@@ -140,8 +145,8 @@ else
         netSearchState.Namespaces = @namespaces
             .Select(w => w.Namespace).ToArray();
 
-        lastSearchReq = Query;
-        await ProcessQuery();
+        lastRequest = MakeRequest();
+        await ProcessQuery(lastRequest);
     }
 
     void UriStateHasChanged(object sender, EventArgs eventArgs)
@@ -153,12 +158,14 @@ else
     {
         UpdateUri();
 
-        lastSearchReq = netSearchState.Query;
+        var request = MakeRequest();
+        lastRequest = request;
 
-        Task.Run(() => UpdateFromStateChanged())
+        netSearchState.DisplayItems = null;
+        Task.Run(() => UpdateFromStateChanged(request))
             .ContinueWith(t =>
             {
-                if (t.Result) 
+                if (t.Result)
                     InvokeAsync(() => StateHasChanged());
             });
     }
@@ -166,6 +173,7 @@ else
 
     public void Dispose()
     {
+        netSearchState.SelectedNamespaceChanged -= QueryChanged;
         netSearchState.ShowOnlyPublicChanged -= UriStateHasChanged;
         netSearchState.SelectedNamespaceChanged -= UriStateHasChanged;
         netSearchState.QueryChanged -= QueryChanged;
@@ -180,12 +188,14 @@ else
         if (Query != null)
             netSearchState.Query = Query;
 
-        if(IsPublic != null)
+        if (IsPublic != null)
             netSearchState.ShowOnlyPublic = IsPublic == "true";
 
         netSearchState.QueryChanged += QueryChanged;
         netSearchState.SelectedNamespaceChanged += UriStateHasChanged;
         netSearchState.ShowOnlyPublicChanged += UriStateHasChanged;
+        netSearchState.SelectedNamespaceChanged += QueryChanged;
+
 
         var namespaces = await Task.Run(() => netSearch.GetNamespaces()
                 .SelectMany(w => w.AllNamespaces)
@@ -195,37 +205,47 @@ else
         netSearchState.Namespaces = @namespaces
             .Select(w => w.Namespace).ToArray();
 
-        lastSearchReq = netSearchState.Query;
-        await ProcessQuery();
+        lastRequest = MakeRequest();
+        await ProcessQuery(lastRequest);
     }
 
-    string lastSearchReq;
-
-    async Task<bool> UpdateFromStateChanged()
+    Request MakeRequest()
     {
-        netSearchState.DisplayItems = null;
+        return new Request { Namespace = netSearchState.SelectedNamespace ?? "", Query = netSearchState.Query ?? "" };
+    }
 
-        var containsText = (string)netSearchState.Query;
+    Request lastRequest;
+
+    async Task<bool> UpdateFromStateChanged(Request request)
+    {
+        var containsText = (string)request.Query;
         var text = containsText.ToLower();
 
         await Task.Delay(500);
-        if (lastSearchReq == text)
+        if (lastRequest.Equals(request))
         {
-            await ProcessQuery();
+            await ProcessQuery(request);
             return true;
         }
 
         return false;
     }
 
-    async Task ProcessQuery()
+    async Task ProcessQuery(Request request)
     {
-        if (string.IsNullOrEmpty(netSearchState.Query))
+        if (string.IsNullOrEmpty(request.Query))
             netSearchState.DisplayItems = new ISearchItem[] { };
         else
         {
-            var searchres = await Task.Run(() => netSearch.Search(netSearchState.Query, 50).ToArray());
-            if (lastSearchReq == netSearchState.Query)
+            var searchres = await Task.Run(() =>
+            {
+                var r = netSearch.Search(request.Query);
+                if (!string.IsNullOrEmpty(request.Namespace))
+                    r = r.Where(w => w.Namespace.StartsWith(request.Namespace));
+                return r.Take(50).ToArray();
+            });
+
+            if (lastRequest.Equals(request))
                 netSearchState.DisplayItems = searchres;
         }
     }

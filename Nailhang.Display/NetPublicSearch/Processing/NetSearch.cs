@@ -67,7 +67,7 @@ namespace Nailhang.Display.NetPublicSearch.Processing
             return res;
         }
 
-        public IEnumerable<Base.ISearchItem> Search(string query, int maxCount)
+        public IEnumerable<Base.ISearchItem> Search(string query)
         {
             CurSearch search = GetSearch();
             var name = query.ToLower();
@@ -80,8 +80,7 @@ namespace Nailhang.Display.NetPublicSearch.Processing
                 .ToArray();
 
             return relevance
-                .ProcessResults(query, filtered)
-                .Take(maxCount > 0 ? maxCount : int.MaxValue);
+                .ProcessResults(query, filtered);
         }
 
         private CurSearch GetSearch()

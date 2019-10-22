@@ -24,7 +24,7 @@ namespace Nailhang.IntegrationTests.NetSearchTests
                 var netSearch = kernel
                     .Get<Nailhang.Display.NetPublicSearch.Base.INetSearch>();
 
-                var res = netSearch.Search("multivox vector3", 100).ToArray();
+                var res = netSearch.Search("multivox vector3").Take(100).ToArray();
                 Assert.That(res.Length > 0);
             }
         }
