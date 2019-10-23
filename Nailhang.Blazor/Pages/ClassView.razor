@@ -11,19 +11,19 @@
 else
 {
     <p>
+        <h2 class="h2-class">
+            @classItem.Value.FullName
+        </h2>
+
         @if (@classItem.Value.IsPublic)
         {
-            <span class="public_modifier_span">public</span>
+            <span class="badge badge-success">public</span>
         }
         else
         {
-            <span class="notpublic_modifier_span">not public</span>
+            <span class="badge badge-info">not public</span>
         }
         <br />
-
-        <h2>Класс: @classItem.Value.FullName</h2>
-        <br />
-
         <span class="sp_assembly">
             @assemblyItem.Value.FullName
         </span>
@@ -31,8 +31,8 @@ else
 
     <ul>
         @foreach (var method in classItem.Value.Methods
-      .OrderBy(w => w.Name)
-      .ThenBy(w => w.ParametersString()))
+   .OrderBy(w => w.Name)
+   .ThenBy(w => w.ParametersString()))
         {
             <li>
                 @if (method.IsPublic)

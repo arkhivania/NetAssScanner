@@ -68,6 +68,10 @@ div.panel-body input {
     width: 300px;
 }
 
+.h2-class {
+    word-break: break-all;
+}
+
 div.jumbotron h2 {
     word-break: break-all;
 }

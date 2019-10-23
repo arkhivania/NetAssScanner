@@ -91,11 +91,11 @@ else
                     <p>
                         @if (displayResult.IsPublic)
                         {
-                            <span class="public_modifier_span">public</span>
+                            <span class="badge badge-success">public</span>
                         }
                         else
                         {
-                            <span class="notpublic_modifier_span">not public</span>
+                            <span class="badge badge-info">not public</span>
                         }
                         <a class="sp_class" href=@($"classview/{@Uri.EscapeDataString(displayResult.Assembly.ShortName)}/{@Uri.EscapeDataString(displayResult.FullClassName)}/")>
                             @displayResult.FullClassName
