@@ -1,5 +1,7 @@
 ﻿<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">Nailhang</a>
+    <p class="small">@($"v. {typeof(Nailhang.Blazor.App).Assembly.GetName().Version.ToString(2)}")</p>
+
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
