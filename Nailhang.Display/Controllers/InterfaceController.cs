@@ -20,8 +20,7 @@ namespace Nailhang.Display.Controllers
 
         public Models.InterfacesModel GetInterfacesModel(string contains)
         {
-            var allModules = modulesStorage.GetModules()
-                .ToArray();
+            var allModules = GetAllModules();
 
             var bindObjects = allModules
                 .Where(w => w.ModuleBinds != null)
@@ -70,10 +69,24 @@ namespace Nailhang.Display.Controllers
             };
         }
 
+        IndexBase.Module[] cachedModules;
+        DateTime? lmtime;
+
+        IndexBase.Module[] GetAllModules()
+        {
+            if (lmtime == null || DateTime.UtcNow > lmtime.Value.Add(TimeSpan.FromMinutes(1)))
+            {
+                cachedModules = modulesStorage.GetModules().ToArray();
+                lmtime = DateTime.UtcNow;
+            }
+
+            return cachedModules;
+        }
+
         // GET: Interface
         public Models.InterfaceModel GetModel(Guid interfaceHash)
         {
-            var allModules = modulesStorage.GetModules()
+            var allModules = GetAllModules()
                 .Select(w => new Models.ModuleModel { Module = w })
                 .ToArray();
 

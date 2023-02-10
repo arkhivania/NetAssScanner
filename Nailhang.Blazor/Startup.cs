@@ -50,13 +50,15 @@ namespace Nailhang.Blazor
             rok.Load<Nailhang.Display.Tools.TextSearch.Module>();
             rok.Load<Nailhang.Display.NetPublicSearch.Module>();
             rok.Load<Nailhang.Display.InterfacesSearch.Module>();
+            rok.Bind<Nailhang.Display.Controllers.InterfaceController>().ToSelf().InSingletonScope();
+            rok.Bind<Nailhang.Display.Controllers.IndexController>().ToSelf().InSingletonScope();
 
             rok.Bind<IConfiguration>()
                 .ToMethod(q => Configuration).InSingletonScope();
             rok.Bind<IMD5Cache>().To<MD5NonBlockingCache>().InSingletonScope();
 
-            services.AddTransient<Nailhang.Display.Controllers.IndexController>();
-            services.AddTransient<Nailhang.Display.Controllers.InterfaceController>();
+            services.AddTransient(sp => rok.Get<Nailhang.Display.Controllers.IndexController>());
+            services.AddTransient(sp => rok.Get<Nailhang.Display.Controllers.InterfaceController>());
 
             services.AddTransient<IModulesStorage>(sp => rok.Get<IModulesStorage>());
             services.AddTransient<INetSearch>(sp => rok.Get<INetSearch>());

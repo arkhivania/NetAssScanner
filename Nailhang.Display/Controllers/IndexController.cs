@@ -13,18 +13,25 @@ namespace Nailhang.Display.Controllers
         public IndexController(IndexBase.Storage.IModulesStorage modulesStorage)
         {
             this.modulesStorage = modulesStorage;
-        }        
+        }
+
+        DateTime? lmtime;
+        ModuleModel[] lastModules;
 
         public IndexModel Get(string rootNamespace)
         {
+            if (lmtime == null || DateTime.UtcNow > lmtime.Value.Add(TimeSpan.FromMinutes(1)))
+            {
+                lastModules = modulesStorage.GetModules()
+                                           .Select(w => new ModuleModel { Module = w })
+                                           .ToArray();
+                lmtime = DateTime.UtcNow;
+            }
+
             var model = new IndexModel();
             var rootDeep = 3;
 
-            var allModules = modulesStorage.GetModules()
-                                           .Select(w => new ModuleModel { Module = w })
-                                           .ToArray();
-
-
+            var allModules = lastModules;
             model.Modules = allModules;
             model.AllModules = allModules;
 

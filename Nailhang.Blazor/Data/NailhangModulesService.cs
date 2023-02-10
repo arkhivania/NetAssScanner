@@ -11,12 +11,14 @@ namespace Nailhang.Blazor.Data
     {
         private readonly IndexBase.Storage.IModulesStorage modulesStorage;
         private readonly InterfaceController interfaceController;
+        private readonly IndexController indexController;
 
         public NailhangModulesService(IndexBase.Storage.IModulesStorage modulesStorage,
-            InterfaceController interfaceController)
+            InterfaceController interfaceController, IndexController indexController)
         {
             this.modulesStorage = modulesStorage;
             this.interfaceController = interfaceController;
+            this.indexController = indexController;
         }
 
         public InterfaceModel GetInterface(Guid hash)
@@ -26,25 +28,21 @@ namespace Nailhang.Blazor.Data
 
         public ModuleModel GetModule(string moduleName)
         {
-            var controller = new Display.Controllers.IndexController(modulesStorage);
-            var model = controller.Get("");
+            var model = indexController.Get("");
             return model.Modules
                 .First(w => w.Module.FullName == moduleName);
         }
 
         public string[] GetNamespaces()
         {
-            var controller = new IndexController(modulesStorage);
-            var model = controller.Get("");
+            var model = indexController.Get("");
 
             return model.RootNamespaces.ToArray();
         }
 
         public ModuleModel[] GetModules(string baseNamespace)
         {
-            var controller = new IndexController(modulesStorage);
-            var model = controller.Get(baseNamespace);
-
+            var model = indexController.Get(baseNamespace);
             return model.Modules.ToArray();
         }
     }
