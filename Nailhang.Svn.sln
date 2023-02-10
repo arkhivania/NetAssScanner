@@ -1,21 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29324.140
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Svn", "Nailhang.Svn\Nailhang.Svn.csproj", "{B2C4FAD7-1DA4-4550-AE1D-C9EF0CAEA288}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Mongodb", "Nailhang.Mongodb\Nailhang.Mongodb.csproj", "{5371C075-0F22-4C77-91BC-D08CEF02E9D4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.IndexBase", "Nailhang.IndexBase\Nailhang.IndexBase.csproj", "{F22CF5F1-B614-420C-B8AD-9A527DFC3681}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang", "Nailhang\Nailhang.csproj", "{EC558B91-D692-4A12-AFD8-12830949FAC9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Silo", "Nailhang.Silo\Nailhang.Silo.csproj", "{8AA190AB-749F-40C0-B86B-DFD23FC10206}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Services.Interfaces", "Nailhang.Services.Interfaces\Nailhang.Services.Interfaces.csproj", "{B4187AB8-3C3A-4D24-B012-B05FC67ED4E5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Services.ModulesMarks", "Nailhang.Services.ModulesMarks\Nailhang.Services.ModulesMarks.csproj", "{02408D51-2F05-441D-987F-1F229DC6E999}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Tool", "Nailhang.Tool\Nailhang.Tool.csproj", "{00CD39F1-FF75-4584-A85F-87F53DF0D984}"
 EndProject
@@ -27,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Blazor", "Nailhang
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.Display", "Nailhang.Display\Nailhang.Display.csproj", "{A059F6BF-4063-4E58-975F-E15832BBAD7B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LegacySVN", "LegacySVN", "{5E22F4B2-EAD3-448E-889F-9E2B7DE2CB51}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.TestLauncher", "Nailhang.TestLauncher\Nailhang.TestLauncher.csproj", "{82A1C847-9A6C-4297-B140-96A03FC96DF2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nailhang.IntegrationTests", "Nailhang.IntegrationTests\Nailhang.IntegrationTests.csproj", "{11B87B1F-CD2F-4FF2-BBBB-37A98514A507}"
@@ -39,10 +29,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B2C4FAD7-1DA4-4550-AE1D-C9EF0CAEA288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B2C4FAD7-1DA4-4550-AE1D-C9EF0CAEA288}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B2C4FAD7-1DA4-4550-AE1D-C9EF0CAEA288}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B2C4FAD7-1DA4-4550-AE1D-C9EF0CAEA288}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5371C075-0F22-4C77-91BC-D08CEF02E9D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5371C075-0F22-4C77-91BC-D08CEF02E9D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5371C075-0F22-4C77-91BC-D08CEF02E9D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -55,18 +41,6 @@ Global
 		{EC558B91-D692-4A12-AFD8-12830949FAC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC558B91-D692-4A12-AFD8-12830949FAC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC558B91-D692-4A12-AFD8-12830949FAC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8AA190AB-749F-40C0-B86B-DFD23FC10206}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8AA190AB-749F-40C0-B86B-DFD23FC10206}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8AA190AB-749F-40C0-B86B-DFD23FC10206}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8AA190AB-749F-40C0-B86B-DFD23FC10206}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B4187AB8-3C3A-4D24-B012-B05FC67ED4E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B4187AB8-3C3A-4D24-B012-B05FC67ED4E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B4187AB8-3C3A-4D24-B012-B05FC67ED4E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B4187AB8-3C3A-4D24-B012-B05FC67ED4E5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{02408D51-2F05-441D-987F-1F229DC6E999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{02408D51-2F05-441D-987F-1F229DC6E999}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{02408D51-2F05-441D-987F-1F229DC6E999}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{02408D51-2F05-441D-987F-1F229DC6E999}.Release|Any CPU.Build.0 = Release|Any CPU
 		{00CD39F1-FF75-4584-A85F-87F53DF0D984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{00CD39F1-FF75-4584-A85F-87F53DF0D984}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00CD39F1-FF75-4584-A85F-87F53DF0D984}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -98,12 +72,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{B2C4FAD7-1DA4-4550-AE1D-C9EF0CAEA288} = {5E22F4B2-EAD3-448E-889F-9E2B7DE2CB51}
-		{8AA190AB-749F-40C0-B86B-DFD23FC10206} = {5E22F4B2-EAD3-448E-889F-9E2B7DE2CB51}
-		{B4187AB8-3C3A-4D24-B012-B05FC67ED4E5} = {5E22F4B2-EAD3-448E-889F-9E2B7DE2CB51}
-		{02408D51-2F05-441D-987F-1F229DC6E999} = {5E22F4B2-EAD3-448E-889F-9E2B7DE2CB51}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {85473518-79C6-4C2A-8D72-F8E37CAFA36B}
