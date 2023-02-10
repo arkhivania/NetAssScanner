@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -64,7 +65,10 @@ namespace Nailhang.Blazor
             services.AddTransient<INetSearch>(sp => rok.Get<INetSearch>());
             services.AddTransient<IPublicApiStorage>(sp => rok.Get<IPublicApiStorage>());
             services.AddTransient<IMD5Cache>(sp => rok.Get<IMD5Cache>());           
-            services.AddTransient<Display.InterfacesSearch.Base.IInterfacesSearch>(sp => rok.Get<Display.InterfacesSearch.Base.IInterfacesSearch>());           
+            services.AddTransient<Display.InterfacesSearch.Base.IInterfacesSearch>(sp => rok.Get<Display.InterfacesSearch.Base.IInterfacesSearch>());
+
+            services.AddDataProtection()
+                    .DisableAutomaticKeyGeneration();
 
         }
 
