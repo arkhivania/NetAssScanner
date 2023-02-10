@@ -21,8 +21,14 @@ else
         @foreach (var s in displayInterfaces)
         {
         <NavLink href=@("interface/?interfaceHash=" + Nailhang.Display.StringUtils.ToMD5(s.Name).ToString())>
-            @s.Name
-        </NavLink>
+                @s.Name @if (s.DepCount == 0)
+                {
+                    <span class="badge badge-light m-1">@s.DepCount</span>
+                }else
+                {
+                    <span class="badge badge-success m-1">@s.DepCount</span>
+                }
+            </NavLink>
         <br />
         }
     </div>

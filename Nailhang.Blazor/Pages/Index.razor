@@ -28,28 +28,34 @@ else
 
     <div class="form-check m-2">
         <input type="checkbox" class="form-check-input" id="showOnlyWD"
-                @bind="@showOnlyWithDescription" @bind:after="@UpdateDisplay">
+           @bind="@showOnlyWithDescription" @bind:after="@UpdateDisplay">
         <label class="form-check-label" for="showOnlyWD">Отображать только модули с описанием</label>
     </div>
 
     <p class="little-text">
         Всего модулей: @displayModules.Length
     </p>
-    <div class="module-columns">
-        @foreach (var m in displayModules
-       .OrderBy(w => w.Module.FullName))
-        {
-            <div class="card m-2">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <NavLink href=@("module/?module=" + @m.Module.FullName)>
-                            @m.Module.FullName
-                        </NavLink>
-                    </h5>
-                    <p class="card-text">@m.Module.Description</p>
+
+    <div class="container-fluid">
+        <div class="row row-cols-2 g-1">
+            @foreach (var m in displayModules
+           .OrderBy(w => w.Module.FullName))
+            {
+                <div class="col">
+                    <div class="card m-1">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <NavLink href=@("module/?module=" + @m.Module.FullName)>
+                                    @m.Module.FullName
+                                </NavLink>
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Сборка: @m.Module.Assembly</h6>
+                            <p class="card-text">@m.Module.Description</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 }
 

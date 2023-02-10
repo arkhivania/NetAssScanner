@@ -20,8 +20,10 @@ namespace Nailhang.Display.Controllers
 
         public Models.InterfacesModel GetInterfacesModel(string contains)
         {
-            var bindObjects = modulesStorage
-                .GetModules()
+            var allModules = modulesStorage.GetModules()
+                .ToArray();
+
+            var bindObjects = allModules
                 .Where(w => w.ModuleBinds != null)
                 .SelectMany(w => w.ModuleBinds)
                 .Select(w => w.FullName)
@@ -34,13 +36,35 @@ namespace Nailhang.Display.Controllers
                 bindObjects = bindObjects.Where(w => w.ToLower().Contains(query));
             }
 
+            Dictionary<string, int> depCounts = new Dictionary<string, int>();
+            foreach (var m in allModules)
+            {
+                var ihs = new HashSet<string>();
+                foreach (var id in m.InterfaceDependencies)
+                    if (ihs.Add(id.FullName))
+                    {
+                        if (!depCounts.ContainsKey(id.FullName))
+                            depCounts[id.FullName] = 0;
+                        depCounts[id.FullName]++;
+                    }
+
+                foreach (var id in m.ObjectDependencies)
+                    if (ihs.Add(id.FullName))
+                    {
+                        if (!depCounts.ContainsKey(id.FullName))
+                            depCounts[id.FullName] = 0;
+                        depCounts[id.FullName]++;
+                    }
+            }
+
             return new Models.InterfacesModel
             {
                 Interfaces = bindObjects
                 .Select(q => new Models.InterfaceMD5KV
                 {
                     Name = q,
-                    MD5 = md5Cache.ToMD5(q)
+                    MD5 = md5Cache.ToMD5(q),
+                    DepCount = depCounts.TryGetValue(q, out int cnt) ? cnt : 0
                 })
                 .ToArray()
             };
