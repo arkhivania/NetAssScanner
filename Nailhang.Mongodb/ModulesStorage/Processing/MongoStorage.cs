@@ -30,7 +30,7 @@ namespace Nailhang.Mongodb.ModulesStorage.Processing
             };
 
             var filter = Builders<ModuleEntity>.Filter.Where(w => w.Id == mentity.Id);
-            var replaceResult = modules.ReplaceOne(filter, mentity, new UpdateOptions { IsUpsert = true });
+            var replaceResult = modules.ReplaceOne(filter, mentity, new ReplaceOptions { IsUpsert = true });
         }
 
         public IEnumerable<IndexBase.Module> GetModules()

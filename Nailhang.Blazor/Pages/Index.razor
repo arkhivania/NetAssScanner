@@ -36,24 +36,24 @@ else
         Всего модулей: @displayModules.Length
     </p>
 
-    <div class="container-fluid">
-        <div class="row row-cols-2 g-1">
+    <div class="container">
+        <div class="card-columns">
             @foreach (var m in displayModules
            .OrderBy(w => w.Module.FullName))
             {
-                <div class="col">
-                    <div class="card m-1">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                <NavLink href=@("module/?module=" + @m.Module.FullName)>
-                                    @m.Module.FullName
-                                </NavLink>
-                            </h5>
-                            <h6 class="card-subtitle mb-2 text-muted">Сборка: @m.Module.Assembly</h6>
-                            <p class="card-text">@m.Module.Description</p>
-                        </div>
+
+                <div class="card m-1">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <NavLink href=@("module/?module=" + @m.Module.FullName)>
+                                @m.Module.FullName
+                            </NavLink>
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Сборка: @m.Module.Assembly</h6>
+                        <p class="card-text">@m.Module.Description</p>
                     </div>
                 </div>
+
             }
         </div>
     </div>

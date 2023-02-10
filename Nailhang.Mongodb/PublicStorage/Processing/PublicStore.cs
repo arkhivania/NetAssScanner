@@ -52,7 +52,7 @@ namespace Nailhang.Mongodb.PublicStorage.Processing
 
                 var filter = Builders<AssemblyEntity>.Filter.Where(w => w.Id == entity.Id);
                 var replaceResult = assembliesCollection
-                    .ReplaceOne(filter, entity, new UpdateOptions { IsUpsert = true });
+                    .ReplaceOne(filter, entity, new ReplaceOptions { IsUpsert = true });
             }
         }
 

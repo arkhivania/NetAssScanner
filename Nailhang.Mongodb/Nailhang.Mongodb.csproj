@@ -13,13 +13,13 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="MongoDB.Driver" Version="2.9.2" />
-    <PackageReference Include="MongoDB.Bson" Version="2.9.2" />
-    <PackageReference Include="MongoDB.Driver.Core" Version="2.9.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
-    <PackageReference Include="Ninject" Version="3.3.4" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />    
+    <PackageReference Include="MongoDB.Driver" Version="2.19.0" />
+    <PackageReference Include="MongoDB.Bson" Version="2.19.0" />
+    <PackageReference Include="MongoDB.Driver.Core" Version="2.19.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="Ninject" Version="3.3.6" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />    
   </ItemGroup>
 
 </Project>
