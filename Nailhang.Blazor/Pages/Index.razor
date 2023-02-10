@@ -1,6 +1,9 @@
 ﻿@page "/"
 
 @using Nailhang.Blazor.Data
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
+@inject ProtectedSessionStorage ProtectedSessionStore
 @inject NailhangModulesService NailhangModulesService
 
 <h1>Модули:</h1>
@@ -23,21 +26,30 @@ else
         </div>
     </div>
 
+    <div class="form-check m-2">
+        <input type="checkbox" class="form-check-input" id="showOnlyWD"
+                @bind="@showOnlyWithDescription" @bind:after="@UpdateDisplay">
+        <label class="form-check-label" for="showOnlyWD">Отображать только модули с описанием</label>
+    </div>
+
     <p class="little-text">
         Всего модулей: @displayModules.Length
     </p>
     <div class="module-columns">
-
-        <ul>
-            @foreach (var m in displayModules.OrderBy(w => w.Module.FullName))
-            {
-                <li title="@m.Module.Description">
-                    <NavLink href=@("module/?module=" + @m.Module.FullName)>
-                        @m.Module.FullName
-                    </NavLink>
-                </li>
-            }
-        </ul>
+        @foreach (var m in displayModules
+       .OrderBy(w => w.Module.FullName))
+        {
+            <div class="card m-2">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <NavLink href=@("module/?module=" + @m.Module.FullName)>
+                            @m.Module.FullName
+                        </NavLink>
+                    </h5>
+                    <p class="card-text">@m.Module.Description</p>
+                </div>
+            </div>
+        }
     </div>
 }
 
@@ -46,19 +58,41 @@ else
     Nailhang.Display.Models.ModuleModel[] allModules;
     Nailhang.Display.Models.ModuleModel[] displayModules;
 
+    bool showOnlyWithDescription;
+    string selectedNamespace = "";
+
     protected override async Task OnInitializedAsync()
     {
+        var s = await ProtectedSessionStore.GetAsync<bool>("show_w_description");
+        if (s.Success)
+            showOnlyWithDescription = s.Value;
+
         if (namespaces == null)
             namespaces = await Task.Run(() => NailhangModulesService.GetNamespaces());
         if (allModules == null)
             allModules = await Task.Run(() => NailhangModulesService.GetModules(""));
 
-        displayModules = allModules;
+        await UpdateDisplay();
     }
 
-    private void UpdateModules(ChangeEventArgs e)
+    private async Task UpdateModules(ChangeEventArgs e)
     {
-        var selectedNamespace = e.Value.ToString().ToLower();
-        displayModules = allModules.Where(w => w.Module.FullName.ToLower().StartsWith(selectedNamespace)).ToArray();
+        this.selectedNamespace = e.Value.ToString().ToLower();
+        await UpdateDisplay();
+    }
+
+    async Task UpdateDisplay()
+    {
+        displayModules = allModules
+            .Where(w => w.Module.FullName.ToLower().StartsWith(selectedNamespace))
+            .Where(q => (showOnlyWithDescription ? !string.IsNullOrEmpty(q.Module.Description) : true))
+            .ToArray();
+        this.StateHasChanged();
+        await StoreParameters();
+    }
+
+    async Task StoreParameters()
+    {
+        await ProtectedSessionStore.SetAsync("show_w_description", showOnlyWithDescription);
     }
 }
