@@ -40,6 +40,7 @@ namespace Nailhang.Blazor
 
             services.AddSingleton<Data.NailhangModulesService>();
             services.AddScoped<States.NetSearchState>();
+            services.AddScoped<States.ModulesIndexState>();
 
             //dirty place
 
@@ -66,10 +67,6 @@ namespace Nailhang.Blazor
             services.AddTransient<IPublicApiStorage>(sp => rok.Get<IPublicApiStorage>());
             services.AddTransient<IMD5Cache>(sp => rok.Get<IMD5Cache>());           
             services.AddTransient<Display.InterfacesSearch.Base.IInterfacesSearch>(sp => rok.Get<Display.InterfacesSearch.Base.IInterfacesSearch>());
-
-            services.AddDataProtection()
-                    .DisableAutomaticKeyGeneration();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

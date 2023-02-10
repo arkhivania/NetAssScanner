@@ -3,8 +3,8 @@
 @using Nailhang.Blazor.Data
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 
-@inject ProtectedSessionStorage ProtectedSessionStore
 @inject NailhangModulesService NailhangModulesService
+@inject States.ModulesIndexState modulesIndexState;
 
 <h1>Модули:</h1>
 
@@ -69,36 +69,29 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var s = await ProtectedSessionStore.GetAsync<bool>("show_w_description");
-        if (s.Success)
-            showOnlyWithDescription = s.Value;
+        showOnlyWithDescription = modulesIndexState.ShowOnlyWithDescription;
 
         if (namespaces == null)
             namespaces = await Task.Run(() => NailhangModulesService.GetNamespaces());
         if (allModules == null)
             allModules = await Task.Run(() => NailhangModulesService.GetModules(""));
 
-        await UpdateDisplay();
+        UpdateDisplay();
     }
 
-    private async Task UpdateModules(ChangeEventArgs e)
+    private void UpdateModules(ChangeEventArgs e)
     {
         this.selectedNamespace = e.Value.ToString().ToLower();
-        await UpdateDisplay();
+        UpdateDisplay();
     }
 
-    async Task UpdateDisplay()
+    void UpdateDisplay()
     {
         displayModules = allModules
             .Where(w => w.Module.FullName.ToLower().StartsWith(selectedNamespace))
             .Where(q => (showOnlyWithDescription ? !string.IsNullOrEmpty(q.Module.Description) : true))
             .ToArray();
         this.StateHasChanged();
-        await StoreParameters();
-    }
-
-    async Task StoreParameters()
-    {
-        await ProtectedSessionStore.SetAsync("show_w_description", showOnlyWithDescription);
+        modulesIndexState.ShowOnlyWithDescription = showOnlyWithDescription;
     }
 }
