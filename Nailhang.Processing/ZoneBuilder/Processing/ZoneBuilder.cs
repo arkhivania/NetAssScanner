@@ -45,7 +45,12 @@ namespace Nailhang.Processing.ZoneBuilder.Processing
 
                 if (components.Any())
                 {
-                    var zone = new Zone { Path = $"{typeDef.FullName}?{m.Name}", ComponentIds = components.ToArray() };
+                    var zone = new Zone 
+                    { 
+                        Path = $"{typeDef.FullName}?{m.Name}", 
+                        ComponentIds = components.ToArray(), 
+                        Description = typeDef.GetDescription()
+                    };
                     if (typeDef.BaseType.FullName == "Ninject.Modules.NinjectModule"
                         && m.Name == "Load")
                     {
