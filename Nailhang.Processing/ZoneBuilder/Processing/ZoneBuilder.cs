@@ -20,11 +20,6 @@ namespace Nailhang.Processing.ZoneBuilder.Processing
 
         private IEnumerable<Zone> ExtractZonesFromType(TypeDefinition typeDef)
         {
-            if(typeDef.FullName == "Alda.MultiVox.BootstrapsPublic.Modes.Mode2D")
-            {
-
-            }
-
             foreach (var m in typeDef.Methods.Where(w => w.Body != null))
             {
                 var components = new List<string>();
