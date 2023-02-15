@@ -9,19 +9,23 @@ using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Configuration;
 using Nailhang.IndexBase.PublicApi;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Nailhang.IndexBase.Index;
 
 namespace Nailhang.Tool
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             using (var kernel = new StandardKernel(
                 new Nailhang.Mongodb.Module(),
                 new Nailhang.Mongodb.ModuleDefault(),
                 new Nailhang.Mongodb.ModulesStorage.Module(),
+                new Nailhang.Mongodb.ZonesStorage.Module(),
                 new Nailhang.Mongodb.PublicStorage.Module(),
                 new Nailhang.Processing.ModuleBuilder.Module(),
+                new Nailhang.Processing.ZoneBuilder.Module(),
                 new Nailhang.Processing.PublicExtract.Module(),
                 new Nailhang.MVoxLease.AgarLease.Module()))
             {
@@ -33,6 +37,7 @@ namespace Nailhang.Tool
 
                 var storage = kernel.Get<IModulesStorage>();
                 var processor = kernel.Get<IndexBase.Index.IIndexProcessor>();
+                var zs = kernel.Get<IZonesStorage>();
                 var targetFiles = GetTargetFiles(Environment.GetCommandLineArgs());
 
                 if (args[0] == "classes")
@@ -45,12 +50,12 @@ namespace Nailhang.Tool
                         Console.WriteLine($"Dropped: {dropped} assemblies");
                     }
 
-                    foreach(var dropP in GetParameters("drop"))
+                    foreach (var dropP in GetParameters("drop"))
                     {
                         var dropped = apiStorage.Drop(new DropRequest { NameStartsWith = dropP });
                         Console.WriteLine($"Dropped: {dropped} assemblies");
                     }
-                    
+
                     ClassesAssembliesPipeline(
                         apiStorage,
                         kernel.Get<IPublicProcessor>(), targetFiles);
@@ -58,11 +63,17 @@ namespace Nailhang.Tool
                 else
                 {
                     if (Environment.GetCommandLineArgs().Any(w => w.ToLower() == "-drop"))
-                        storage.DropModules(namespaceStartsWith: "");
+                    {
+                        storage.DropModules("");
+                        zs.DropZones("");
+                    }
 
                     foreach (var drop in Environment.GetCommandLineArgs()
                         .Where(w => w.ToLower().StartsWith("-drop:")))
+                    {
                         storage.DropModules(drop.Substring("-drop:".Length));
+                        zs.DropZones(drop.Substring("-drop:".Length));
+                    }
 
                     if (Environment.GetCommandLineArgs().Any(w => w.ToLower() == "-list"))
                     {
@@ -77,7 +88,7 @@ namespace Nailhang.Tool
                         }
                     }
 
-                    ModulesPipeLine(storage, processor, targetFiles);
+                    ModulesPipeLine(storage, zs, processor, targetFiles);
                 }
             }
         }
@@ -132,11 +143,11 @@ namespace Nailhang.Tool
 
             foreach (var envParam in args)
             {
-                if(envParam.ToLower().StartsWith("-ignore:"))
+                if (envParam.ToLower().StartsWith("-ignore:"))
                 {
                     var param = envParam.Substring("-ignore:".Length);
                     var reg = new Regex(WildcardToRegex(param));
-                    for(int i = 0; i < targetFiles.Count; ++i)
+                    for (int i = 0; i < targetFiles.Count; ++i)
                     {
                         if (reg.IsMatch(targetFiles[i]))
                         {
@@ -173,10 +184,10 @@ namespace Nailhang.Tool
             }
         }
 
-        private static void ModulesPipeLine(IModulesStorage storage, IndexBase.Index.IIndexProcessor processor, List<string> targetFiles)
+        private static void ModulesPipeLine(IModulesStorage storage, IZonesStorage zonesStorage, IndexBase.Index.IIndexProcessor processor, List<string> targetFiles)
         {
             var filesBlock = new BufferBlock<string>();
-            var getModulesBlock = new TransformManyBlock<string, IndexBase.Module>(w =>
+            var getModulesBlock = new TransformManyBlock<string, ExtractResult>(w =>
             {
                 try
                 {
@@ -185,22 +196,32 @@ namespace Nailhang.Tool
                 catch (BadImageFormatException)
                 {
                     Console.WriteLine("Skip bad image: " + w + Environment.NewLine);
-                    return Enumerable.Empty<IndexBase.Module>();
+                    return Enumerable.Empty<ExtractResult>();
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("Fail to extract from: " + w + Environment.NewLine + e.ToString());
-                    return Enumerable.Empty<IndexBase.Module>();
+                    return Enumerable.Empty<ExtractResult>();
                 }
             }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 1 });
 
-            var broadcastBlock = new BroadcastBlock<IndexBase.Module>(w => w);
-            var printModuleBlock = new ActionBlock<IndexBase.Module>(m => Console.WriteLine(string.Format("Store module: {0}", m.FullName)));
+            var broadcastBlock = new BroadcastBlock<ExtractResult>(w => w);
+            var printModuleBlock = new ActionBlock<ExtractResult>(m =>
+            {
+                if (m.Module != null)
+                    Console.WriteLine(string.Format("Store module: {0}", m.Module?.FullName));
+                if (m.Zone != null)
+                    Console.WriteLine(string.Format("Store zone: {0}", m.Zone.Value.Path));
+            });
 
             int stored = 0;
-            var storeBlock = new ActionBlock<IndexBase.Module>(m =>
+            var storeBlock = new ActionBlock<ExtractResult>(m =>
             {
-                storage.StoreModule(m);
+                if (m.Module != null)
+                    storage.StoreModule(m.Module);
+
+                if (m.Zone != null)
+                    zonesStorage.StoreZone(m.Zone.Value);
                 System.Threading.Interlocked.Increment(ref stored);
             }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 4, BoundedCapacity = 2000 });
 

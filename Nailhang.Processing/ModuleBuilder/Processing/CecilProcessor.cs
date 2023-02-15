@@ -8,19 +8,25 @@ using Mono.Cecil;
 using System.ComponentModel;
 using System.Reflection;
 using System.IO;
+using Nailhang.Processing.ZoneBuilder.Base;
+using Nailhang.IndexBase.Storage;
+using Nailhang.IndexBase.Index;
 
 namespace Nailhang.Processing.ModuleBuilder.Processing
 {
     class CecilProcessor : IndexBase.Index.IIndexProcessor
     {
         private readonly Base.IModuleBuilder[] moduleBuilders;
+        private readonly IEnumerable<IZoneBuilder> zoneBuilders;
 
-        public CecilProcessor(IEnumerable<Base.IModuleBuilder> moduleBuilders)
+        public CecilProcessor(IEnumerable<Base.IModuleBuilder> moduleBuilders,
+            IEnumerable<IZoneBuilder> zoneBuilders)
         {
             this.moduleBuilders = moduleBuilders.ToArray();
+            this.zoneBuilders = zoneBuilders.ToArray();
         }
 
-        public IEnumerable<IndexBase.Module> ExtractModules(string filePath)
+        public IEnumerable<ExtractResult> ExtractModules(string filePath)
         {
             var readerParameters = new ReaderParameters();
             var resolver = new DefaultAssemblyResolver();
@@ -48,7 +54,11 @@ namespace Nailhang.Processing.ModuleBuilder.Processing
 
             foreach (var mb in moduleBuilders)
                 foreach (var module in mb.CreateModules(assDef))
-                    yield return module;
+                    yield return new ExtractResult { Module = module };
+
+            foreach (var mb in zoneBuilders)
+                foreach (var zone in mb.ExtractZones(assDef))
+                    yield return new ExtractResult { Zone = zone };
         }
 
 
