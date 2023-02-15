@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using Nailhang.IndexBase.PublicApi;
 using Nailhang.IndexBase.Storage;
+using Nailhang.Mongodb.ModulesStorage.Processing;
 using Nailhang.Mongodb.PublicStorage.Processing;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace Nailhang.Mongodb.ZonesStorage.Processing
 
             var indexOptions = new CreateIndexOptions();
             var indexKeys = Builders<ZoneEntity>.IndexKeys
-                .Ascending(q => q.StringId);
+                .Ascending(q => q.Id);
 
             var indexModel = new CreateIndexModel<ZoneEntity>(indexKeys, indexOptions);
             zonesCollection.Indexes.CreateOne(indexModel);
@@ -31,7 +32,7 @@ namespace Nailhang.Mongodb.ZonesStorage.Processing
             {
                 filter = Builders<ZoneEntity>
                 .Filter
-                    .Where(t => t.StringId.StartsWith(namespaceStartsWith));
+                    .Where(t => t.Id.StartsWith(namespaceStartsWith));
             }
 
             var deleteResult = zonesCollection
@@ -46,7 +47,16 @@ namespace Nailhang.Mongodb.ZonesStorage.Processing
 
         public void StoreZone(Zone zone)
         {
-            throw new NotImplementedException();
+            var mentity = new ZoneEntity
+            {
+                ComponentIds = zone.ComponentIds,
+                Id = zone.Path,
+                Type = zone.Type, 
+                Description = zone.Description
+            };
+
+            var filter = Builders<ZoneEntity>.Filter.Where(w => w.Id == mentity.Id);
+            var replaceResult = zonesCollection.ReplaceOne(filter, mentity, new ReplaceOptions { IsUpsert = true });
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Nailhang.Mongodb.ZonesStorage.Processing
     class ZoneEntity
     {
         [BsonId]
-        public string StringId { get; set; }
+        public string Id { get; set; }
 
         public string Description { get; set; }
         public string[] ComponentIds { get; set; }
