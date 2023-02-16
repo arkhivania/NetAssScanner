@@ -215,14 +215,21 @@ namespace Nailhang.Tool
             });
 
             int stored = 0;
+            int zonesStored = 0;
             var storeBlock = new ActionBlock<ExtractResult>(m =>
             {
                 if (m.Module != null)
+                {
                     storage.StoreModule(m.Module);
+                    System.Threading.Interlocked.Increment(ref stored);
+                }
 
                 if (m.Zone != null)
+                {
                     zonesStorage.StoreZone(m.Zone.Value);
-                System.Threading.Interlocked.Increment(ref stored);
+                    System.Threading.Interlocked.Increment(ref zonesStored);
+                }
+                
             }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 4, BoundedCapacity = 2000 });
 
             filesBlock.LinkTo(getModulesBlock, new DataflowLinkOptions { PropagateCompletion = true });
@@ -251,7 +258,7 @@ namespace Nailhang.Tool
             sw.Stop();
 
             Console.WriteLine(string.Format("Complete: {0} ms", sw.ElapsedMilliseconds));
-            Console.WriteLine("Modules stored:" + stored);
+            Console.WriteLine($"Modules stored: {stored}. Zones stored: {zonesStored}");
         }
     }
 }
