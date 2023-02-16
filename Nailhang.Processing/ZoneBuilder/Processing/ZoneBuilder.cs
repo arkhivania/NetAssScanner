@@ -106,6 +106,9 @@ namespace Nailhang.Processing.ZoneBuilder.Processing
                     if (zone.Path.EndsWith("?MoveNext"))
                         zone.Path = zone.Path.Substring(0, zone.Path.Length - "?MoveNext".Length);
 
+                    if (typeDef.CustomAttributes.Any(q => q.AttributeType.FullName == "NUnit.Framework.TestFixtureAttribute"))
+                        zone.Type = ZoneType.Test;
+
                     yield return zone;
                 }
             }
