@@ -12,23 +12,39 @@ namespace Nailhang.Processing.ZoneBuilder.Processing
     {
         public IEnumerable<Zone> ExtractZones(AssemblyDefinition assemblyDefinition)
         {
+            var extracted = new List<Zone>();
             var privateExtracted = new HashSet<TypeDefinition>();
+
+
             foreach (var module in assemblyDefinition.Modules)
                 foreach (var t in module.Types)
                 {
-                    foreach (var z in ExtractZonesFromType(t))
-                        yield return z;
+                    try
+                    {
+                        foreach (var z in ExtractZonesFromType(t))
+                            extracted.Add(z);
+                    }
+                    catch
+                    {
 
-                    foreach (var et in PrivateTypes(t))
-                        if (privateExtracted.Add(et))
-                        {
-                            foreach (var z in ExtractZonesFromType(et))
-                                yield return z;
-                        }else
-                        {
+                    }
 
-                        }
+                    try
+                    {
+                        foreach (var et in PrivateTypes(t))
+                            if (privateExtracted.Add(et))
+                            {
+                                foreach (var z in ExtractZonesFromType(et))
+                                    extracted.Add(z);
+                            }
+                    }
+                    catch
+                    {
+
+                    }
                 }
+
+            return extracted;
         }
 
         private IEnumerable<TypeDefinition> PrivateTypes(TypeDefinition t)
