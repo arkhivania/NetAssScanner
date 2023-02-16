@@ -27,15 +27,16 @@ namespace Nailhang.Processing.ZoneBuilder.Processing
         private IEnumerable<TypeDefinition> PrivateTypes(TypeDefinition t)
         {
             var hs = new HashSet<TypeDefinition>();
-            foreach(var m in t.Methods)
-                foreach (var i in m.Body.Instructions)
-                {
-                    if (i.OpCode == OpCodes.Newobj
-                        && i.Operand is MethodDefinition md
-                        && (md.DeclaringType.Attributes & TypeAttributes.NestedPrivate) != 0)
-                        if (hs.Add(md.DeclaringType))
-                            yield return md.DeclaringType;
-                }
+            foreach (var m in t.Methods)
+                if (m.Body != null)
+                    foreach (var i in m.Body.Instructions)
+                    {
+                        if (i.OpCode == OpCodes.Newobj
+                            && i.Operand is MethodDefinition md
+                            && (md.DeclaringType.Attributes & TypeAttributes.NestedPrivate) != 0)
+                            if (hs.Add(md.DeclaringType))
+                                yield return md.DeclaringType;
+                    }
         }
 
         private IEnumerable<Zone> ExtractZonesFromType(TypeDefinition typeDef)
@@ -49,7 +50,7 @@ namespace Nailhang.Processing.ZoneBuilder.Processing
                         && i.Operand is MethodReference mr)
                     {
                         var br = mr.DeclaringType.Resolve();
-                        if(br != null && br.BaseType.FullName == "Ninject.Modules.NinjectModule")
+                        if (br != null && br.BaseType?.FullName == "Ninject.Modules.NinjectModule")
                             components.Add(br.FullName);
                     }
 
@@ -66,10 +67,10 @@ namespace Nailhang.Processing.ZoneBuilder.Processing
 
                 if (components.Any())
                 {
-                    var zone = new Zone 
-                    { 
-                        Path = $"{typeDef.FullName}?{m.Name}", 
-                        ComponentIds = components.ToArray(), 
+                    var zone = new Zone
+                    {
+                        Path = $"{typeDef.FullName}?{m.Name}",
+                        ComponentIds = components.ToArray(),
                         Description = typeDef.GetDescription()
                     };
                     if (typeDef.BaseType.FullName == "Ninject.Modules.NinjectModule"
@@ -79,8 +80,8 @@ namespace Nailhang.Processing.ZoneBuilder.Processing
                         zone.Type = ZoneType.Bootstrap;
                     }
 
-                    if (zone.Path.EndsWith("d__0?MoveNext"))
-                        zone.Path = zone.Path.Substring(0, zone.Path.Length - "d__0?MoveNext".Length);
+                    if (zone.Path.EndsWith("?MoveNext"))
+                        zone.Path = zone.Path.Substring(0, zone.Path.Length - "?MoveNext".Length);
 
                     yield return zone;
                 }

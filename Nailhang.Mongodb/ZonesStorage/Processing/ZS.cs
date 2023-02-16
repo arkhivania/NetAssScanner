@@ -16,13 +16,6 @@ namespace Nailhang.Mongodb.ZonesStorage.Processing
         public ZS(IMongoDatabase database)
         {
             zonesCollection = database.GetCollection<ZoneEntity>("zones");
-
-            var indexOptions = new CreateIndexOptions();
-            var indexKeys = Builders<ZoneEntity>.IndexKeys
-                .Ascending(q => q.Id);
-
-            var indexModel = new CreateIndexModel<ZoneEntity>(indexKeys, indexOptions);
-            zonesCollection.Indexes.CreateOne(indexModel);
         }
 
         public long DropZones(string namespaceStartsWith)
