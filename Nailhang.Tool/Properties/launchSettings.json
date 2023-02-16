@@ -6,7 +6,7 @@
     },
     "scan": {
       "commandName": "Project",
-      "commandLineArgs": "-folder:\"C:\\Development\\dev3\\MultiVox\\Bin_Testing_Net40\" -mongo:\"mongodb://192.168.0.32\" -cecilRefPath:\"c:\\Development\\dev3\\MultiVox\\Bin_Testing_Net40\" -cecilRefPath:\"c:\\Development\\dev3\\References\\Release\" -ignore:*.Mapping.dll -folderMask:Alda.MultiVox*.dll"
+      "commandLineArgs": "-folder:\"C:\\Development\\dev3\\MultiVox\\Bin_Testing_Net40\" -mongo:\"mongodb://192.168.0.32\" -cecilRefPath:\"c:\\Development\\dev3\\MultiVox\\Bin_Testing_Net40\" -cecilRefPath:\"c:\\Development\\dev3\\References\\Release\" -ignore:*.Mapping.dll -folderMask:Alda.MultiVox.BootstrapsPublic*.dll"
     }
   }
 }
