@@ -6,6 +6,7 @@ using Nailhang.Mongodb.PublicStorage.Processing;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace Nailhang.Mongodb.ZonesStorage.Processing
 {
@@ -49,7 +50,18 @@ namespace Nailhang.Mongodb.ZonesStorage.Processing
             };
 
             var filter = Builders<ZoneEntity>.Filter.Where(w => w.Id == mentity.Id);
-            var replaceResult = zonesCollection.ReplaceOne(filter, mentity, new ReplaceOptions { IsUpsert = true });
+            for (int i = 0; i < 5; ++i)
+            {
+                try
+                {
+                    zonesCollection.ReplaceOne(filter, mentity, new ReplaceOptions { IsUpsert = true });
+                    return;
+                }
+                catch(MongoWriteException)
+                {
+                    Thread.Sleep(1000);
+                }
+            }
         }
     }
 }
